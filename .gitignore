@@ -1,0 +1,16 @@
+# Secrets - NEVER commit these
+.env
+secrets/
+token.json
+
+*.json
+!package.json
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# OS
+.DS_Store
