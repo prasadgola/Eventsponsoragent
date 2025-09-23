@@ -142,85 +142,83 @@ class CombinedServerHandler(BaseHTTPRequestHandler):
         """Handle POST requests"""
         
         print(f"📨 Received POST request to: {self.path}")
-        print(f"🔗 Headers: {dict(self.headers)}")
         
-        # Main agent interaction endpoint
         if self.path == '/run':
             try:
-                # Read request body
                 content_length = int(self.headers.get('Content-Length', 0))
-                if content_length == 0:
-                    raise ValueError("Empty request body")
-                
                 post_data = self.rfile.read(content_length)
-                print(f"📨 Received POST /run with {len(post_data)} bytes")
-                print(f"📝 Request data: {post_data.decode()[:200]}...")
+                request_json = json.loads(post_data.decode())
                 
-                # Validate JSON
-                try:
-                    request_json = json.loads(post_data.decode())
-                    print(f"✅ Valid JSON with keys: {list(request_json.keys())}")
-                except json.JSONDecodeError as e:
-                    print(f"❌ Invalid JSON: {e}")
-                    self.send_response(400)
+                # First, try to run the agent
+                response_data = self._run_agent(post_data)
+                
+                self.send_response(200)
+                self._set_cors_headers()
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(response_data)
+                
+            except HTTPError as e:
+                # If the session doesn't exist (404), create it and retry
+                if e.code == 404:
+                    print("🤔 Session not found. Creating a new one...")
+                    self._create_session(request_json)
+                    
+                    print("🔄 Retrying to run the agent...")
+                    response_data = self._run_agent(post_data)
+                    
+                    self.send_response(200)
                     self._set_cors_headers()
                     self.send_header('Content-Type', 'application/json')
                     self.end_headers()
-                    error_data = {"error": "Invalid JSON", "details": str(e)}
-                    self.wfile.write(json.dumps(error_data).encode())
-                    return
-                
-                # Forward to ADK server
-                req = urllib.request.Request(
-                    f"{self.ADK_SERVER_URL}/run",
-                    data=post_data,
-                    headers={'Content-Type': 'application/json'}
-                )
-                
-                print(f"🔄 Forwarding to {self.ADK_SERVER_URL}/run")
-                
-                with urllib.request.urlopen(req, timeout=120) as response:
-                    response_data = response.read()
-                    print(f"✅ ADK responded with {len(response_data)} bytes")
-                    
-                    # Send response back with CORS headers
-                    self.send_response(200)
-                    self._set_cors_headers()
-                    self.send_header('Content-Type', response.headers.get('Content-Type', 'application/json'))
-                    self.end_headers()
                     self.wfile.write(response_data)
-                
-            except HTTPError as e:
-                print(f"❌ ADK HTTP Error: {e.code} - {e.reason}")
-                try:
-                    error_body = e.read().decode()
-                    print(f"❌ Error body: {error_body[:200]}")
-                except:
-                    pass
-                    
-                self.send_response(e.code)
-                self._set_cors_headers()
-                self.send_header('Content-Type', 'application/json')
-                self.end_headers()
-                
-                error_data = {"error": f"ADK server error: {e.reason}", "status_code": e.code}
-                self.wfile.write(json.dumps(error_data).encode())
-                
+                else:
+                    self._handle_error(e)
             except Exception as e:
-                print(f"❌ Proxy Error: {str(e)}")
-                self.send_response(500)
-                self._set_cors_headers()
-                self.send_header('Content-Type', 'application/json')
-                self.end_headers()
-                
-                error_data = {"error": f"Proxy error: {str(e)}"}
-                self.wfile.write(json.dumps(error_data).encode())
-        
+                self._handle_error(e)
         else:
-            print(f"🔄 Forwarding POST {self.path} to ADK")
-            # Forward other POST requests to ADK
             self._forward_to_adk('POST')
-    
+
+    def _run_agent(self, post_data):
+        """Forwards the request to the ADK's /run endpoint."""
+        req = urllib.request.Request(
+            f"{self.ADK_SERVER_URL}/run",
+            data=post_data,
+            headers={'Content-Type': 'application/json'}
+        )
+        print(f"▶️  Running agent with payload: {post_data.decode()[:200]}...")
+        with urllib.request.urlopen(req, timeout=120) as response:
+            return response.read()
+
+    def _create_session(self, request_json):
+        """Creates a new session using the details from the request."""
+        app_name = request_json.get("app_name")
+        user_id = request_json.get("user_id")
+        session_id = request_json.get("session_id")
+        
+        session_url = f"{self.ADK_SERVER_URL}/apps/{app_name}/users/{user_id}/sessions/{session_id}"
+        session_data = json.dumps({"state": {}}).encode()
+        
+        req = urllib.request.Request(
+            session_url,
+            data=session_data,
+            headers={'Content-Type': 'application/json'},
+            method='POST'
+        )
+        print(f"✨ Creating session at: {session_url}")
+        with urllib.request.urlopen(req) as response:
+            print(f"✅ Session created with status: {response.status}")
+
+    def _handle_error(self, e):
+        """Sends a generic error response."""
+        print(f"❌ Error: {e}")
+        self.send_response(500)
+        self._set_cors_headers()
+        self.send_header('Content-Type', 'application/json')
+        self.end_headers()
+        error_data = {"error": str(e)}
+        self.wfile.write(json.dumps(error_data).encode())
+
     def _forward_to_adk(self, method):
         """Generic method to forward requests to ADK server"""
         try:
@@ -238,8 +236,6 @@ class CombinedServerHandler(BaseHTTPRequestHandler):
             else:
                 req = urllib.request.Request(url)
             
-            print(f"🔄 Forwarding {method} {self.path} to ADK")
-            
             with urllib.request.urlopen(req, timeout=60) as response:
                 response_data = response.read()
                 
@@ -250,31 +246,16 @@ class CombinedServerHandler(BaseHTTPRequestHandler):
                 self.wfile.write(response_data)
                 
         except HTTPError as e:
-            print(f"❌ ADK HTTP Error for {method} {self.path}: {e.code}")
-            self.send_response(e.code)
-            self._set_cors_headers()
-            self.send_header('Content-Type', 'application/json')
-            self.end_headers()
-            
-            error_data = {"error": f"ADK server error: {e.reason}", "path": self.path}
-            self.wfile.write(json.dumps(error_data).encode())
+            self._handle_error(e)
             
         except Exception as e:
-            print(f"❌ Forward Error for {method} {self.path}: {str(e)}")
-            self.send_response(500)
-            self._set_cors_headers()
-            self.send_header('Content-Type', 'application/json')
-            self.end_headers()
-            
-            error_data = {"error": f"Proxy error: {str(e)}", "path": self.path}
-            self.wfile.write(json.dumps(error_data).encode())
+            self._handle_error(e)
 
     def log_message(self, format, *args):
         """Override to reduce log noise"""
         pass
 
 if __name__ == '__main__':
-    # Cloud Run configuration
     HOST = os.getenv('HOST', '0.0.0.0')
     PORT = int(os.getenv('PORT', 8080))
     

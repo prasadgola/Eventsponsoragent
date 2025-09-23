@@ -1,0 +1,50 @@
+steps:
+  # Step 1: Build the backend Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/adk-backend:latest', '.']
+
+  # Step 2: Push the backend image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/adk-backend:latest']
+
+  # Step 3: Build the frontend Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/adk-frontend:latest', './frontend']
+
+  # Step 4: Push the frontend image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/adk-frontend:latest']
+
+  # Step 5: Deploy the backend service to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'adk-backend-service'
+      - '--image=us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/adk-backend:latest'
+      - '--project=event-sponsor-assistant'
+      - '--region=us-central1'
+      - '--port=8000'
+      - '--allow-unauthenticated'
+      - '--update-secrets=GOOGLE_API_KEY=GOOGLE_API_KEY:latest,AIRTABLE_API_KEY=AIRTABLE_API_KEY:latest,AIRTABLE_BASE_ID=AIRTABLE_BASE_ID:latest,AIRTABLE_TABLE_ID=AIRTABLE_TABLE_ID:latest'
+    id: 'deploy-backend'
+
+  # Step 6: Get the backend URL and deploy the frontend service
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        BACKEND_URL=$$(gcloud run services describe adk-backend-service --platform managed --project=event-sponsor-assistant --region us-central1 --format 'value(status.url)') && \
+        gcloud run deploy adk-frontend-service \
+          --image=us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/adk-frontend:latest \
+          --project=event-sponsor-assistant \
+          --region=us-central1 \
+          --allow-unauthenticated \
+          --set-env-vars="ADK_SERVER_URL=$$BACKEND_URL"
+    waitFor: ['deploy-backend']
+
+images:
+  - 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/adk-backend:latest'
+  - 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/adk-frontend:latest'
