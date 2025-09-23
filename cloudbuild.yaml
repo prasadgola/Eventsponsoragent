@@ -48,3 +48,7 @@ steps:
 images:
   - 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/adk-backend:latest'
   - 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/adk-frontend:latest'
+
+# --- ADD THIS SECTION ---
+options:
+  logging: CLOUD_LOGGING_ONLY

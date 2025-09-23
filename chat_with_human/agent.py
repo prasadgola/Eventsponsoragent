@@ -1,7 +1,4 @@
-import requests
-import os
 from google.adk.agents import Agent
-# from google.adk.core import SessionManager
 from .prompts import instructions_root
 from .sub_agents.event_sponsors.agent import sponsor_finder
 
