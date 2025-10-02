@@ -5,6 +5,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy everything in current directory to /app/chat_with_human
 COPY . ./chat_with_human
 
 EXPOSE 8000
