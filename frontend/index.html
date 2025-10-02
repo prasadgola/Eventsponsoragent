@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Sponsor Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #212121;
+            color: #e8eaed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #3c4043;
+            background: #212121;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 32px;
+            height: 32px;
+            background: #8ab4f8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #202124;
+        }
+
+        .header-info h1 {
+            color: #e8eaed;
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .theme-toggle {
+            background: transparent;
+            color: #9aa0a6;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .theme-toggle:hover {
+            background: #3c4043;
+            color: #e8eaed;
+        }
+
+        /* Main container */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            /* Increased max-width for better wide-screen layout */
+            max-width: 680px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Welcome screen - centered */
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+
+        .welcome-screen.hidden {
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #8ab4f8, #a8c7fa, #c58af9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-subtitle {
+            color: #9aa0a6;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Suggestions */
+        .suggestions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+
+        .suggestion {
+            background: #303134;
+            border: 1px solid #3c4043;
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .suggestion:hover {
+            border-color: #5f6368;
+            background: #3c4043;
+        }
+
+        .suggestion h3 {
+            color: #e8eaed;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .suggestion p {
+            color: #9aa0a6;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Chat messages */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem 1rem;
+            display: none;
+        }
+
+        .messages.active {
+            display: block;
+        }
+
+        .message {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            max-width: 100%;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.user .message-content {
+            background: #2d2d30;
+            color: #e8eaed;
+            border: 1px solid #3c4043;
+        }
+
+        .message.assistant .message-content {
+            background: transparent;
+            color: #e8eaed;
+            border: none;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .message.user .avatar {
+            background: #8ab4f8;
+            color: #202124;
+            order: 1;
+        }
+
+        .message.assistant .avatar {
+            background: #8ab4f8;
+            color: #202124;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 1rem 1.25rem;
+            border-radius: 18px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            border-bottom-right-radius: 6px;
+        }
+
+        .message.assistant .message-content {
+            border-bottom-left-radius: 6px;
+        }
+
+        /* Loading indicator */
+        .loading-message {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .loading-content {
+            background: transparent;
+            color: #e8eaed;
+            padding: 1rem 1.25rem;
+            border-radius: 18px;
+            border-bottom-left-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #9aa0a6;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Input area */
+        .input-area {
+            padding: 1rem 1rem 2rem;
+            background: #212121;
+            position: sticky;
+            bottom: 0;
+        }
+        
+        /* New wrapper to center the input container */
+        .input-wrapper {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: flex-end;
+            background: #212121;
+            border: 1px solid #3c4043;
+            border-radius: 24px;
+            padding: 0.5rem;
+            transition: all 0.2s ease;
+            max-width: 100%;
+        }
+
+        /* NEW: Removed blue glow, replaced with simple border color change */
+        .input-container:focus-within {
+            border-color: #3c4043; /* White-ish border on focus for dark mode */
+            box-shadow: none;
+        }
+
+        .message-input {
+            flex: 1;
+            min-height: 24px;
+            max-height: 120px;
+            padding: 0.5rem 1rem;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #e8eaed;
+            resize: none;
+            font-family: inherit;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .message-input::placeholder {
+            color: #9aa0a6;
+            font-weight: 300;
+        }
+        
+        /* Shared style for action buttons */
+        .action-btn {
+            border: none;
+            padding: 0.625rem;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+        }
+
+        /* NEW: Mic button styles */
+        .mic-btn {
+            background: transparent;
+            color: #9aa0a6;
+        }
+        .mic-btn:hover {
+            background: #3c4043;
+            color: #e8eaed;
+        }
+        .mic-btn.listening {
+            animation: glow 1.5s infinite ease-out;
+            color: #8ab4f8;
+        }
+
+        /* MODIFIED: Send button now has a transparent background */
+        .send-btn {
+            background: transparent;
+            color: #9aa0a6;
+        }
+
+        /* MODIFIED: Send button hover now matches mic button hover */
+        .send-btn:hover:not(:disabled) {
+            background: #3c4043;
+            color: #e8eaed;
+            transform: none; /* Removed scale effect */
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* NEW: Glow animation for mic button */
+        @keyframes glow {
+            0% { box-shadow: 0 0 0 0 rgba(138, 180, 248, 0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(138, 180, 248, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(138, 180, 248, 0); }
+        }
+
+        /* Light theme */
+        body.light-theme {
+            background: #ffffff;
+            color: #202124;
+        }
+
+        .light-theme .header {
+            background: #ffffff;
+            border-bottom-color: #dadce0;
+        }
+
+        .light-theme .logo {
+            background: #1a73e8;
+            color: #ffffff;
+        }
+
+        .light-theme .header-info h1 {
+            color: #202124;
+        }
+
+        .light-theme .theme-toggle {
+            color: #5f6368;
+        }
+
+        .light-theme .theme-toggle:hover {
+            background: #f1f3f4;
+            color: #202124;
+        }
+
+        .light-theme .welcome-title {
+            background: linear-gradient(45deg, #1a73e8, #4285f4, #8430ce);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .light-theme .welcome-subtitle {
+            color: #5f6368;
+        }
+
+        .light-theme .suggestion {
+            background: #f8f9fa;
+            border-color: #dadce0;
+        }
+
+        .light-theme .suggestion:hover {
+            border-color: #1a73e8;
+            background: #f1f3f4;
+        }
+
+        .light-theme .suggestion h3 {
+            color: #202124;
+        }
+
+        .light-theme .suggestion p {
+            color: #5f6368;
+        }
+
+        .light-theme .message.user .message-content {
+            background: #f1f3f4;
+            color: #202124;
+            border-color: #dadce0;
+        }
+
+        .light-theme .message.assistant .message-content {
+            color: #202124;
+        }
+
+        .light-theme .message.user .avatar {
+            background: #1a73e8;
+            color: #ffffff;
+        }
+
+        .light-theme .message.assistant .avatar {
+            background: #1a73e8;
+            color: #ffffff;
+        }
+
+        .light-theme .loading-content {
+            color: #202124;
+        }
+
+        .light-theme .dot {
+            background: #5f6368;
+        }
+
+        .light-theme .input-area {
+            background: #ffffff;
+        }
+
+        .light-theme .input-container {
+            background: #ffffff;
+            border-color: #dadce0;
+        }
+
+        /* MODIFIED: Black border on focus for light mode */
+        .light-theme .input-container:focus-within {
+            border-color: #dadce0; 
+            box-shadow: none;
+        }
+
+        .light-theme .message-input {
+            color: #202124;
+        }
+
+        .light-theme .message-input::placeholder {
+            color: #5f6368;
+        }
+
+        /* MODIFIED: Light mode send button has a transparent background */
+        .light-theme .send-btn {
+            background: transparent;
+            color: #5f6368;
+        }
+        
+        .light-theme .mic-btn {
+            color: #5f6368;
+        }
+        
+        .light-theme .mic-btn:hover {
+            background: #f1f3f4;
+            color: #202124;
+        }
+        
+        .light-theme .mic-btn.listening {
+             color: #1a73e8;
+        }
+
+        /* MODIFIED: Light mode send button hover matches mic button hover */
+        .light-theme .send-btn:hover:not(:disabled) {
+            background: #f1f3f4;
+            color: #202124;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message {
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        /* Scrollbar */
+        .messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .messages::-webkit-scrollbar-thumb {
+            background: #3c4043;
+            border-radius: 2px;
+        }
+
+        .light-theme .messages::-webkit-scrollbar-thumb {
+            background: #dadce0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 2rem;
+            }
+            
+            .suggestions {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+            
+            .messages {
+                padding: 1rem;
+            }
+            
+            .input-area {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">ES</div>
+            <div class="header-info">
+                <h1>Event Sponsor Assistant</h1>
+            </div>
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" title="Toggle theme">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+        </button>
+    </div>
+
+    <div class="main-container">
+        <div class="welcome-screen" id="welcomeScreen">
+            <h1 class="welcome-title">Hello, there!</h1>
+            <p class="welcome-subtitle">How can I help you with event sponsorship today?</p>
+            
+            <div class="suggestions">
+                <div class="suggestion" onclick="sendSuggestion('Help me find potential sponsors for a tech conference')">
+                    <h3>Find Sponsors</h3>
+                    <p>Get recommendations for potential sponsors based on your event type and audience</p>
+                </div>
+                <div class="suggestion" onclick="sendSuggestion('Create a sponsorship proposal template')">
+                    <h3>Proposal Template</h3>
+                    <p>Generate a professional sponsorship proposal tailored to your event</p>
+                </div>
+                <div class="suggestion" onclick="sendSuggestion('What are effective sponsorship packages?')">
+                    <h3>Package Ideas</h3>
+                    <p>Learn about different sponsorship tiers and package structures</p>
+                </div>
+                <div class="suggestion" onclick="sendSuggestion('Best practices for sponsor outreach')">
+                    <h3>Outreach Tips</h3>
+                    <p>Discover proven strategies for contacting and engaging sponsors</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="messages" id="messages"></div>
+    </div>
+
+    <div class="input-area">
+        <!-- Centering wrapper -->
+        <div class="input-wrapper">
+            <div class="input-container">
+                <textarea 
+                    id="messageInput" 
+                    class="message-input" 
+                    placeholder="Ask me about event sponsorship..." 
+                    rows="1"
+                ></textarea>
+                 <!-- NEW: Mic button -->
+                <button class="action-btn mic-btn" id="micBtn" title="Use voice">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="23"></line>
+                    </svg>
+                </button>
+                 <!-- MODIFIED: Send button now uses shared class -->
+                <button class="action-btn send-btn" onclick="sendMessage()" id="sendBtn" title="Send">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22,2 15,22 11,13 2,9"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE = 'http://localhost:8080';
+        
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const messagesContainer = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const themeToggle = document.getElementById('themeToggle');
+        // NEW: Mic button element
+        const micBtn = document.getElementById('micBtn');
+
+        // --- THEME MANAGEMENT (No changes) ---
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            const isLightTheme = document.body.classList.contains('light-theme');
+            localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
+            updateThemeIcon(isLightTheme);
+        }
+        function updateThemeIcon(isLightTheme) {
+            const icon = themeToggle.querySelector('svg');
+            if (isLightTheme) {
+                icon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+            } else {
+                icon.innerHTML = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+            }
+        }
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const shouldUseLightTheme = savedTheme === 'light' || (savedTheme === null && !prefersDark);
+            if (shouldUseLightTheme) {
+                document.body.classList.add('light-theme');
+            }
+            updateThemeIcon(shouldUseLightTheme);
+        }
+
+        // --- NEW: Function to toggle Mic/Send button visibility ---
+        function updateInputButtons() {
+            const hasText = messageInput.value.trim().length > 0;
+            sendBtn.style.display = hasText ? 'flex' : 'none';
+            micBtn.style.display = hasText ? 'none' : 'flex';
+        }
+
+        // --- MODIFIED: Auto-resize textarea and update buttons on input ---
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            updateInputButtons(); // Toggle buttons based on text
+        });
+
+        // --- MODIFIED: Send on Enter (but not Shift+Enter) ---
+        messageInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                // Check if there is text before sending
+                if (messageInput.value.trim().length > 0) {
+                    sendMessage();
+                }
+            }
+        });
+        
+        // --- NEW: VOICE-TO-TEXT IMPLEMENTATION ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false; // Stop listening after a pause
+            recognition.lang = 'en-US';
+
+            micBtn.addEventListener('click', () => {
+                recognition.start();
+            });
+
+            recognition.onstart = () => {
+                micBtn.classList.add('listening');
+            };
+
+            recognition.onend = () => {
+                micBtn.classList.remove('listening');
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error:", event.error);
+                micBtn.classList.remove('listening');
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[event.results.length - 1][0].transcript.trim();
+                messageInput.value = transcript;
+                // Manually trigger the input event to resize textarea and show send button
+                messageInput.dispatchEvent(new Event('input'));
+            };
+
+        } else {
+            // If browser doesn't support SpeechRecognition, hide the mic button
+            micBtn.style.display = 'none';
+            console.log('Speech recognition not supported in this browser.');
+        }
+
+        // --- CHAT LOGIC (No major changes) ---
+        function switchToChatView() {
+            welcomeScreen.classList.add('hidden');
+            messagesContainer.classList.add('active');
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+            }, 500);
+        }
+
+        function addMessage(content, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            avatar.textContent = type === 'user' ? 'You' : 'ES';
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.textContent = content;
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            return messageDiv;
+        }
+
+        function addLoading() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'loading-message';
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            avatar.textContent = 'ES';
+            const loadingContent = document.createElement('div');
+            loadingContent.className = 'loading-content';
+            loadingContent.innerHTML = `<span>Thinking</span><div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+            loadingDiv.appendChild(avatar);
+            loadingDiv.appendChild(loadingContent);
+            messagesContainer.appendChild(loadingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            return loadingDiv;
+        }
+
+        function sendSuggestion(message) {
+            messageInput.value = message;
+            // Manually trigger input event for UI update
+            messageInput.dispatchEvent(new Event('input'));
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message || sendBtn.disabled) return;
+            if (!messagesContainer.classList.contains('active')) {
+                switchToChatView();
+            }
+            addMessage(message, 'user');
+            messageInput.value = '';
+            // Manually trigger input event to reset UI
+            messageInput.dispatchEvent(new Event('input'));
+            sendBtn.disabled = true;
+            const loadingElement = addLoading();
+            try {
+                console.log('Sending message:', message);
+                const payload = {
+                    "app_name": "chat_with_human", "user_id": "demo_user", "session_id": "default_session",
+                    "new_message": { "role": "user", "parts": [{ "text": message }] }
+                };
+                console.log('Payload:', JSON.stringify(payload, null, 2));
+                const response = await fetch(`${API_BASE}/run`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                console.log('Response status:', response.status);
+                loadingElement.remove();
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Error response:', errorData);
+                    throw new Error(errorData.error || `HTTP ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Response data:', data);
+                let assistantMessage = 'I received your message but couldn\'t parse the response.';
+                if (Array.isArray(data) && data.length > 0) {
+                    const firstEvent = data[0];
+                    if (firstEvent.content && firstEvent.content.parts && firstEvent.content.parts.length > 0) {
+                        assistantMessage = firstEvent.content.parts[0].text;
+                    }
+                }
+                addMessage(assistantMessage, 'assistant');
+            } catch (error) {
+                loadingElement.remove();
+                console.error('Network error:', error);
+                addMessage(`Sorry, I encountered an error: ${error.message}. Please check that the server is running and try again.`, 'assistant');
+            } finally {
+                sendBtn.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+        // --- MODIFIED: Initialize ---
+        window.addEventListener('load', () => {
+            loadTheme();
+            updateInputButtons(); // Set initial button state
+            messageInput.focus();
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

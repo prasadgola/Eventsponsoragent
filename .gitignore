@@ -1,0 +1,19 @@
+# Secrets
+.env
+secrets/
+token.json
+gmail_token.json
+client_secret.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+env/
+
+# OS
+.DS_Store
+
+# Keep examples
+!.env.example

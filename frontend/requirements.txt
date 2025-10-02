@@ -1,0 +1,11 @@
+--extra-index-url https://google-cloud-agents.pkg.dev/google-adk/pypi-adk/simple/
+google-adk
+google-auth-oauthlib
+google-auth
+google-api-python-client
+fastapi
+uvicorn
+psycopg2-binary
+flask
+flask-cors
+requests
