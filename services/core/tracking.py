@@ -3,11 +3,10 @@ import json
 import os
 from datetime import datetime
 
-# Use local file for development
-TRACKING_FILE = os.path.join(os.path.dirname(__file__), '..', 'tracking_data.json')
+# Use /tmp in Cloud Run (persists during container lifetime)
+TRACKING_FILE = '/tmp/tracking_data.json' if os.getenv('K_SERVICE') else 'tracking_data.json'
 
 def _read_tracking_data():
-    """Read from local file"""
     if not os.path.exists(TRACKING_FILE):
         return {}
     try:
@@ -17,9 +16,9 @@ def _read_tracking_data():
         return {}
 
 def _write_tracking_data(data):
-    """Write to local file"""
     with open(TRACKING_FILE, 'w') as f:
         json.dump(data, indent=2, fp=f)
+
 
 def create_tracking_id(recipient: str, campaign_id: str = "default") -> str:
     """Create new tracking ID"""
