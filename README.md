@@ -1,4 +1,4 @@
-markdown# Event Sponsor Assistant
+markdown# Event Sponsor Assistant (https://adk-frontend-service-766291037876.us-central1.run.app/)
 
 AI-powered event sponsorship platform with email tracking, sponsor matching, and conversation intelligence.
 
@@ -138,12 +138,11 @@ Calendar integration
 Project Structure
 event-sponsor-assistant/
 ├── chat_with_human/          # Conversation AI
-│   └── agents/
-│       ├── root_agent.py
-│       └── sub_agents/
-│           ├── undecided/
-│           ├── host/
-│           └── sponsor/
+│   ├── agent.py
+│   └── sub_agents/
+│       ├── undecided/
+│       ├── host/
+│       └── sponsor/
 ├── services/                  # Backend operations
 │   ├── routers/
 │   │   ├── email.py

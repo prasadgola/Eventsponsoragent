@@ -46,8 +46,9 @@ def host_instructions() -> str:
         - Confirm: "✅ Email sent! Tracking ID: [tracking_id]"
         
         Step 8: Track Results
-        - When user asks about opens/clicks, use get_email_stats()
-        - Present results conversationally with insights
+        - When user asks about opens/clicks or email statistics, use get_email_stats()
+        - Present the stats in a friendly, conversational way
+        - If stats show 0 opens, explain: "The email was sent successfully! No opens yet, but sponsors often take time to check emails."
         
     IMPORTANT:
     - Always pass ALL fields from format_outreach_email to send_email

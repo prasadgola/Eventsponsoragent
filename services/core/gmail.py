@@ -8,12 +8,24 @@ from googleapiclient.discovery import build
 def get_gmail_service():
     """Get Gmail API service"""
     
-    # For Cloud Run, use Secret Manager
-    # For local dev, use token file
-    token_path = os.getenv('GMAIL_TOKEN_PATH', '/secrets/gmail_token.json')
+    # Try local path first, then cloud path
+    token_paths = [
+        './secrets/gmail_token.json',
+        '../secrets/gmail_token.json',
+        '/secrets/gmail_token.json',
+        os.getenv('GMAIL_TOKEN_PATH', './secrets/gmail_token.json')
+    ]
     
-    if not os.path.exists(token_path):
-        raise FileNotFoundError(f"Gmail token not found at {token_path}")
+    token_path = None
+    for path in token_paths:
+        if os.path.exists(path):
+            token_path = path
+            break
+    
+    if not token_path:
+        raise FileNotFoundError(f"Gmail token not found. Tried: {token_paths}")
+    
+    print(f"✅ Using Gmail token from: {token_path}")
     
     creds = Credentials.from_authorized_user_file(
         token_path,

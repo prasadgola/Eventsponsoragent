@@ -100,53 +100,8 @@ async def get_stats_by_id(tracking_id: str):
     if not stats:
         return {"message": f"No tracking data found for ID: {tracking_id}"}
     
-    message = f"""
-📧 Email Tracking Report
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Recipient: {stats.get('recipient', 'Unknown')}
-Sent: {stats.get('sent_at', 'Unknown')}
-
-📬 Opens:
-  • Opened: {'✅ Yes' if stats.get('opened') else '❌ Not yet'}
-  • First opened: {stats.get('opened_at', 'N/A')}
-  • Total opens: {stats.get('open_count', 0)}
-
-🔗 Clicks:
-  • Total clicks: {stats.get('click_count', 0)}
-"""
-    
-    return {"message": message, "data": stats}
-
-@router.get("/stats")
-async def get_all_stats():
-    """Get overall campaign statistics"""
-    
-    stats = get_tracking_stats()
-    
-    total = stats['total_emails']
-    opened = stats['total_opens']
-    rate = stats['open_rate']
-    
-    message = f"""
-📊 Overall Campaign Statistics
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Total emails sent: {total}
-Total opens: {opened}
-Open rate: {rate}
-
-📧 Individual Emails:
-"""
-    
-    if stats['emails']:
-        for tid, email_data in stats['emails'].items():
-            status = "✅ Opened" if email_data['opened'] else "📭 Not opened"
-            message += f"\n{status} - {email_data['recipient']}"
-            message += f"\n  Sent: {email_data['sent_at']}"
-            if email_data['opened']:
-                message += f"\n  Opens: {email_data['open_count']}"
-    else:
-        message += "\nNo emails sent yet."
+    # Simplified message
+    opened = "✅ Yes" if stats.get('opened') else "❌ Not yet"
+    message = f"Email to {stats['recipient']}: {opened}. Opens: {stats['open_count']}"
     
     return {"message": message, "data": stats}

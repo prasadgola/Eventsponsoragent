@@ -1,0 +1,22 @@
+{
+  "e4deae46-8ff2-41dc-9671-767375f2f55a": {
+    "recipient": "tobasavaprasad@gmail.com",
+    "campaign_id": "sponsor_outreach",
+    "sent_at": "2025-10-03T11:19:46.224221",
+    "opened": true,
+    "opened_at": "2025-10-03T11:30:12.349658",
+    "open_count": 1,
+    "click_count": 0,
+    "clicks": []
+  },
+  "da0c2cbf-1aa7-4c81-ac9a-448eff08c474": {
+    "recipient": "tobasavaprasad@gmail.com",
+    "campaign_id": "sponsor_outreach",
+    "sent_at": "2025-10-03T12:01:39.357214",
+    "opened": false,
+    "opened_at": null,
+    "open_count": 0,
+    "click_count": 0,
+    "clicks": []
+  }
+}
