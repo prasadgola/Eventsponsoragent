@@ -104,8 +104,34 @@ class FrontendHandler(BaseHTTPRequestHandler):
                     self._handle_error(e)
             except Exception as e:
                 self._handle_error(e)
-        else:
-            self._forward_to_adk('POST')
+
+        elif self.path == '/upload-document':
+            try:
+                content_type = self.headers.get('Content-Type', '')
+                content_length = int(self.headers.get('Content-Length', 0))
+                post_data = self.rfile.read(content_length)
+                
+                # Forward to services /upload endpoint (not /analyze)
+                req = urllib.request.Request(
+                    'http://localhost:8001/documents/upload',
+                    data=post_data,
+                    headers={'Content-Type': content_type}
+                )
+                
+                with urllib.request.urlopen(req, timeout=30) as response:
+                    response_data = response.read()
+                    
+                    self.send_response(200)
+                    self._set_cors_headers()
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(response_data)
+                    
+            except Exception as e:
+                print(f"Upload error: {e}")
+                self._handle_error(e)
+            return
+        
 
     def _run_agent(self, post_data):
         req = urllib.request.Request(

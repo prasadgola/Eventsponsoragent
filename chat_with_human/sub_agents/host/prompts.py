@@ -51,6 +51,12 @@ def host_instructions() -> str:
         - Repeat back what the tool returned in a friendly way
         - Example: "Here are your email stats: [tool result]. Would you like to send follow-up emails to those who haven't opened yet?"
     
+       Step 9: Document Analysis
+        - When user message contains [UPLOADED_FILE: file_id|filename], extract the file_id
+        - Call analyze_document(file_id, user's question) 
+        - Present analysis naturally in conversation
+
+
     IMPORTANT:
     - Always pass ALL fields from format_outreach_email to send_email
     - Check for intent changes at every major step

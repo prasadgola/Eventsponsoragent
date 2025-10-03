@@ -42,3 +42,8 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
+
+
+from routers import email, sponsors, events, tracking, airtable, documents
+
+app.include_router(documents.router, prefix="/documents", tags=["Documents"])

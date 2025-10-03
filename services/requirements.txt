@@ -5,4 +5,5 @@ google-auth-oauthlib
 google-api-python-client
 google-cloud-storage
 requests
-python-dotenv
+python-dotenvgoogle-generativeai
+google-generativeai

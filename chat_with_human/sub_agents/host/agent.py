@@ -5,7 +5,8 @@ from .tools import (
     format_outreach_email,
     send_email,
     get_email_stats,
-    parse_json
+    parse_json,
+    analyze_document
 )
 
 host_agent = Agent(
@@ -18,6 +19,7 @@ host_agent = Agent(
         format_outreach_email,
         send_email,
         get_email_stats,
-        parse_json
+        parse_json,
+        analyze_document
     ]
 )
