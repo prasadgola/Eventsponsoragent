@@ -70,17 +70,30 @@ def send_email(recipient: str, subject: str, body: str,
 
 def get_email_stats(tracking_id: str = "") -> str:
     """
-    Get email tracking statistics.
+    Get email tracking statistics to see if sponsors opened emails.
     
     Args:
-        tracking_id: Specific tracking ID, or empty for all stats
+        tracking_id: Specific email tracking ID (optional). 
+                     Leave empty to get overall campaign stats.
     
     Returns:
-        Formatted statistics message
+        Human-readable message about email opens and engagement.
+    
+    Use this when user asks:
+    - "Show me email statistics"
+    - "Did anyone open my emails?"
+    - "How many sponsors opened?"
+    - "Check tracking for [id]"
     """
     endpoint = f'/email/stats/{tracking_id}' if tracking_id else '/email/stats'
     result = _call_service('GET', endpoint)
-    return result.get('message', '')
+    
+    # Debug: print what we got
+    print(f"DEBUG: API result = {result}")
+    message = result.get('message', '')
+    print(f"DEBUG: Extracted message = {message}")
+    
+    return message
 
 def parse_json(json_string: str) -> list:
     """
