@@ -23,7 +23,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/frontend:latest']
 
-  # Deploy services first (chat_with_human depends on it)
+# Deploy services first (chat_with_human depends on it)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -36,6 +36,7 @@ steps:
       - '--port=8001'
       - '--allow-unauthenticated'
       - '--update-secrets=AIRTABLE_API_KEY=AIRTABLE_API_KEY:latest,AIRTABLE_BASE_ID=AIRTABLE_BASE_ID:latest,AIRTABLE_TABLE_ID=AIRTABLE_TABLE_ID:latest,GOOGLE_API_KEY=GOOGLE_API_KEY:latest'
+      - '--update-secrets=/secrets/gmail_token.json=GMAIL_TOKEN:latest'
     id: 'deploy-services'
 
   # Deploy chat_with_human (connects to services)

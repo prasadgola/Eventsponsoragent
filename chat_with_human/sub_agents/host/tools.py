@@ -59,14 +59,18 @@ def send_email(recipient: str, subject: str, body: str,
     Returns:
         Success message with tracking info
     """
-    result = _call_service('POST', '/email/send', json={
-        'recipient': recipient,
-        'subject': subject,
-        'body': body,
-        'body_html': body_html,
-        'tracking_id': tracking_id
-    })
-    return result.get('message', 'Email sent successfully')
+    try:
+        result = _call_service('POST', '/email/send', json={
+            'recipient': recipient,
+            'subject': subject,
+            'body': body,
+            'body_html': body_html,
+            'tracking_id': tracking_id
+        })
+        return result.get('message', 'Email sent successfully')
+    except Exception as e:
+        # Return a user-friendly error message
+        return f"Sorry, there was an error sending the email: {e}"
 
 def get_email_stats(tracking_id: str = "") -> str:
     """
