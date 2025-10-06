@@ -9,7 +9,7 @@ from .tools import (
 
 sponsor_agent = Agent(
     name="sponsor_agent",
-    model="gemini-2.0-flash",
+    model="gemini-2.5-flash",
     description=sponsor_description(),
     instruction=sponsor_instructions(),
     tools=[

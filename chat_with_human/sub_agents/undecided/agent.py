@@ -3,7 +3,7 @@ from .prompts import undecided_instructions, undecided_description
 
 undecided_agent = Agent(
     name="undecided_agent",
-    model="gemini-2.0-flash",
+    model="gemini-2.5-flash",
     description=undecided_description(),
     instruction=undecided_instructions(),
     tools=[]
