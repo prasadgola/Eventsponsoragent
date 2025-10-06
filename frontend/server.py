@@ -113,8 +113,19 @@ class FrontendHandler(BaseHTTPRequestHandler):
             headers={'Content-Type': 'application/json'}
         )
         print(f"▶️ Running agent...")
-        with urllib.request.urlopen(req, timeout=120) as response:
-            return response.read()
+        
+        try:
+            with urllib.request.urlopen(req, timeout=120) as response:
+                response_data = response.read()
+                
+                # NEW: Debug logging
+                print(f"📦 Response length: {len(response_data)} bytes")
+                print(f"📦 First 200 chars: {response_data[:200]}")
+                
+                return response_data
+        except Exception as e:
+            print(f"❌ Error in _run_agent: {e}")
+            raise
 
     def _create_session(self, request_json):
         app_name = request_json.get("app_name")

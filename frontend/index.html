@@ -842,11 +842,28 @@
                 }
                 
                 const data = await response.json();
-                let assistantMessage = 'I received your message but couldn\'t parse the response.';
-                if (Array.isArray(data) && data.length > 0) {
-                    const firstEvent = data[0];
-                    if (firstEvent.content && firstEvent.content.parts && firstEvent.content.parts.length > 0) {
-                        assistantMessage = firstEvent.content.parts[0].text;
+                
+                let assistantMessage = '';
+
+                if (Array.isArray(data)) {
+                    // Collect all text parts from all events
+                    const textParts = [];
+                    
+                    for (const event of data) {
+                        if (event.content && event.content.parts) {
+                            for (const part of event.content.parts) {
+                                if (part.text) {
+                                    textParts.push(part.text);
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Join all text parts
+                    if (textParts.length > 0) {
+                        assistantMessage = textParts.join('\n\n');
+                    } else {
+                        assistantMessage = 'I received your message but couldn\'t parse the response.';
                     }
                 }
                 
