@@ -355,23 +355,6 @@
             color: #8ab4f8;
         }
 
-        .upload-btn {
-            background: transparent;
-            color: #9aa0a6;
-        }
-        .upload-btn:hover {
-            background: #3c4043;
-            color: #e8eaed;
-        }
-        
-        .light-theme .upload-btn {
-            color: #5f6368;
-        }
-        .light-theme .upload-btn:hover {
-            background: #f1f3f4;
-            color: #202124;
-        }
-
         /* MODIFIED: Send button now has a transparent background */
         .send-btn {
             background: transparent;
@@ -644,14 +627,6 @@
         <!-- Centering wrapper -->
         <div class="input-wrapper">
             <div class="input-container">
-                <button class="action-btn upload-btn" id="uploadBtn" title="Upload document">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="17 8 12 3 7 8"></polyline>
-                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                    </svg>
-                </button>
-                <input type="file" id="fileInput" style="display:none" accept=".pdf,.png,.jpg,.jpeg,.txt">
                 <textarea 
                     id="messageInput" 
                     class="message-input" 
@@ -680,8 +655,6 @@
     <script>
         // Configuration
         const API_BASE = 'http://localhost:8080';
-
-        let uploadedFile = null;
         
         const welcomeScreen = document.getElementById('welcomeScreen');
         const messagesContainer = document.getElementById('messages');
@@ -836,40 +809,8 @@
             
             sendBtn.disabled = true;
             let actualMessage = message;
-            
-            // Upload file first if attached
-            if (uploadedFile) {
-                addMessage(`📎 ${uploadedFile.name}: ${message}`, 'user');
-                
-                const formData = new FormData();
-                formData.append('file', uploadedFile);
-                
-                try {
-                    const uploadResponse = await fetch(`${API_BASE}/upload-document`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    if (!uploadResponse.ok) throw new Error('Upload failed');
-                    
-                    const uploadResult = await uploadResponse.json();
-                    
-                    // Embed file info in message text
-                    actualMessage = `[UPLOADED_FILE: ${uploadResult.file_id}|${uploadedFile.name}]\n\n${message}`;
-                    
-                } catch (error) {
-                    addMessage(`❌ Upload failed: ${error.message}`, 'assistant');
-                    sendBtn.disabled = false;
-                    uploadedFile = null;
-                    messageInput.placeholder = "Ask me about event sponsorship...";
-                    return;
-                }
-                
-                uploadedFile = null;
-                messageInput.placeholder = "Ask me about event sponsorship...";
-            } else {
-                addMessage(message, 'user');
-            }
+
+            addMessage(message, 'user');
             
             messageInput.value = '';
             messageInput.dispatchEvent(new Event('input'));
@@ -925,54 +866,6 @@
             loadTheme();
             updateInputButtons(); // Set initial button state
             messageInput.focus();
-        });
-
-        // File upload handling
-        const uploadBtn = document.getElementById('uploadBtn');
-        const fileInput = document.getElementById('fileInput');
-
-        uploadBtn.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        // Global variable to track uploaded file
-        let uploadedFileId = null;
-        let uploadedFileName = null;
-
-        fileInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            addMessage(`📄 Uploading: ${file.name}...`, 'user');
-            const loadingElement = addLoading();
-            
-            try {
-                const formData = new FormData();
-                formData.append('file', file);
-                
-                // Upload and get file_id
-                const response = await fetch(`${API_BASE}/upload-document`, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (!response.ok) throw new Error('Upload failed');
-                
-                const result = await response.json();
-                loadingElement.remove();
-                
-                // Store file info for next message
-                uploadedFileId = result.file_id;
-                uploadedFileName = file.filename || file.name;
-                
-                addMessage(`✅ File uploaded: ${uploadedFileName}. Ask me anything about it!`, 'assistant');
-                
-            } catch (error) {
-                loadingElement.remove();
-                addMessage(`❌ Upload failed: ${error.message}`, 'assistant');
-            }
-            
-            fileInput.value = '';
         });
     </script>
 </body>

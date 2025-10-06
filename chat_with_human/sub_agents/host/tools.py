@@ -110,21 +110,3 @@ def parse_json(json_string: str) -> list:
         Parsed list/dict
     """
     return json.loads(json_string)
-
-def analyze_document(file_id: str, query: str = "") -> str:
-    """
-    Analyze an uploaded document using AI.
-    
-    Args:
-        file_id: The ID of the uploaded file
-        query: Optional specific question about the document
-    
-    Returns:
-        AI analysis of the document
-    """
-    import urllib.parse
-    
-    query_param = urllib.parse.quote(query if query else "Analyze this document for event sponsorship insights")
-    
-    result = _call_service('POST', f'/documents/analyze/{file_id}?query={query_param}')
-    return result.get('analysis', 'Analysis failed')
