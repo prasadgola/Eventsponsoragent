@@ -6,7 +6,7 @@ import os
 # Load .env from parent directory (works locally, ignored in Cloud Run)
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
-from routers import email, sponsors, events, tracking, airtable
+from routers import email, sponsors, events, tracking, airtable, payments  # NEW: Added payments
 
 app = FastAPI(title="Event Sponsor Services API")
 
@@ -24,6 +24,7 @@ app.include_router(sponsors.router, prefix="/sponsors", tags=["Sponsors"])
 app.include_router(events.router, prefix="/events", tags=["Events"])
 app.include_router(tracking.router, prefix="/track", tags=["Tracking"])
 app.include_router(airtable.router, prefix="/airtable", tags=["Airtable"])
+app.include_router(payments.router, prefix="/payments", tags=["Payments"])  # NEW
 
 @app.get("/")
 async def root():
@@ -35,7 +36,8 @@ async def root():
             "sponsors": "/sponsors/*",
             "events": "/events/*",
             "tracking": "/track/*",
-            "airtable": "/airtable/*"
+            "airtable": "/airtable/*",
+            "payments": "/payments/*"  # NEW
         }
     }
 

@@ -7,3 +7,4 @@ google-cloud-storage
 requests
 python-dotenv
 google-generativeai
+git+https://github.com/google-agentic-commerce/AP2.git@main
