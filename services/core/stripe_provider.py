@@ -10,7 +10,12 @@ from datetime import datetime
 from typing import Dict, Any, List, Optional
 
 # Initialize Stripe
-stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
+stripe_secret = os.getenv('STRIPE_SECRET_KEY')
+if stripe_secret:
+    stripe.api_key = stripe_secret
+    print("✅ Stripe initialized")
+else:
+    print("⚠️ STRIPE_SECRET_KEY not found - Stripe payments will not work")
 
 class StripeCredentialProvider:
     """Real Stripe integration with AP2 mandates"""
@@ -20,9 +25,10 @@ class StripeCredentialProvider:
         self.carts = {}
         self.transactions = {}
         
-        # Verify Stripe is configured
+        # Verify Stripe is configured (but don't crash if not)
         if not stripe.api_key:
-            raise ValueError("STRIPE_SECRET_KEY not found in environment")
+            print("⚠️ Warning: STRIPE_SECRET_KEY not configured")
+    
     
     def create_intent_mandate(
         self,

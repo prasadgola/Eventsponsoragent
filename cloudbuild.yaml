@@ -33,12 +33,12 @@ steps:
       - '--image=us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/services:latest'
       - '--project=event-sponsor-assistant'
       - '--region=us-central1'
-      - '--port=8080'  # CHANGED from 8001 to 8080
+      - '--port=8080'
       - '--allow-unauthenticated'
-      - '--update-secrets=AIRTABLE_API_KEY=AIRTABLE_API_KEY:latest,AIRTABLE_BASE_ID=AIRTABLE_BASE_ID:latest,AIRTABLE_TABLE_ID=AIRTABLE_TABLE_ID:latest,GOOGLE_API_KEY=GOOGLE_API_KEY:latest'
+      - '--update-secrets=AIRTABLE_API_KEY=AIRTABLE_API_KEY:latest,AIRTABLE_BASE_ID=AIRTABLE_BASE_ID:latest,AIRTABLE_TABLE_ID=AIRTABLE_TABLE_ID:latest,GOOGLE_API_KEY=GOOGLE_API_KEY:latest,STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest'  # ADDED STRIPE_SECRET_KEY
       - '--update-secrets=/secrets/gmail_token.json=GMAIL_TOKEN:latest'
-      - '--timeout=300'  # NEW: Increase timeout to 5 minutes
-      - '--memory=512Mi'  # NEW: Ensure enough memory
+      - '--timeout=300'
+      - '--memory=512Mi'
     id: 'deploy-services'
 
   # Deploy chat_with_human (connects to services)
