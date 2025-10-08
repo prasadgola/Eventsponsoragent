@@ -24,41 +24,88 @@ def create_sponsorship_cart(
     
     Args:
         event_name: Name of the event to sponsor
-        tier: Sponsorship tier (e.g., "Gold", "Silver", "Bronze")
-        price: Price (e.g., "$10,000")
+        tier: Sponsorship tier (e.g., "Gold", "Silver", "Bronze", "Custom")
+        price: Price (e.g., "$10,000" or "$1" or "$0.50")
         user_name: Sponsor's name
         user_email: Sponsor's email
     
     Returns:
-        JSON string with cart details and mandate info
+        JSON string with cart details including client_secret for payment form
     """
     try:
+        # Parse and validate amount
+        price_clean = price.replace('$', '').replace(',', '').strip()
+        
+        try:
+            amount = float(price_clean)
+        except ValueError:
+            return json.dumps({
+                "success": False, 
+                "error": f"Invalid amount format: {price}. Please use format like $1 or $10.00"
+            })
+        
+        # Stripe minimum is $0.50
+        if amount < 0.50:
+            return json.dumps({
+                "success": False,
+                "error": "Stripe requires a minimum payment of $0.50. Would you like to sponsor $0.50 instead?"
+            })
+        
+        # Set reasonable maximum (optional)
+        if amount > 1000000:
+            return json.dumps({
+                "success": False,
+                "error": "For sponsorships over $1,000,000, please contact us directly for a custom package!"
+            })
+        
+        # Call backend to create cart
         result = _call_service('POST', '/payments/create-cart', json={
             'event_name': event_name,
             'tier': tier,
-            'price': price,
+            'price': f"${amount:.2f}",  # Format consistently
             'user_name': user_name,
             'user_email': user_email
         })
-        return json.dumps(result)
+        
+        # Return everything the frontend needs
+        if result.get('success'):
+            # Add encouraging message based on amount
+            if amount < 10:
+                encouragement = "Every dollar counts! Thank you for supporting this event! 💙"
+            elif amount < 100:
+                encouragement = "Your generous contribution is much appreciated! 🌟"
+            elif amount < 1000:
+                encouragement = "Wow! Your support means so much to us! 🎉"
+            else:
+                encouragement = "Incredible! Your sponsorship makes a huge impact! 🚀"
+            
+            return json.dumps({
+                "success": True,
+                "cart_id": result.get("cart_id"),
+                "client_secret": result.get("client_secret"),
+                "cart_summary": result.get("cart_summary"),
+                "payment_form_trigger": True,
+                "message": f"Cart created! {encouragement}"
+            })
+        else:
+            return json.dumps({"success": False, "error": "Failed to create cart"})
     except Exception as e:
-        return json.dumps({"error": str(e)})
+        return json.dumps({"success": False, "error": str(e)})
 
 def select_payment_method(cart_id: str) -> str:
     """
-    Show available payment methods (mock cards).
+    Show available payment methods (Stripe card input).
     
     Args:
         cart_id: Cart ID from create_sponsorship_cart
     
     Returns:
-        JSON string with available payment methods
+        JSON string with payment instructions
     """
-    try:
-        result = _call_service('GET', f'/payments/payment-methods?cart_id={cart_id}')
-        return json.dumps(result)
-    except Exception as e:
-        return json.dumps({"error": str(e)})
+    return json.dumps({
+        "success": True,
+        "message": "Payment form is ready. User can enter card details securely."
+    })
 
 def process_payment(
     cart_id: str,
@@ -66,29 +113,21 @@ def process_payment(
     otp: str = ""
 ) -> str:
     """
-    Process payment with AP2 Payment Mandate.
+    This tool is no longer needed - Stripe handles payment directly.
+    Kept for compatibility.
     
     Args:
         cart_id: Cart ID
         payment_method_id: Selected payment method ID
-        otp: One-time password (use "123" for mock)
+        otp: One-time password
     
     Returns:
-        Payment confirmation message
+        Status message
     """
-    try:
-        result = _call_service('POST', '/payments/process', json={
-            'cart_id': cart_id,
-            'payment_method_id': payment_method_id,
-            'otp': otp
-        })
-        
-        if result.get('success'):
-            return f"✅ Payment successful!\n\n{result.get('message', '')}\n\nTransaction ID: {result.get('transaction_id', 'N/A')}"
-        else:
-            return f"❌ Payment failed: {result.get('message', 'Unknown error')}"
-    except Exception as e:
-        return f"❌ Payment error: {str(e)}"
+    return json.dumps({
+        "success": True,
+        "message": "Payment processing happens automatically via Stripe form."
+    })
 
 def get_sponsorship_tiers(event_type: str = "") -> str:
     """
@@ -106,3 +145,4 @@ def get_sponsorship_tiers(event_type: str = "") -> str:
         return json.dumps(result)
     except Exception as e:
         return json.dumps({"error": str(e)})
+

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Sponsor Assistant</title>
+
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
         * {
             margin: 0;
@@ -570,6 +572,110 @@
                 padding: 1rem;
             }
         }
+
+        /* Stripe Payment Form Styles */
+        .payment-form-container {
+            background: #303134;
+            border: 1px solid #3c4043;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            max-width: 500px;
+        }
+
+        .light-theme .payment-form-container {
+            background: #f8f9fa;
+            border-color: #dadce0;
+        }
+
+        .payment-form-title {
+            color: #e8eaed;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .light-theme .payment-form-title {
+            color: #202124;
+        }
+
+        .payment-form-subtitle {
+            color: #9aa0a6;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .light-theme .payment-form-subtitle {
+            color: #5f6368;
+        }
+
+        #card-element {
+            background: #212121;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .light-theme #card-element {
+            background: #ffffff;
+            border-color: #dadce0;
+        }
+
+        .card-errors {
+            color: #f28b82;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            min-height: 20px;
+        }
+
+        .light-theme .card-errors {
+            color: #d93025;
+        }
+
+        .pay-button {
+            width: 100%;
+            background: #8ab4f8;
+            color: #202124;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+        }
+
+        .pay-button:hover:not(:disabled) {
+            background: #aecbfa;
+            transform: translateY(-1px);
+        }
+
+        .pay-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .light-theme .pay-button {
+            background: #1a73e8;
+            color: #ffffff;
+        }
+
+        .light-theme .pay-button:hover:not(:disabled) {
+            background: #1765cc;
+        }
+
+        .payment-processing {
+            text-align: center;
+            padding: 1rem;
+            color: #9aa0a6;
+        }
+
+        .light-theme .payment-processing {
+            color: #5f6368;
+        }
     </style>
 </head>
 <body>
@@ -655,14 +761,29 @@
     <script>
         // Configuration
         const API_BASE = 'http://localhost:8080';
+        const SERVICES_API = 'http://localhost:8001';
+        const STRIPE_PUBLISHABLE_KEY = 'pk_test_51SFiGIHRBWNtQGKsXBP2PDJE5iPhriiCZBQW5QESdTgOSoFCTEdM1eiNdQXNSbkFqNcsoVdCMYqXJLtf0C0v3S4h00SLYyRXU4'; // Your Stripe key
         
         const welcomeScreen = document.getElementById('welcomeScreen');
         const messagesContainer = document.getElementById('messages');
         const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendBtn');
         const themeToggle = document.getElementById('themeToggle');
-        // NEW: Mic button element
         const micBtn = document.getElementById('micBtn');
+
+        // NEW: Stripe initialization
+        let stripe = null;
+        let elements = null;
+        let cardElement = null;
+        let currentCartId = null;
+        let currentClientSecret = null;
+
+        // Initialize Stripe
+        function initializeStripe() {
+            if (!stripe) {
+                stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+            }
+        }
 
         // --- THEME MANAGEMENT (No changes) ---
         function toggleTheme() {
@@ -671,6 +792,7 @@
             localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
             updateThemeIcon(isLightTheme);
         }
+        
         function updateThemeIcon(isLightTheme) {
             const icon = themeToggle.querySelector('svg');
             if (isLightTheme) {
@@ -679,6 +801,7 @@
                 icon.innerHTML = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
             }
         }
+        
         function loadTheme() {
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -689,36 +812,35 @@
             updateThemeIcon(shouldUseLightTheme);
         }
 
-        // --- NEW: Function to toggle Mic/Send button visibility ---
+        // --- Function to toggle Mic/Send button visibility ---
         function updateInputButtons() {
             const hasText = messageInput.value.trim().length > 0;
             sendBtn.style.display = hasText ? 'flex' : 'none';
             micBtn.style.display = hasText ? 'none' : 'flex';
         }
 
-        // --- MODIFIED: Auto-resize textarea and update buttons on input ---
+        // --- Auto-resize textarea and update buttons on input ---
         messageInput.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-            updateInputButtons(); // Toggle buttons based on text
+            updateInputButtons();
         });
 
-        // --- MODIFIED: Send on Enter (but not Shift+Enter) ---
+        // --- Send on Enter (but not Shift+Enter) ---
         messageInput.addEventListener('keydown', function(event) {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
-                // Check if there is text before sending
                 if (messageInput.value.trim().length > 0) {
                     sendMessage();
                 }
             }
         });
         
-        // --- NEW: VOICE-TO-TEXT IMPLEMENTATION ---
+        // --- VOICE-TO-TEXT IMPLEMENTATION ---
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
             const recognition = new SpeechRecognition();
-            recognition.continuous = false; // Stop listening after a pause
+            recognition.continuous = false;
             recognition.lang = 'en-US';
 
             micBtn.addEventListener('click', () => {
@@ -741,17 +863,15 @@
             recognition.onresult = (event) => {
                 const transcript = event.results[event.results.length - 1][0].transcript.trim();
                 messageInput.value = transcript;
-                // Manually trigger the input event to resize textarea and show send button
                 messageInput.dispatchEvent(new Event('input'));
             };
 
         } else {
-            // If browser doesn't support SpeechRecognition, hide the mic button
             micBtn.style.display = 'none';
             console.log('Speech recognition not supported in this browser.');
         }
 
-        // --- CHAT LOGIC (No major changes) ---
+        // --- CHAT LOGIC ---
         function switchToChatView() {
             welcomeScreen.classList.add('hidden');
             messagesContainer.classList.add('active');
@@ -776,6 +896,162 @@
             return messageDiv;
         }
 
+        // NEW: Add payment form to chat
+        function addPaymentForm(cartId, clientSecret, cartSummary) {
+            initializeStripe();
+            
+            currentCartId = cartId;
+            currentClientSecret = clientSecret;
+            
+            const formContainer = document.createElement('div');
+            formContainer.className = 'message assistant';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            avatar.textContent = 'ES';
+            
+            const formContent = document.createElement('div');
+            formContent.className = 'message-content';
+            
+            formContent.innerHTML = `
+                <div class="payment-form-container">
+                    <div class="payment-form-title">💳 Enter Payment Details</div>
+                    <div class="payment-form-subtitle">
+                        Sponsorship: ${cartSummary.tier} - ${cartSummary.amount}<br>
+                        Event: ${cartSummary.event}
+                    </div>
+                    <div id="card-element"></div>
+                    <div id="card-errors" class="card-errors"></div>
+                    <button id="pay-button" class="pay-button">
+                        Pay ${cartSummary.amount}
+                    </button>
+                </div>
+            `;
+            
+            formContainer.appendChild(avatar);
+            formContainer.appendChild(formContent);
+            messagesContainer.appendChild(formContainer);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Initialize Stripe Elements
+            setTimeout(() => {
+                const isDark = !document.body.classList.contains('light-theme');
+                elements = stripe.elements({
+                    clientSecret: clientSecret,
+                    appearance: {
+                        theme: isDark ? 'night' : 'stripe',
+                        variables: {
+                            colorPrimary: '#8ab4f8',
+                            colorBackground: isDark ? '#212121' : '#ffffff',
+                            colorText: isDark ? '#e8eaed' : '#202124',
+                            colorDanger: '#f28b82',
+                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
+                            spacingUnit: '4px',
+                            borderRadius: '8px'
+                        }
+                    }
+                });
+                
+                cardElement = elements.create('payment');
+                cardElement.mount('#card-element');
+                
+                // Handle errors
+                cardElement.on('change', (event) => {
+                    const displayError = document.getElementById('card-errors');
+                    if (event.error) {
+                        displayError.textContent = event.error.message;
+                    } else {
+                        displayError.textContent = '';
+                    }
+                });
+                
+                // Handle payment submission
+                const payButton = document.getElementById('pay-button');
+                payButton.addEventListener('click', handlePayment);
+            }, 100);
+        }
+
+        // NEW: Handle payment processing
+        async function handlePayment() {
+            const payButton = document.getElementById('pay-button');
+            const cardErrors = document.getElementById('card-errors');
+            
+            payButton.disabled = true;
+            payButton.textContent = 'Processing...';
+            cardErrors.textContent = '';
+            
+            try {
+                console.log('Starting payment confirmation with Stripe...');
+                
+                // Confirm payment with Stripe
+                const {error, paymentIntent} = await stripe.confirmPayment({
+                    elements,
+                    confirmParams: {
+                        return_url: window.location.href,
+                    },
+                    redirect: 'if_required'
+                });
+                
+                if (error) {
+                    console.error('Stripe error:', error);
+                    cardErrors.textContent = error.message;
+                    payButton.disabled = false;
+                    payButton.textContent = 'Try Again';
+                    return;
+                }
+                
+                console.log('Stripe payment succeeded:', paymentIntent.id);
+                
+                if (paymentIntent.status === 'succeeded') {
+                    console.log('Confirming with backend at:', `${SERVICES_API}/payments/confirm`);
+                    
+                    // CHANGED: Use SERVICES_API (port 8001) instead of API_BASE (port 8080)
+                    const response = await fetch(`${SERVICES_API}/payments/confirm`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            cart_id: currentCartId,
+                            payment_method_id: paymentIntent.payment_method
+                        })
+                    });
+                    
+                    console.log('Backend response status:', response.status);
+                    
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Backend error response:', errorText);
+                        throw new Error(`Server error: ${response.status} - ${errorText}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('Backend confirmation result:', result);
+                    
+                    if (result.success) {
+                        // Remove payment form
+                        const messageElement = payButton.closest('.message');
+                        if (messageElement) {
+                            messageElement.remove();
+                        }
+                        
+                        // Show success message
+                        addMessage(result.message, 'assistant');
+                        
+                        console.log('✅ Payment flow complete!');
+                    } else {
+                        throw new Error(result.message || 'Payment confirmation failed');
+                    }
+                }
+                
+            } catch (err) {
+                console.error('Payment error:', err);
+                cardErrors.textContent = err.message || 'Payment failed. Please try again.';
+                payButton.disabled = false;
+                payButton.textContent = 'Try Again';
+            }
+        }
+
         function addLoading() {
             const loadingDiv = document.createElement('div');
             loadingDiv.className = 'loading-message';
@@ -794,7 +1070,6 @@
 
         function sendSuggestion(message) {
             messageInput.value = message;
-            // Manually trigger input event for UI update
             messageInput.dispatchEvent(new Event('input'));
             sendMessage();
         }
@@ -808,7 +1083,6 @@
             }
             
             sendBtn.disabled = true;
-            let actualMessage = message;
 
             addMessage(message, 'user');
             
@@ -824,7 +1098,7 @@
                     "session_id": "default_session",
                     "new_message": {
                         "role": "user",
-                        "parts": [{"text": actualMessage}]
+                        "parts": [{"text": message}]
                     }
                 };
                 
@@ -842,32 +1116,99 @@
                 }
                 
                 const data = await response.json();
+                console.log('=== API RESPONSE ===');
+                console.log(JSON.stringify(data, null, 2));
                 
                 let assistantMessage = '';
+                let cartData = null;
 
                 if (Array.isArray(data)) {
-                    // Collect all text parts from all events
-                    const textParts = [];
-                    
                     for (const event of data) {
+                        // Collect text responses
                         if (event.content && event.content.parts) {
                             for (const part of event.content.parts) {
                                 if (part.text) {
-                                    textParts.push(part.text);
+                                    assistantMessage += part.text + '\n';
+                                }
+                                
+                                // Check for tool/function responses
+                                if (part.function_response && part.function_response.response) {
+                                    const funcResp = part.function_response.response;
+                                    console.log('Function response:', funcResp);
+                                    
+                                    // Try to parse if it's a string
+                                    let parsedResp = funcResp;
+                                    if (typeof funcResp === 'string') {
+                                        try {
+                                            parsedResp = JSON.parse(funcResp);
+                                        } catch (e) {
+                                            console.log('Could not parse function response');
+                                        }
+                                    }
+                                    
+                                    // Check if this is cart creation
+                                    if (parsedResp.payment_form_trigger && parsedResp.cart_id && parsedResp.client_secret) {
+                                        console.log('✅ Found cart data in function response!');
+                                        cartData = parsedResp;
+                                    }
                                 }
                             }
                         }
                     }
+                }
+                
+                assistantMessage = assistantMessage.trim();
+                
+                // Display the assistant's message
+                if (assistantMessage) {
+                    addMessage(assistantMessage, 'assistant');
                     
-                    // Join all text parts
-                    if (textParts.length > 0) {
-                        assistantMessage = textParts.join('\n\n');
-                    } else {
-                        assistantMessage = 'I received your message but couldn\'t parse the response.';
+                    // NEW: Check if message mentions cart/payment (keyword-based fallback)
+                    if (assistantMessage.toLowerCase().includes('processing payment') || 
+                        assistantMessage.toLowerCase().includes('created your cart') ||
+                        assistantMessage.toLowerCase().includes('cart created')) {
+                        console.log('🔍 Payment keyword detected, fetching cart...');
+                        
+                        // Wait a moment for backend to finish saving
+                        setTimeout(async () => {
+                            try {
+                                const cartResponse = await fetch(`${SERVICES_API}/payments/latest-cart`);
+                                const cartData = await cartResponse.json();
+                                
+                                if (cartData.success && cartData.cart_id && cartData.client_secret) {
+                                    console.log('✅ Got latest cart, showing payment form!');
+                                    console.log('Cart ID:', cartData.cart_id);
+                                    console.log('Client Secret:', cartData.client_secret);
+                                    addPaymentForm(
+                                        cartData.cart_id,
+                                        cartData.client_secret,
+                                        cartData.cart_summary
+                                    );
+                                } else {
+                                    console.error('❌ Failed to get cart:', cartData);
+                                }
+                            } catch (e) {
+                                console.error('❌ Error fetching latest cart:', e);
+                            }
+                        }, 500); // Wait 500ms for backend to save cart
                     }
                 }
                 
-                addMessage(assistantMessage, 'assistant');
+                // Show payment form if cart was found in tool response (primary method)
+                if (cartData) {
+                    console.log('📝 Showing payment form from tool response...');
+                    console.log('Cart ID:', cartData.cart_id);
+                    console.log('Client Secret:', cartData.client_secret);
+                    console.log('Summary:', cartData.cart_summary);
+                    
+                    addPaymentForm(
+                        cartData.cart_id,
+                        cartData.client_secret,
+                        cartData.cart_summary
+                    );
+                } else {
+                    console.log('ℹ️ No cart data found in tool response (using keyword fallback)');
+                }
                 
             } catch (error) {
                 loadingElement.remove();
@@ -878,11 +1219,15 @@
             }
         }
 
-        // --- MODIFIED: Initialize ---
+
+
+
+        // --- Initialize ---
         window.addEventListener('load', () => {
             loadTheme();
-            updateInputButtons(); // Set initial button state
+            updateInputButtons();
             messageInput.focus();
+            initializeStripe();
         });
     </script>
 </body>
