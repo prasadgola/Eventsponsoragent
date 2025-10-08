@@ -1,11 +1,12 @@
 FROM python:3.11-slim
 
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy everything in current directory to /app/chat_with_human
 COPY . ./chat_with_human
 
 EXPOSE 8000

@@ -1,3 +1,2 @@
 google-adk
 requests
-git+https://github.com/google-agentic-commerce/AP2.git@main

@@ -9,4 +9,3 @@ psycopg2-binary
 flask
 flask-cors
 requests
-git+https://github.com/google-agentic-commerce/AP2.git@main
