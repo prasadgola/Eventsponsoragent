@@ -761,7 +761,7 @@
     <script>
         // Configuration
         const API_BASE = 'http://localhost:8080';
-        const SERVICES_API = 'http://localhost:8001';
+        const SERVICES_API = window.SERVICES_API_URL || 'http://localhost:8001';
         const STRIPE_PUBLISHABLE_KEY = 'pk_test_51SFiGIHRBWNtQGKsXBP2PDJE5iPhriiCZBQW5QESdTgOSoFCTEdM1eiNdQXNSbkFqNcsoVdCMYqXJLtf0C0v3S4h00SLYyRXU4'; // Your Stripe key
         
         const welcomeScreen = document.getElementById('welcomeScreen');

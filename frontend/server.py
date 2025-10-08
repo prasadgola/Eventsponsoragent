@@ -9,6 +9,7 @@ from urllib.error import HTTPError
 
 class FrontendHandler(BaseHTTPRequestHandler):
     ADK_SERVER_URL = os.getenv("ADK_SERVER_URL", "http://127.0.0.1:8000")
+    SERVICES_API_URL = os.getenv("SERVICES_API_URL", "http://localhost:8001")  # NEW
     
     def _set_cors_headers(self):
         self.send_header('Access-Control-Allow-Origin', '*')
@@ -27,9 +28,16 @@ class FrontendHandler(BaseHTTPRequestHandler):
                 with open('index.html', 'r', encoding='utf-8') as f:
                     html_content = f.read()
                 
+                # Inject both URLs
                 html_content = html_content.replace(
                     "const API_BASE = 'http://localhost:8080';", 
                     "const API_BASE = '';"
+                )
+                
+                # NEW: Inject services URL
+                html_content = html_content.replace(
+                    "const SERVICES_API = window.SERVICES_API_URL || 'http://localhost:8001';",
+                    f"const SERVICES_API = '{self.SERVICES_API_URL}';"
                 )
                 
                 self.send_response(200)
@@ -45,6 +53,7 @@ class FrontendHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(json.dumps({"error": "HTML not found"}).encode())
                 return
+        
         
         if self.path == '/health':
             self.send_response(200)
