@@ -91,14 +91,9 @@ def get_email_stats(tracking_id: str = "") -> str:
     """
     endpoint = f'/email/stats/{tracking_id}' if tracking_id else '/email/stats'
     result = _call_service('GET', endpoint)
-    
-    # Debug: print what we got
-    print(f"DEBUG: API result = {result}")
-    message = result.get('message', '')
-    print(f"DEBUG: Extracted message = {message}")
-    
-    return message
+    return result.get('message', '')
 
+    
 def parse_json(json_string: str) -> list:
     """
     Parse JSON string to Python list.

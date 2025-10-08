@@ -114,9 +114,6 @@ async def create_cart(request: CreateCartRequest):
         }
         
     except Exception as e:
-        print(f"❌ Error in create_cart: {e}")
-        import traceback
-        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -224,9 +221,6 @@ Thank you for your sponsorship!
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Error in confirm_payment: {e}")
-        import traceback
-        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/transaction/{transaction_id}")
@@ -286,5 +280,4 @@ async def get_latest_cart():
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Error in get_latest_cart: {e}")
         raise HTTPException(status_code=500, detail=str(e))

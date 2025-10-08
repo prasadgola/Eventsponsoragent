@@ -13,19 +13,16 @@ from typing import Dict, Any, List, Optional
 stripe_secret = os.getenv('STRIPE_SECRET_KEY')
 if stripe_secret:
     stripe.api_key = stripe_secret
-    print("✅ Stripe initialized")
 else:
-    print("⚠️ STRIPE_SECRET_KEY not found - Stripe payments will not work")
+    print("⚠️ STRIPE_SECRET_KEY not found")
 
 class StripeCredentialProvider:
     """Real Stripe integration with AP2 mandates"""
     
     def __init__(self):
-        # Store carts and transactions in memory
         self.carts = {}
         self.transactions = {}
-        
-        # Verify Stripe is configured (but don't crash if not)
+
         if not stripe.api_key:
             print("⚠️ Warning: STRIPE_SECRET_KEY not configured")
     
@@ -158,17 +155,12 @@ class StripeCredentialProvider:
         cart_id: str,
         payment_method_id: str
     ) -> Dict[str, Any]:
-        """
-        SIMPLIFIED: Just record that payment succeeded
-        Stripe confirmation already happened in frontend
-        """
+        """Record payment completion after Stripe confirmation"""
         if cart_id not in self.carts:
             raise ValueError(f"Cart {cart_id} not found")
         
         cart = self.carts[cart_id]
-        
-        # Payment already succeeded via frontend Stripe.js
-        # We just need to create mandates and record the transaction
+
         
         # Create cart mandate if not exists
         if "cart_mandate" not in cart:
