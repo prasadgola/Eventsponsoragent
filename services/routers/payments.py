@@ -114,7 +114,11 @@ async def create_cart(request: CreateCartRequest):
         }
         
     except Exception as e:
+        print(f"❌ Error in create_cart: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.get("/payment-methods")
 async def get_payment_methods(cart_id: str):
