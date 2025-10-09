@@ -1,0 +1,34 @@
+{
+  "name": "EventSponsorAssistant",
+  "displayName": "Event Sponsor Assistant",
+  "description": "An agent that helps with event planning, finding sponsors, and managing outreach.",
+  "version": "1.0.0",
+  "contact": "your-email@example.com",
+  "endpointUrl": "https://adk-backend-service-766291037876.us-central1.run.app",
+  "authentication": {
+    "type": "none"
+  },
+  "capabilities": [
+    "streaming"
+  ],
+  "skills": [
+    {
+      "name": "chat",
+      "description": "Chat with the event sponsor assistant about hosting or sponsoring an event.",
+      "inputs": [
+        {
+          "name": "prompt",
+          "type": "string",
+          "description": "The user's message or question."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "response",
+          "type": "string",
+          "description": "The assistant's reply."
+        }
+      ]
+    }
+  ]
+}
