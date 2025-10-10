@@ -7,8 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . ./chat_with_human
 
-COPY agent.json .
-
 EXPOSE 8000
 
-CMD ["adk", "api_server", "--host", "0.0.0.0", "--port", "8000", "--agent-card", "./agent.json"]
+CMD ["adk", "api_server", "--host", "0.0.0.0", "--port", "8000"]
