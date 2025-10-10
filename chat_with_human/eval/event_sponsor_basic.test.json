@@ -1,0 +1,82 @@
+{
+  "eval_set_id": "event_sponsor_basic_tests",
+  "name": "Event Sponsor Assistant Basic Tests",
+  "description": "Basic unit tests for routing and tool usage",
+  "eval_cases": [
+    {
+      "eval_id": "routing_to_host",
+      "conversation": [
+        {
+          "invocation_id": "test-host-routing-001",
+          "user_content": {
+            "parts": [{"text": "I want to organize a charity gala and I need to find companies to sponsor it."}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "I can help you find sponsors for your charity gala."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "chat_with_human",
+        "user_id": "test_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "host_finds_sponsors",
+      "conversation": [
+        {
+          "invocation_id": "test-host-tools-001",
+          "user_content": {
+            "parts": [{"text": "I'm hosting a tech conference. Can you find some potential sponsors for me?"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "Here are some sponsors that might be a good fit for your tech conference."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [{"name": "get_sponsors", "args": {}}],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "chat_with_human",
+        "user_id": "test_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "sponsor_gets_tiers",
+      "conversation": [
+        {
+          "invocation_id": "test-sponsor-tiers-001",
+          "user_content": {
+            "parts": [{"text": "I want to sponsor a music festival. What are the options?"}],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [{"text": "Here are the sponsorship tiers: Gold, Silver, and Bronze."}],
+            "role": "model"
+          },
+          "intermediate_data": {
+            "tool_uses": [{"name": "get_sponsorship_tiers", "args": {}}],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "chat_with_human",
+        "user_id": "test_user",
+        "state": {}
+      }
+    }
+  ]
+}
