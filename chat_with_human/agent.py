@@ -6,7 +6,7 @@ from .sub_agents.sponsor.agent import sponsor_agent
 
 root_agent = Agent(
     name="root_orchestrator",
-    model="gemini-2.5-flash",
+    model="gemini-2.0-flash-exp",
     instruction=root_instructions(),
     sub_agents=[undecided_agent, host_agent, sponsor_agent]
 )

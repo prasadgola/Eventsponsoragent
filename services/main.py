@@ -10,14 +10,20 @@ from routers import email, sponsors, events, tracking, airtable, payments
 
 app = FastAPI(title="Event Sponsor Services API")
 
-# CORS - IMPORTANT: Must allow frontend origin
+# CORS - Allow frontend origins
+allowed_origins = [
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "https://adk-frontend-service-766291037876.us-central1.run.app",  # Your Cloud Run frontend
+]
+
+# In development, allow all origins
+if os.getenv("ENV") == "development":
+    allowed_origins.append("*")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:8080",
-        "http://127.0.0.1:8080",
-        "*"  # Allow all for development (remove in production)
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

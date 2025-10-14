@@ -10,7 +10,7 @@ from .tools import (
 
 host_agent = Agent(
     name="host_agent",
-    model="gemini-2.5-flash",
+    model="gemini-2.0-flash-exp",
     description=host_description(),
     instruction=host_instructions(),
     tools=[
