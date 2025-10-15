@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -269,12 +270,25 @@
             animation: bounce 1.4s infinite ease-in-out both;
         }
 
-        .dot:nth-child(1) { animation-delay: -0.32s; }
-        .dot:nth-child(2) { animation-delay: -0.16s; }
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
 
         @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
         }
 
         /* Input area */
@@ -284,7 +298,7 @@
             position: sticky;
             bottom: 0;
         }
-        
+
         .input-wrapper {
             max-width: 680px;
             margin: 0 auto;
@@ -302,7 +316,7 @@
         }
 
         .input-container:focus-within {
-            border-color: #3c4043; 
+            border-color: #3c4043;
             box-shadow: none;
         }
 
@@ -325,7 +339,7 @@
             color: #9aa0a6;
             font-weight: 300;
         }
-        
+
         .action-btn {
             border: none;
             padding: 0.625rem;
@@ -339,12 +353,14 @@
             height: 40px;
         }
 
-        .mic-btn, .live-btn {
+        .mic-btn,
+        .live-btn {
             background: transparent;
             color: #9aa0a6;
         }
 
-        .mic-btn:hover, .live-btn:hover {
+        .mic-btn:hover,
+        .live-btn:hover {
             background: #3c4043;
             color: #e8eaed;
         }
@@ -373,17 +389,33 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-        
+
         @keyframes glow {
-            0% { box-shadow: 0 0 0 0 rgba(138, 180, 248, 0.4); }
-            70% { box-shadow: 0 0 0 12px rgba(138, 180, 248, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(138, 180, 248, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(138, 180, 248, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 12px rgba(138, 180, 248, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(138, 180, 248, 0);
+            }
         }
 
         @keyframes glow-red {
-            0% { box-shadow: 0 0 0 0 rgba(232, 65, 53, 0.4); }
-            70% { box-shadow: 0 0 0 12px rgba(232, 65, 53, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(232, 65, 53, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(232, 65, 53, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 12px rgba(232, 65, 53, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(232, 65, 53, 0);
+            }
         }
 
         /* Light theme */
@@ -488,11 +520,14 @@
             color: #5f6368;
         }
 
-        .light-theme .send-btn, .light-theme .mic-btn, .light-theme .live-btn {
+        .light-theme .send-btn,
+        .light-theme .mic-btn,
+        .light-theme .live-btn {
             color: #5f6368;
         }
 
-        .light-theme .mic-btn:hover, .light-theme .live-btn:hover {
+        .light-theme .mic-btn:hover,
+        .light-theme .live-btn:hover {
             background: #f1f3f4;
             color: #202124;
         }
@@ -610,6 +645,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -639,25 +675,26 @@
             .welcome-title {
                 font-size: 2rem;
             }
-            
+
             .suggestions {
                 grid-template-columns: 1fr;
             }
-            
+
             .header {
                 padding: 1rem;
             }
-            
+
             .messages {
                 padding: 1rem;
             }
-            
+
             .input-area {
                 padding: 1rem;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <div class="header-left">
@@ -667,7 +704,8 @@
             </div>
         </div>
         <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" title="Toggle theme">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="5"></circle>
                 <line x1="12" y1="1" x2="12" y2="3"></line>
                 <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -685,9 +723,10 @@
         <div class="welcome-screen" id="welcomeScreen">
             <h1 class="welcome-title">Hello, there!</h1>
             <p class="welcome-subtitle">How can I help you with event sponsorship today?</p>
-            
+
             <div class="suggestions">
-                <div class="suggestion" onclick="sendSuggestion('Help me find potential sponsors for a tech conference')">
+                <div class="suggestion"
+                    onclick="sendSuggestion('Help me find potential sponsors for a tech conference')">
                     <h3>Find Sponsors</h3>
                     <p>Get recommendations for potential sponsors based on your event type and audience</p>
                 </div>
@@ -712,16 +751,13 @@
     <div class="input-area">
         <div class="input-wrapper">
             <div class="input-container">
-                <textarea 
-                    id="messageInput" 
-                    class="message-input" 
-                    placeholder="Ask me about event sponsorship..." 
-                    rows="1"
-                ></textarea>
-                
+                <textarea id="messageInput" class="message-input" placeholder="Ask me about event sponsorship..."
+                    rows="1"></textarea>
+
                 <!-- Voice-to-text button -->
                 <button class="action-btn mic-btn" id="micBtn" title="Voice to text">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
                         <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                         <line x1="12" y1="19" x2="12" y2="23"></line>
@@ -730,7 +766,8 @@
 
                 <!-- Live audio conversation button -->
                 <button class="action-btn live-btn" id="liveBtn" title="Start live conversation">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 20h.01"></path>
                         <path d="M8.5 16.5a5 5 0 0 1 7 0"></path>
                         <path d="M5 13a9 9 0 0 1 14 0"></path>
@@ -738,15 +775,18 @@
                 </button>
 
                 <!-- Stop live conversation button (hidden by default) -->
-                <button class="action-btn live-btn streaming" id="stopLiveBtn" title="Stop live conversation" style="display: none;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <button class="action-btn live-btn streaming" id="stopLiveBtn" title="Stop live conversation"
+                    style="display: none;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <rect x="6" y="6" width="12" height="12"></rect>
                     </svg>
                 </button>
-                
+
                 <!-- Send button -->
                 <button class="action-btn send-btn" onclick="sendMessage()" id="sendBtn" title="Send">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <line x1="22" y1="2" x2="11" y2="13"></line>
                         <polygon points="22,2 15,22 11,13 2,9"></polygon>
                     </svg>
@@ -761,7 +801,7 @@
         const ADK_SERVER_URL = window.ADK_SERVER_URL || 'http://localhost:8000';
         const SERVICES_API = window.SERVICES_API_URL || 'http://localhost:8001';
         const STRIPE_PUBLISHABLE_KEY = 'pk_test_51SFiGIHRBWNtQGKsXBP2PDJE5iPhriiCZBQW5QESdTgOSoFCTEdM1eiNdQXNSbkFqNcsoVdCMYqXJLtf0C0v3S4h00SLYyRXU4';
-        
+
         const welcomeScreen = document.getElementById('welcomeScreen');
         const messagesContainer = document.getElementById('messages');
         const messageInput = document.getElementById('messageInput');
@@ -802,7 +842,7 @@
             localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
             updateThemeIcon(isLightTheme);
         }
-        
+
         function updateThemeIcon(isLightTheme) {
             const icon = themeToggle.querySelector('svg');
             if (isLightTheme) {
@@ -811,7 +851,7 @@
                 icon.innerHTML = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
             }
         }
-        
+
         function loadTheme() {
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -825,7 +865,7 @@
         // --- INPUT MANAGEMENT ---
         function updateInputButtons() {
             const hasText = messageInput.value.trim().length > 0;
-            
+
             if (isStreaming) {
                 // During streaming: only show stop button
                 sendBtn.style.display = 'none';
@@ -847,13 +887,13 @@
             }
         }
 
-        messageInput.addEventListener('input', function() {
+        messageInput.addEventListener('input', function () {
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 120) + 'px';
             updateInputButtons();
         });
 
-        messageInput.addEventListener('keydown', function(event) {
+        messageInput.addEventListener('keydown', function (event) {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
                 if (messageInput.value.trim().length > 0) {
@@ -861,7 +901,7 @@
                 }
             }
         });
-        
+
         // --- VOICE-TO-TEXT (micBtn) ---
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
@@ -906,7 +946,7 @@
 
         async function startLiveSession() {
             console.log('🎙️ Starting live session...');
-            
+
             try {
                 if (!audioContext) {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)({
@@ -948,7 +988,7 @@
 
         function stopLiveSession() {
             console.log('🛑 Stopping live session...');
-            
+
             if (mediaRecorder) {
                 if (mediaRecorder.processor) {
                     mediaRecorder.processor.disconnect();
@@ -956,19 +996,19 @@
                 }
                 mediaRecorder = null;
             }
-            
+
             if (socket) {
                 socket.close();
                 socket = null;
             }
-            
+
             audioQueue = [];
             isPlaying = false;
             isStreaming = false;
             messageInput.disabled = false;
             messageInput.placeholder = "Ask me about event sponsorship...";
             updateInputButtons();
-            
+
             if (messagesContainer.classList.contains('active')) {
                 addMessage('✅ Live conversation ended.', 'assistant');
             }
@@ -978,13 +1018,25 @@
             return new Promise((resolve, reject) => {
                 const wsUrl = ADK_SERVER_URL.replace('http://', 'ws://').replace('https://', 'wss://');
                 const wsEndpoint = `${wsUrl}/run_live?app_name=${APP_NAME}&user_id=${USER_ID}&session_id=${SESSION_ID}`;
-                
-                console.log(`🔗 Connecting to: ${wsEndpoint}`);
-                socket = new WebSocket(wsEndpoint);
-                
+
+                // LOG THE ACTUAL URL BEING USED
+                console.log(`🔗 Attempting WebSocket connection to: ${wsEndpoint}`);
+                console.log(`📍 Original ADK_SERVER_URL: ${ADK_SERVER_URL}`);
+                console.log(`🔐 Protocol: ${wsUrl.startsWith('wss://') ? 'Secure (WSS)' : 'Insecure (WS)'}`);
+
+                try {
+                    socket = new WebSocket(wsEndpoint);
+                } catch (error) {
+                    console.error('❌ Failed to create WebSocket:', error);
+                    addMessage(`WebSocket creation failed: ${error.message}`, 'assistant');
+                    reject(error);
+                    return;
+                }
+
                 socket.onopen = () => {
-                    console.log('✅ WebSocket connected');
-                    
+                    console.log('✅ WebSocket connected successfully');
+                    console.log('📡 WebSocket readyState:', socket.readyState);
+
                     const setupMessage = {
                         "app_name": APP_NAME,
                         "user_id": USER_ID,
@@ -994,49 +1046,94 @@
                             "response_modalities": ["AUDIO"]
                         }
                     };
-                    
+
+                    console.log('📤 Sending setup message:', setupMessage);
                     socket.send(JSON.stringify(setupMessage));
                     startAudioRecording(stream);
                     resolve();
                 };
-                
+
+                socket.onerror = (error) => {
+                    console.error('❌ WebSocket error occurred:', error);
+                    console.error('🔍 Error type:', error.type);
+                    console.error('🔍 Error target:', error.target);
+                    console.error('🔍 WebSocket URL:', error.target?.url);
+                    console.error('🔍 WebSocket readyState:', error.target?.readyState);
+
+                    addMessage(`WebSocket connection error. Check console for details.`, 'assistant');
+                    reject(error);
+                };
+
+                socket.onclose = (event) => {
+                    console.log('🔌 WebSocket closed');
+                    console.log('📊 Close code:', event.code);
+                    console.log('📊 Close reason:', event.reason);
+                    console.log('📊 Was clean:', event.wasClean);
+
+                    // Common WebSocket close codes
+                    const closeCodes = {
+                        1000: 'Normal closure',
+                        1001: 'Going away',
+                        1002: 'Protocol error',
+                        1003: 'Unsupported data',
+                        1006: 'Abnormal closure (no close frame)',
+                        1007: 'Invalid frame payload',
+                        1008: 'Policy violation',
+                        1009: 'Message too big',
+                        1011: 'Server error',
+                        1015: 'TLS handshake failure'
+                    };
+
+                    const closeMessage = closeCodes[event.code] || `Unknown code: ${event.code}`;
+                    console.log('📝 Close meaning:', closeMessage);
+
+                    if (!event.wasClean) {
+                        addMessage(`Connection lost: ${closeMessage}`, 'assistant');
+                    }
+
+                    if (isStreaming) {
+                        stopLiveSession();
+                    }
+                };
+
+                // Rest of socket.onmessage stays the same
                 socket.onmessage = async (event) => {
                     try {
                         const data = JSON.parse(event.data);
 
                         if (data.content && data.content.parts) {
                             console.log(`📦 Received ${data.content.parts.length} parts`);
-                            
-                            const audioPart = data.content.parts.find(p => 
-                                p.inlineData && 
-                                p.inlineData.mimeType && 
+
+                            const audioPart = data.content.parts.find(p =>
+                                p.inlineData &&
+                                p.inlineData.mimeType &&
                                 p.inlineData.mimeType.startsWith('audio/pcm')
                             );
-                            
+
                             if (audioPart && audioPart.inlineData.data) {
                                 console.log(`🎵 Audio chunk received (${audioPart.inlineData.data.length} chars)`);
-                                
+
                                 let base64String = audioPart.inlineData.data;
-                                
+
                                 // Clean base64 string
                                 base64String = base64String.replace(/\s/g, '');
                                 base64String = base64String.replace(/-/g, '+').replace(/_/g, '/');
-                                
+
                                 while (base64String.length % 4 !== 0) {
                                     base64String += '=';
                                 }
-                                
+
                                 try {
                                     const binaryString = atob(base64String);
                                     const bytes = new Uint8Array(binaryString.length);
                                     for (let i = 0; i < binaryString.length; i++) {
                                         bytes[i] = binaryString.charCodeAt(i);
                                     }
-                                    
+
                                     const pcmData = new Int16Array(bytes.buffer);
                                     console.log(`✅ Decoded ${pcmData.length} PCM samples, adding to queue`);
                                     audioQueue.push(pcmData);
-                                    
+
                                     if (!isPlaying) {
                                         console.log('🔊 Starting playback...');
                                         playNextInQueue();
@@ -1055,18 +1152,6 @@
                         console.error(`❌ Error processing message: ${e.message}`);
                     }
                 };
-                
-                socket.onerror = (error) => {
-                    console.error('❌ WebSocket error:', error);
-                    reject(error);
-                };
-                
-                socket.onclose = (event) => {
-                    console.log('🔌 WebSocket closed:', event.code, event.reason);
-                    if (isStreaming) {
-                        stopLiveSession();
-                    }
-                };
             });
         }
 
@@ -1074,20 +1159,20 @@
             try {
                 const source = audioContext.createMediaStreamSource(stream);
                 const processor = audioContext.createScriptProcessor(4096, 1, 1);
-                
+
                 source.connect(processor);
                 processor.connect(audioContext.destination);
-                
+
                 processor.onaudioprocess = (e) => {
                     if (socket && socket.readyState === WebSocket.OPEN) {
                         const inputData = e.inputBuffer.getChannelData(0);
                         const pcmData = new Int16Array(inputData.length);
-                        
+
                         for (let i = 0; i < inputData.length; i++) {
                             const s = Math.max(-1, Math.min(1, inputData[i]));
                             pcmData[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
                         }
-                        
+
                         const base64Audio = btoa(String.fromCharCode.apply(null, new Uint8Array(pcmData.buffer)));
                         const audioMessage = {
                             "blob": {
@@ -1095,13 +1180,13 @@
                                 "data": base64Audio
                             }
                         };
-                        
+
                         socket.send(JSON.stringify(audioMessage));
                     }
                 };
-                
+
                 mediaRecorder = { processor, source };
-                
+
             } catch (error) {
                 console.error('❌ Error starting recording:', error);
                 throw error;
@@ -1112,27 +1197,27 @@
             if (audioQueue.length > 0) {
                 isPlaying = true;
                 const pcmData = audioQueue.shift();
-                
+
                 try {
                     const audioBuffer = audioContext.createBuffer(
                         1,
                         pcmData.length,
                         24000
                     );
-                    
+
                     const channelData = audioBuffer.getChannelData(0);
                     for (let i = 0; i < pcmData.length; i++) {
                         channelData[i] = pcmData[i] / (pcmData[i] < 0 ? 0x8000 : 0x7FFF);
                     }
-                    
+
                     const source = audioContext.createBufferSource();
                     source.buffer = audioBuffer;
                     source.connect(audioContext.destination);
-                    
+
                     source.onended = () => {
                         playNextInQueue();
                     };
-                    
+
                     source.start(0);
                 } catch (error) {
                     console.error(`Error playing audio: ${error.message}`);
@@ -1171,20 +1256,20 @@
 
         function addPaymentForm(cartId, clientSecret, cartSummary) {
             initializeStripe();
-            
+
             currentCartId = cartId;
             currentClientSecret = clientSecret;
-            
+
             const formContainer = document.createElement('div');
             formContainer.className = 'message assistant';
-            
+
             const avatar = document.createElement('div');
             avatar.className = 'avatar';
             avatar.textContent = 'ES';
-            
+
             const formContent = document.createElement('div');
             formContent.className = 'message-content';
-            
+
             formContent.innerHTML = `
                 <div class="payment-form-container">
                     <div class="payment-form-title">💳 Enter Payment Details</div>
@@ -1199,12 +1284,12 @@
                     </button>
                 </div>
             `;
-            
+
             formContainer.appendChild(avatar);
             formContainer.appendChild(formContent);
             messagesContainer.appendChild(formContainer);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            
+
             setTimeout(() => {
                 const isDark = !document.body.classList.contains('light-theme');
                 elements = stripe.elements({
@@ -1222,10 +1307,10 @@
                         }
                     }
                 });
-                
+
                 cardElement = elements.create('payment');
                 cardElement.mount('#card-element');
-                
+
                 cardElement.on('change', (event) => {
                     const displayError = document.getElementById('card-errors');
                     if (event.error) {
@@ -1234,7 +1319,7 @@
                         displayError.textContent = '';
                     }
                 });
-                
+
                 const payButton = document.getElementById('pay-button');
                 payButton.addEventListener('click', handlePayment);
             }, 100);
@@ -1243,27 +1328,27 @@
         async function handlePayment() {
             const payButton = document.getElementById('pay-button');
             const cardErrors = document.getElementById('card-errors');
-            
+
             payButton.disabled = true;
             payButton.textContent = 'Processing...';
             cardErrors.textContent = '';
-            
+
             try {
-                const {error, paymentIntent} = await stripe.confirmPayment({
+                const { error, paymentIntent } = await stripe.confirmPayment({
                     elements,
                     confirmParams: {
                         return_url: window.location.href,
                     },
                     redirect: 'if_required'
                 });
-                
+
                 if (error) {
                     cardErrors.textContent = error.message;
                     payButton.disabled = false;
                     payButton.textContent = 'Try Again';
                     return;
                 }
-                
+
                 if (paymentIntent.status === 'succeeded') {
                     const response = await fetch(`${SERVICES_API}/payments/confirm`, {
                         method: 'POST',
@@ -1275,13 +1360,13 @@
                             payment_method_id: paymentIntent.payment_method
                         })
                     });
-                    
+
                     if (!response.ok) {
                         throw new Error(`Server error: ${response.status}`);
                     }
-                    
+
                     const result = await response.json();
-                    
+
                     if (result.success) {
                         const messageElement = payButton.closest('.message');
                         if (messageElement) {
@@ -1292,7 +1377,7 @@
                         throw new Error(result.message || 'Payment confirmation failed');
                     }
                 }
-                
+
             } catch (err) {
                 console.error('Payment error:', err);
                 cardErrors.textContent = err.message || 'Payment failed. Please try again.';
@@ -1326,19 +1411,19 @@
         async function sendMessage() {
             const message = messageInput.value.trim();
             if (!message || sendBtn.disabled) return;
-            
+
             if (!messagesContainer.classList.contains('active')) {
                 switchToChatView();
             }
-            
+
             sendBtn.disabled = true;
             addMessage(message, 'user');
-            
+
             messageInput.value = '';
             messageInput.dispatchEvent(new Event('input'));
-            
+
             const loadingElement = addLoading();
-            
+
             try {
                 const payload = {
                     "app_name": APP_NAME,
@@ -1346,22 +1431,22 @@
                     "session_id": SESSION_ID,
                     "new_message": {
                         "role": "user",
-                        "parts": [{"text": message}]
+                        "parts": [{ "text": message }]
                     }
                 };
-                
+
                 const response = await fetch(`${API_BASE}/run`, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                
+
                 loadingElement.remove();
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
                 }
-                
+
                 const data = await response.json();
                 let assistantMessage = '';
                 let cartData = null;
@@ -1373,16 +1458,16 @@
                                 if (part.text) {
                                     assistantMessage += part.text + '\n';
                                 }
-                                
+
                                 if (part.function_response && part.function_response.response) {
                                     const funcResp = part.function_response.response;
                                     let parsedResp = funcResp;
                                     if (typeof funcResp === 'string') {
                                         try {
                                             parsedResp = JSON.parse(funcResp);
-                                        } catch (e) {}
+                                        } catch (e) { }
                                     }
-                                    
+
                                     if (parsedResp.payment_form_trigger && parsedResp.cart_id && parsedResp.client_secret) {
                                         cartData = parsedResp;
                                     }
@@ -1391,21 +1476,21 @@
                         }
                     }
                 }
-                
+
                 assistantMessage = assistantMessage.trim();
-                
+
                 if (assistantMessage) {
                     addMessage(assistantMessage, 'assistant');
-                    
-                    if (assistantMessage.toLowerCase().includes('processing payment') || 
+
+                    if (assistantMessage.toLowerCase().includes('processing payment') ||
                         assistantMessage.toLowerCase().includes('created your cart') ||
                         assistantMessage.toLowerCase().includes('cart created')) {
-                        
+
                         setTimeout(async () => {
                             try {
                                 const cartResponse = await fetch(`${SERVICES_API}/payments/latest-cart`);
                                 const cartData = await cartResponse.json();
-                                
+
                                 if (cartData.success && cartData.cart_id && cartData.client_secret) {
                                     addPaymentForm(
                                         cartData.cart_id,
@@ -1419,7 +1504,7 @@
                         }, 500);
                     }
                 }
-                
+
                 if (cartData) {
                     addPaymentForm(
                         cartData.cart_id,
@@ -1427,7 +1512,7 @@
                         cartData.cart_summary
                     );
                 }
-                
+
             } catch (error) {
                 loadingElement.remove();
                 addMessage(`Sorry, I encountered an error: ${error.message}`, 'assistant');
@@ -1446,4 +1531,5 @@
         });
     </script>
 </body>
+
 </html>
