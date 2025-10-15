@@ -28,13 +28,19 @@ class FrontendHandler(BaseHTTPRequestHandler):
                 with open('index.html', 'r', encoding='utf-8') as f:
                     html_content = f.read()
                 
-                # Inject both URLs
+                # Inject API_BASE (for regular HTTP requests)
                 html_content = html_content.replace(
                     "const API_BASE = 'http://localhost:8080';", 
                     "const API_BASE = '';"
                 )
                 
-                # NEW: Inject services URL
+                # Inject ADK_SERVER_URL (for WebSocket connections)
+                html_content = html_content.replace(
+                    "const ADK_SERVER_URL = window.ADK_SERVER_URL || 'http://localhost:8000';",
+                    f"const ADK_SERVER_URL = '{self.ADK_SERVER_URL}';"
+                )
+                
+                # Inject services URL
                 html_content = html_content.replace(
                     "const SERVICES_API = window.SERVICES_API_URL || 'http://localhost:8001';",
                     f"const SERVICES_API = '{self.SERVICES_API_URL}';"
