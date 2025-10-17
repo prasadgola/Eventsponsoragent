@@ -769,9 +769,9 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <line x1="6" y1="10" x2="6" y2="14"></line>
-                       <line x1="10" y1="4" x2="10" y2="20"></line>
-                       <line x1="14" y1="8" x2="14" y2="16"></line>
-                       <line x1="18" y1="11" x2="18" y2="13"></line>
+                        <line x1="10" y1="4" x2="10" y2="20"></line>
+                        <line x1="14" y1="8" x2="14" y2="16"></line>
+                        <line x1="18" y1="11" x2="18" y2="13"></line>
                     </svg>
                 </button>
 
@@ -798,10 +798,22 @@
 
     <script>
         // Configuration
-        const API_BASE = 'http://localhost:8080';
-        const ADK_SERVER_URL = window.ADK_SERVER_URL || 'http://localhost:8000';
-        const SERVICES_API = window.SERVICES_API_URL || 'http://localhost:8001';
-        const STRIPE_PUBLISHABLE_KEY = 'pk_test_51SFiGIHRBWNtQGKsXBP2PDJE5iPhriiCZBQW5QESdTgOSoFCTEdM1eiNdQXNSbkFqNcsoVdCMYqXJLtf0C0v3S4h00SLYyRXU4';
+        const CONFIG = {
+            ADK_SERVER_URL: 'https://adk-backend-service-766291037876.us-central1.run.app',
+            SERVICES_API_URL: 'https://services-backend-766291037876.us-central1.run.app',
+            STRIPE_PUBLISHABLE_KEY: 'pk_test_51SFiGIHRBWNtQGKsXBP2PDJE5iPhriiCZBQW5QESdTgOSoFCTEdM1eiNdQXNSbkFqNcsoVdCMYqXJLtf0C0v3S4h00SLYyRXU4',
+            APP_NAME: 'chat_with_human'
+        };
+
+        // Detect if running locally
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+        const ADK_SERVER_URL = isLocal ? 'http://localhost:8000' : CONFIG.ADK_SERVER_URL;
+        const SERVICES_API = isLocal ? 'http://localhost:8001' : CONFIG.SERVICES_API_URL;
+        const STRIPE_PUBLISHABLE_KEY = CONFIG.STRIPE_PUBLISHABLE_KEY;
+        const APP_NAME = CONFIG.APP_NAME;
+        const USER_ID = 'demo_user';
+        const SESSION_ID = 'default_session';
 
         const welcomeScreen = document.getElementById('welcomeScreen');
         const messagesContainer = document.getElementById('messages');
@@ -824,10 +836,6 @@
         let audioContext = null;
         let audioQueue = [];
         let isPlaying = false;
-
-        const APP_NAME = 'chat_with_human';
-        const USER_ID = 'demo_user';
-        const SESSION_ID = 'default_session';
 
         // Initialize Stripe
         function initializeStripe() {
@@ -868,19 +876,16 @@
             const hasText = messageInput.value.trim().length > 0;
 
             if (isStreaming) {
-                // During streaming: only show stop button
                 sendBtn.style.display = 'none';
                 micBtn.style.display = 'none';
                 liveBtn.style.display = 'none';
                 stopLiveBtn.style.display = 'flex';
             } else if (hasText) {
-                // Has text: only show send button
                 sendBtn.style.display = 'flex';
                 micBtn.style.display = 'none';
                 liveBtn.style.display = 'none';
                 stopLiveBtn.style.display = 'none';
             } else {
-                // No text: show mic and live buttons
                 sendBtn.style.display = 'none';
                 micBtn.style.display = 'flex';
                 liveBtn.style.display = 'flex';
@@ -1016,14 +1021,15 @@
         }
 
         async function connectLiveWebSocket(stream) {
+            if (!await ensureSession()) {
+                throw new Error('Failed to create session');
+            }
+
             return new Promise((resolve, reject) => {
                 const wsUrl = ADK_SERVER_URL.replace('http://', 'ws://').replace('https://', 'wss://');
                 const wsEndpoint = `${wsUrl}/run_live?app_name=${APP_NAME}&user_id=${USER_ID}&session_id=${SESSION_ID}`;
 
-                // LOG THE ACTUAL URL BEING USED
                 console.log(`🔗 Attempting WebSocket connection to: ${wsEndpoint}`);
-                console.log(`📍 Original ADK_SERVER_URL: ${ADK_SERVER_URL}`);
-                console.log(`🔐 Protocol: ${wsUrl.startsWith('wss://') ? 'Secure (WSS)' : 'Insecure (WS)'}`);
 
                 try {
                     socket = new WebSocket(wsEndpoint);
@@ -1036,7 +1042,6 @@
 
                 socket.onopen = () => {
                     console.log('✅ WebSocket connected successfully');
-                    console.log('📡 WebSocket readyState:', socket.readyState);
 
                     const setupMessage = {
                         "app_name": APP_NAME,
@@ -1056,11 +1061,6 @@
 
                 socket.onerror = (error) => {
                     console.error('❌ WebSocket error occurred:', error);
-                    console.error('🔍 Error type:', error.type);
-                    console.error('🔍 Error target:', error.target);
-                    console.error('🔍 WebSocket URL:', error.target?.url);
-                    console.error('🔍 WebSocket readyState:', error.target?.readyState);
-
                     addMessage(`WebSocket connection error. Check console for details.`, 'assistant');
                     reject(error);
                 };
@@ -1069,27 +1069,9 @@
                     console.log('🔌 WebSocket closed');
                     console.log('📊 Close code:', event.code);
                     console.log('📊 Close reason:', event.reason);
-                    console.log('📊 Was clean:', event.wasClean);
-
-                    // Common WebSocket close codes
-                    const closeCodes = {
-                        1000: 'Normal closure',
-                        1001: 'Going away',
-                        1002: 'Protocol error',
-                        1003: 'Unsupported data',
-                        1006: 'Abnormal closure (no close frame)',
-                        1007: 'Invalid frame payload',
-                        1008: 'Policy violation',
-                        1009: 'Message too big',
-                        1011: 'Server error',
-                        1015: 'TLS handshake failure'
-                    };
-
-                    const closeMessage = closeCodes[event.code] || `Unknown code: ${event.code}`;
-                    console.log('📝 Close meaning:', closeMessage);
 
                     if (!event.wasClean) {
-                        addMessage(`Connection lost: ${closeMessage}`, 'assistant');
+                        addMessage(`Connection lost`, 'assistant');
                     }
 
                     if (isStreaming) {
@@ -1097,14 +1079,11 @@
                     }
                 };
 
-                // Rest of socket.onmessage stays the same
                 socket.onmessage = async (event) => {
                     try {
                         const data = JSON.parse(event.data);
 
                         if (data.content && data.content.parts) {
-                            console.log(`📦 Received ${data.content.parts.length} parts`);
-
                             const audioPart = data.content.parts.find(p =>
                                 p.inlineData &&
                                 p.inlineData.mimeType &&
@@ -1112,11 +1091,8 @@
                             );
 
                             if (audioPart && audioPart.inlineData.data) {
-                                console.log(`🎵 Audio chunk received (${audioPart.inlineData.data.length} chars)`);
-
                                 let base64String = audioPart.inlineData.data;
 
-                                // Clean base64 string
                                 base64String = base64String.replace(/\s/g, '');
                                 base64String = base64String.replace(/-/g, '+').replace(/_/g, '/');
 
@@ -1132,22 +1108,15 @@
                                     }
 
                                     const pcmData = new Int16Array(bytes.buffer);
-                                    console.log(`✅ Decoded ${pcmData.length} PCM samples, adding to queue`);
                                     audioQueue.push(pcmData);
 
                                     if (!isPlaying) {
-                                        console.log('🔊 Starting playback...');
                                         playNextInQueue();
                                     }
                                 } catch (e) {
                                     console.error(`❌ Error decoding audio: ${e.message}`);
                                 }
                             }
-                        } else if (data.inputTranscription || data.outputTranscription) {
-                            const text = data.inputTranscription?.text || data.outputTranscription?.text;
-                            console.log(`📝 Transcription: "${text}"`);
-                        } else if (data.turnComplete) {
-                            console.log('✅ Turn complete.');
                         }
                     } catch (e) {
                         console.error(`❌ Error processing message: ${e.message}`);
@@ -1272,19 +1241,19 @@
             formContent.className = 'message-content';
 
             formContent.innerHTML = `
-                <div class="payment-form-container">
-                    <div class="payment-form-title">💳 Enter Payment Details</div>
-                    <div class="payment-form-subtitle">
-                        Sponsorship: ${cartSummary.tier} - ${cartSummary.amount}<br>
-                        Event: ${cartSummary.event}
-                    </div>
-                    <div id="card-element"></div>
-                    <div id="card-errors" class="card-errors"></div>
-                    <button id="pay-button" class="pay-button">
-                        Pay ${cartSummary.amount}
-                    </button>
-                </div>
-            `;
+        <div class="payment-form-container">
+            <div class="payment-form-title">💳 Enter Payment Details</div>
+            <div class="payment-form-subtitle">
+                Sponsorship: ${cartSummary.tier} - ${cartSummary.amount}<br>
+                Event: ${cartSummary.event}
+            </div>
+            <div id="card-element"></div>
+            <div id="card-errors" class="card-errors"></div>
+            <button id="pay-button" class="pay-button">
+                Pay ${cartSummary.amount}
+            </button>
+        </div>
+    `;
 
             formContainer.appendChild(avatar);
             formContainer.appendChild(formContent);
@@ -1409,7 +1378,35 @@
             sendMessage();
         }
 
+        async function ensureSession() {
+            const sessionUrl = `${ADK_SERVER_URL}/apps/${APP_NAME}/users/${USER_ID}/sessions/${SESSION_ID}`;
+
+            try {
+                const response = await fetch(sessionUrl);
+                if (response.ok) return true;
+            } catch (e) { }
+
+            try {
+                const response = await fetch(sessionUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ state: {} })
+                });
+
+                if (response.ok || response.status === 409) return true;
+                throw new Error(`Session creation failed: ${response.status}`);
+            } catch (error) {
+                console.error('❌ Session error:', error);
+                return false;
+            }
+        }
+
         async function sendMessage() {
+            if (!await ensureSession()) {
+                addMessage('Failed to create session. Please refresh the page.', 'assistant');
+                return;
+            }
+
             const message = messageInput.value.trim();
             if (!message || sendBtn.disabled) return;
 
@@ -1436,7 +1433,7 @@
                     }
                 };
 
-                const response = await fetch(`${API_BASE}/run`, {
+                const response = await fetch(`${ADK_SERVER_URL}/run`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)

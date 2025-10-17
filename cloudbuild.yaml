@@ -7,10 +7,6 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/services:latest', './services']
 
-  # Build frontend
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/frontend:latest', './frontend']
-
   # Push chat_with_human
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/chat-with-human:latest']
@@ -19,11 +15,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/services:latest']
 
-  # Push frontend
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/frontend:latest']
-
-# Deploy services first (chat_with_human depends on it)
+  # Deploy services first
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -35,13 +27,13 @@ steps:
       - '--region=us-central1'
       - '--port=8080'
       - '--allow-unauthenticated'
-      - '--update-secrets=AIRTABLE_API_KEY=AIRTABLE_API_KEY:latest,AIRTABLE_BASE_ID=AIRTABLE_BASE_ID:latest,AIRTABLE_TABLE_ID=AIRTABLE_TABLE_ID:latest,GOOGLE_API_KEY=GOOGLE_API_KEY:latest,STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest'  # ADDED STRIPE_SECRET_KEY
+      - '--update-secrets=AIRTABLE_API_KEY=AIRTABLE_API_KEY:latest,AIRTABLE_BASE_ID=AIRTABLE_BASE_ID:latest,AIRTABLE_TABLE_ID=AIRTABLE_TABLE_ID:latest,GOOGLE_API_KEY=GOOGLE_API_KEY:latest,STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest'
       - '--update-secrets=/secrets/gmail_token.json=GMAIL_TOKEN:latest'
       - '--timeout=300'
       - '--memory=512Mi'
     id: 'deploy-services'
 
-  # Deploy chat_with_human (connects to services)
+  # Deploy chat_with_human
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
     args:
@@ -55,31 +47,29 @@ steps:
           --port=8000 \
           --allow-unauthenticated \
           --set-env-vars="SERVICES_URL=$$SERVICES_URL" \
-          --update-secrets=GOOGLE_API_KEY=GOOGLE_API_KEY:latest
+          --update-secrets=GOOGLE_API_KEY=GOOGLE_API_KEY:latest,AIRTABLE_API_KEY=AIRTABLE_API_KEY:latest,AIRTABLE_BASE_ID=AIRTABLE_BASE_ID:latest,AIRTABLE_TABLE_ID=AIRTABLE_TABLE_ID:latest
     waitFor: ['deploy-services']
     id: 'deploy-chat'
 
-  # Deploy frontend (connects to chat_with_human)
-# Deploy frontend (connects to chat_with_human)
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        BACKEND_URL=$$(gcloud run services describe adk-backend-service --platform managed --project=event-sponsor-assistant --region us-central1 --format 'value(status.url)') && \
-        SERVICES_URL=$$(gcloud run services describe services-backend --platform managed --project=event-sponsor-assistant --region us-central1 --format 'value(status.url)') && \
-        gcloud run deploy adk-frontend-service \
-          --image=us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/frontend:latest \
-          --project=event-sponsor-assistant \
-          --region=us-central1 \
-          --allow-unauthenticated \
-          --set-env-vars="ADK_SERVER_URL=$$BACKEND_URL,SERVICES_API_URL=$$SERVICES_URL"
+  # Upload frontend to GCS
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args: ['cp', 'frontend/index.html', 'gs://event-sponsor-frontend/']
     waitFor: ['deploy-chat']
 
 images:
   - 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/chat-with-human:latest'
   - 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/services:latest'
-  - 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/frontend:latest'
 
 options:
   logging: CLOUD_LOGGING_ONLY
+```
+
+---
+
+## Step 5: Update `.gitignore`
+
+Add:
+```
+frontend/server.py
+frontend/Dockerfile
+frontend/requirements.txt

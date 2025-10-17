@@ -3,11 +3,14 @@ import os
 import sys
 from pathlib import Path
 
+# Detect environment
 is_cloud_run = os.getenv('K_SERVICE') is not None
 
 if is_cloud_run:
+    # Cloud Run: We're in /app, need to stay there
     os.chdir('/app')
 else:
+    # Local: Go to parent directory
     parent_dir = Path(__file__).parent.parent
     os.chdir(parent_dir)
 
