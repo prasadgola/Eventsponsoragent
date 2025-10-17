@@ -7,7 +7,7 @@ from pathlib import Path
 is_cloud_run = os.getenv('K_SERVICE') is not None
 
 if is_cloud_run:
-    # Cloud Run: We're in /app, need to stay there
+    # Cloud Run: We're in /app
     os.chdir('/app')
 else:
     # Local: Go to parent directory
@@ -19,6 +19,7 @@ sys.path.insert(0, os.getcwd())
 from google.adk.cli.fast_api import get_fast_api_app
 import uvicorn
 
+# Create FastAPI app with CORS enabled
 app = get_fast_api_app(
     agents_dir=".",
     allow_origins=[

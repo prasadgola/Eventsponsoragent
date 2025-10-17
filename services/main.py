@@ -1,34 +1,62 @@
-#!/usr/bin/env python3
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 import os
-import sys
-from pathlib import Path
 
-is_cloud_run = os.getenv('K_SERVICE') is not None
+# Load .env
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
-if is_cloud_run:
-    os.chdir('/app')
-else:
-    parent_dir = Path(__file__).parent.parent
-    os.chdir(parent_dir)
+from routers import email, sponsors, events, tracking, airtable, payments
 
-sys.path.insert(0, os.getcwd())
+app = FastAPI(title="Event Sponsor Services API")
 
-from google.adk.cli.fast_api import get_fast_api_app
-import uvicorn
+# CORS - Allow frontend origins
+allowed_origins = [
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "https://adk-frontend-service-766291037876.us-central1.run.app",  # Your Cloud Run frontend
+]
 
-app = get_fast_api_app(
-    agents_dir=".",
-    allow_origins=[
-        "https://storage.googleapis.com",
-        "http://localhost:8080",
-        "http://127.0.0.1:8080"
-    ],
-    web=False,
-    a2a=False,
-    host="0.0.0.0",
-    port=int(os.getenv("PORT", 8000))
+# In development, allow all origins
+if os.getenv("ENV") == "development":
+    allowed_origins.append("*")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
+# Register routers
+app.include_router(email.router, prefix="/email", tags=["Email"])
+app.include_router(sponsors.router, prefix="/sponsors", tags=["Sponsors"])
+app.include_router(events.router, prefix="/events", tags=["Events"])
+app.include_router(tracking.router, prefix="/track", tags=["Tracking"])
+app.include_router(airtable.router, prefix="/airtable", tags=["Airtable"])
+app.include_router(payments.router, prefix="/payments", tags=["Payments"])
+
+@app.get("/")
+async def root():
+    return {
+        "service": "Event Sponsor Services API",
+        "status": "running",
+        "endpoints": {
+            "email": "/email/*",
+            "sponsors": "/sponsors/*",
+            "events": "/events/*",
+            "tracking": "/track/*",
+            "airtable": "/airtable/*",
+            "payments": "/payments/*"
+        }
+    }
+
+@app.get("/health")
+async def health():
+    return {"status": "healthy"}
+
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8000))
+    import uvicorn
+    port = int(os.environ.get("PORT", 8001))
     uvicorn.run(app, host="0.0.0.0", port=port)
