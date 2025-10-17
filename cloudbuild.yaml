@@ -1,19 +1,19 @@
 steps:
   # Build chat_with_human (ADK backend)
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/chat-with-human:latest', './chat_with_human']
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/event-sponsor-assistant/event-sponsor-repo/chat-with-human:latest', './chat_with_human']
 
   # Build services
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/services:latest', './services']
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/event-sponsor-assistant/event-sponsor-repo/services:latest', './services']
 
   # Push chat_with_human
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/chat-with-human:latest']
+    args: ['push', 'us-central1-docker.pkg.dev/event-sponsor-assistant/event-sponsor-repo/chat-with-human:latest']
 
   # Push services
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/services:latest']
+    args: ['push', 'us-central1-docker.pkg.dev/event-sponsor-assistant/event-sponsor-repo/services:latest']
 
   # Deploy services first
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -22,7 +22,7 @@ steps:
       - 'run'
       - 'deploy'
       - 'services-backend'
-      - '--image=us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/services:latest'
+      - '--image=us-central1-docker.pkg.dev/event-sponsor-assistant/event-sponsor-repo/services:latest'
       - '--project=event-sponsor-assistant'
       - '--region=us-central1'
       - '--port=8080'
@@ -41,7 +41,7 @@ steps:
       - |
         SERVICES_URL=$$(gcloud run services describe services-backend --platform managed --project=event-sponsor-assistant --region us-central1 --format 'value(status.url)') && \
         gcloud run deploy adk-backend-service \
-          --image=us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/chat-with-human:latest \
+          --image=us-central1-docker.pkg.dev/event-sponsor-assistant/event-sponsor-repo/chat-with-human:latest \
           --project=event-sponsor-assistant \
           --region=us-central1 \
           --port=8000 \
@@ -57,19 +57,8 @@ steps:
     waitFor: ['deploy-chat']
 
 images:
-  - 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/chat-with-human:latest'
-  - 'us-central1-docker.pkg.dev/event-sponsor-assistant/${_REPO_NAME}/services:latest'
+  - 'us-central1-docker.pkg.dev/event-sponsor-assistant/event-sponsor-repo/chat-with-human:latest'
+  - 'us-central1-docker.pkg.dev/event-sponsor-assistant/event-sponsor-repo/services:latest'
 
 options:
   logging: CLOUD_LOGGING_ONLY
-```
-
----
-
-## Step 5: Update `.gitignore`
-
-Add:
-```
-frontend/server.py
-frontend/Dockerfile
-frontend/requirements.txt
