@@ -48,5 +48,15 @@
     "open_count": 0,
     "click_count": 0,
     "clicks": []
+  },
+  "3a422cfa-3724-4074-b0d7-16a4538f2168": {
+    "recipient": "tobasavaprasad@gmail.com",
+    "campaign_id": "sponsor_outreach",
+    "sent_at": "2025-10-17T15:52:14.506853",
+    "opened": false,
+    "opened_at": null,
+    "open_count": 0,
+    "click_count": 0,
+    "clicks": []
   }
 }

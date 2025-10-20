@@ -403,6 +403,11 @@
             color: #8ab4f8;
         }
 
+        .live-btn.streaming {
+            color: #e84135;
+            animation: glow-red 1.5s infinite ease-out;
+        }
+
         .send-btn {
             background: transparent;
             color: #9aa0a6;
@@ -429,6 +434,20 @@
 
             100% {
                 box-shadow: 0 0 0 0 rgba(138, 180, 248, 0);
+            }
+        }
+
+        @keyframes glow-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(232, 65, 53, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 12px rgba(232, 65, 53, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(232, 65, 53, 0);
             }
         }
 
@@ -548,6 +567,10 @@
 
         .light-theme .mic-btn.listening {
             color: #1a73e8;
+        }
+
+        .light-theme .live-btn.streaming {
+            color: #d93025;
         }
 
         .light-theme .send-btn:hover:not(:disabled) {
@@ -787,6 +810,15 @@
                     </svg>
                 </button>
 
+                <!-- Stop live conversation button (hidden by default) -->
+                <button class="action-btn live-btn streaming" id="stopLiveBtn" title="Stop live conversation"
+                    style="display: none;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="6" y="6" width="12" height="12"></rect>
+                    </svg>
+                </button>
+
                 <!-- Send button -->
                 <button class="action-btn send-btn" onclick="sendMessage()" id="sendBtn" title="Send">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -829,7 +861,7 @@
         const SESSION_ID = 'default_session';
 
         // Log the environment for debugging
-        console.log('🌐 Environment Detection:');
+        console.log('🌍 Environment Detection:');
         console.log('  - Hostname:', window.location.hostname);
         console.log('  - Port:', window.location.port);
         console.log('  - Is Local:', isLocal);
@@ -843,6 +875,7 @@
         const themeToggle = document.getElementById('themeToggle');
         const micBtn = document.getElementById('micBtn');
         const liveBtn = document.getElementById('liveBtn');
+        const stopLiveBtn = document.getElementById('stopLiveBtn');
 
         // State
         let stripe = null;
@@ -850,6 +883,12 @@
         let cardElement = null;
         let currentCartId = null;
         let currentClientSecret = null;
+        let isStreaming = false;
+        let socket = null;
+        let mediaRecorder = null;
+        let audioContext = null;
+        let audioQueue = [];
+        let isPlaying = false;
 
         // Initialize Stripe
         function initializeStripe() {
@@ -889,14 +928,21 @@
         function updateInputButtons() {
             const hasText = messageInput.value.trim().length > 0;
 
-            if (hasText) {
+            if (isStreaming) {
+                sendBtn.style.display = 'none';
+                micBtn.style.display = 'none';
+                liveBtn.style.display = 'none';
+                stopLiveBtn.style.display = 'flex';
+            } else if (hasText) {
                 sendBtn.style.display = 'flex';
                 micBtn.style.display = 'none';
                 liveBtn.style.display = 'none';
+                stopLiveBtn.style.display = 'none';
             } else {
                 sendBtn.style.display = 'none';
                 micBtn.style.display = 'flex';
                 liveBtn.style.display = 'flex';
+                stopLiveBtn.style.display = 'none';
             }
         }
 
@@ -950,9 +996,261 @@
 
         // --- LIVE AUDIO CONVERSATION (liveBtn) ---
         liveBtn.addEventListener('click', () => {
-            // Navigate to live audio page
-            window.location.href = 'live.html';
+            startLiveSession();
         });
+
+        stopLiveBtn.addEventListener('click', () => {
+            stopLiveSession();
+        });
+
+        async function startLiveSession() {
+            console.log('🎙️ Starting live session...');
+
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)({
+                        sampleRate: 24000
+                    });
+                }
+
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        channelCount: 1,
+                        sampleRate: 16000,
+                        echoCancellation: true,
+                        noiseSuppression: true
+                    }
+                });
+
+                await connectLiveWebSocket(stream);
+
+                isStreaming = true;
+                messageInput.disabled = true;
+                messageInput.placeholder = "🔴 Live conversation active...";
+                updateInputButtons();
+
+                if (!messagesContainer.classList.contains('active')) {
+                    switchToChatView();
+                }
+                addMessage('🎙️ Live conversation started. Speak now...', 'assistant');
+
+            } catch (error) {
+                console.error('❌ Error starting live session:', error);
+                addMessage(`Failed to start live session: ${error.message}`, 'assistant');
+                stopLiveSession();
+            }
+        }
+
+        function stopLiveSession() {
+            console.log('🛑 Stopping live session...');
+
+            if (mediaRecorder) {
+                if (mediaRecorder.processor) {
+                    mediaRecorder.processor.disconnect();
+                    mediaRecorder.source.disconnect();
+                }
+                mediaRecorder = null;
+            }
+
+            if (socket) {
+                socket.close();
+                socket = null;
+            }
+
+            audioQueue = [];
+            isPlaying = false;
+            isStreaming = false;
+            messageInput.disabled = false;
+            messageInput.placeholder = "Ask me about event sponsorship...";
+            updateInputButtons();
+
+            if (messagesContainer.classList.contains('active')) {
+                addMessage('✅ Live conversation ended.', 'assistant');
+            }
+        }
+
+        async function connectLiveWebSocket(stream) {
+            if (!await ensureSession()) {
+                throw new Error('Failed to create session');
+            }
+
+            return new Promise((resolve, reject) => {
+                const wsUrl = ADK_SERVER_URL.replace('http://', 'ws://').replace('https://', 'wss://');
+                const wsEndpoint = `${wsUrl}/run_live?app_name=${APP_NAME}&user_id=${USER_ID}&session_id=${SESSION_ID}`;
+
+                console.log(`🔗 Attempting WebSocket connection to: ${wsEndpoint}`);
+
+                try {
+                    socket = new WebSocket(wsEndpoint);
+                } catch (error) {
+                    console.error('❌ Failed to create WebSocket:', error);
+                    addMessage(`WebSocket creation failed: ${error.message}`, 'assistant');
+                    reject(error);
+                    return;
+                }
+
+                socket.onopen = () => {
+                    console.log('✅ WebSocket connected successfully');
+
+                    const setupMessage = {
+                        "app_name": APP_NAME,
+                        "user_id": USER_ID,
+                        "session_id": SESSION_ID,
+                        "run_config": {
+                            "streaming_mode": "BIDI",
+                            "response_modalities": ["AUDIO"]
+                        }
+                    };
+
+                    console.log('📤 Sending setup message:', setupMessage);
+                    socket.send(JSON.stringify(setupMessage));
+                    startAudioRecording(stream);
+                    resolve();
+                };
+
+                socket.onerror = (error) => {
+                    console.error('❌ WebSocket error occurred:', error);
+                    addMessage(`WebSocket connection error. Check console for details.`, 'assistant');
+                    reject(error);
+                };
+
+                socket.onclose = (event) => {
+                    console.log('🔌 WebSocket closed');
+                    console.log('📊 Close code:', event.code);
+                    console.log('📊 Close reason:', event.reason);
+
+                    if (!event.wasClean) {
+                        addMessage(`Connection lost`, 'assistant');
+                    }
+
+                    if (isStreaming) {
+                        stopLiveSession();
+                    }
+                };
+
+                socket.onmessage = async (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+
+                        if (data.content && data.content.parts) {
+                            const audioPart = data.content.parts.find(p =>
+                                p.inlineData &&
+                                p.inlineData.mimeType &&
+                                p.inlineData.mimeType.startsWith('audio/pcm')
+                            );
+
+                            if (audioPart && audioPart.inlineData.data) {
+                                let base64String = audioPart.inlineData.data;
+
+                                base64String = base64String.replace(/\s/g, '');
+                                base64String = base64String.replace(/-/g, '+').replace(/_/g, '/');
+
+                                while (base64String.length % 4 !== 0) {
+                                    base64String += '=';
+                                }
+
+                                try {
+                                    const binaryString = atob(base64String);
+                                    const bytes = new Uint8Array(binaryString.length);
+                                    for (let i = 0; i < binaryString.length; i++) {
+                                        bytes[i] = binaryString.charCodeAt(i);
+                                    }
+
+                                    const pcmData = new Int16Array(bytes.buffer);
+                                    audioQueue.push(pcmData);
+
+                                    if (!isPlaying) {
+                                        playNextInQueue();
+                                    }
+                                } catch (e) {
+                                    console.error(`❌ Error decoding audio: ${e.message}`);
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.error(`❌ Error processing message: ${e.message}`);
+                    }
+                };
+            });
+        }
+
+        function startAudioRecording(stream) {
+            try {
+                const source = audioContext.createMediaStreamSource(stream);
+                const processor = audioContext.createScriptProcessor(4096, 1, 1);
+
+                source.connect(processor);
+                processor.connect(audioContext.destination);
+
+                processor.onaudioprocess = (e) => {
+                    if (socket && socket.readyState === WebSocket.OPEN) {
+                        const inputData = e.inputBuffer.getChannelData(0);
+                        const pcmData = new Int16Array(inputData.length);
+
+                        for (let i = 0; i < inputData.length; i++) {
+                            const s = Math.max(-1, Math.min(1, inputData[i]));
+                            pcmData[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+                        }
+
+                        const base64Audio = btoa(String.fromCharCode.apply(null, new Uint8Array(pcmData.buffer)));
+                        const audioMessage = {
+                            "blob": {
+                                "mime_type": "audio/pcm",
+                                "data": base64Audio
+                            }
+                        };
+
+                        socket.send(JSON.stringify(audioMessage));
+                    }
+                };
+
+                mediaRecorder = { processor, source };
+
+            } catch (error) {
+                console.error('❌ Error starting recording:', error);
+                throw error;
+            }
+        }
+
+        async function playNextInQueue() {
+            if (audioQueue.length > 0) {
+                isPlaying = true;
+                const pcmData = audioQueue.shift();
+
+                try {
+                    const audioBuffer = audioContext.createBuffer(
+                        1,
+                        pcmData.length,
+                        24000
+                    );
+
+                    const channelData = audioBuffer.getChannelData(0);
+                    for (let i = 0; i < pcmData.length; i++) {
+                        channelData[i] = pcmData[i] / (pcmData[i] < 0 ? 0x8000 : 0x7FFF);
+                    }
+
+                    const source = audioContext.createBufferSource();
+                    source.buffer = audioBuffer;
+                    source.connect(audioContext.destination);
+
+                    source.onended = () => {
+                        playNextInQueue();
+                    };
+
+                    source.start(0);
+                } catch (error) {
+                    console.error(`Error playing audio: ${error.message}`);
+                    isPlaying = false;
+                    playNextInQueue();
+                }
+            } else {
+                isPlaying = false;
+            }
+        }
 
         // --- CHAT UI FUNCTIONS ---
         function switchToChatView() {

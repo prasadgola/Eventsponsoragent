@@ -2,6 +2,8 @@ AI-powered event sponsorship platform with email tracking, sponsor management, a
 
 **Live Demo:** [https://adk-frontend-service-766291037876.us-central1.run.app/](https://adk-frontend-service-766291037876.us-central1.run.app/)
 
+
+**Live Demo:** [https://storage.googleapis.com/event-sponsor-frontend/index.html](https://storage.googleapis.com/event-sponsor-frontend/index.html)
 ---
 
 ## Features
