@@ -21,14 +21,18 @@
             overflow: hidden;
         }
 
-        /* Header */
+        /* Header - overlay on top of video */
         .header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 1rem 2rem;
-            background: #212121;
-            position: relative;
+            background: rgba(33, 33, 33, 0.7);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
             z-index: 100;
         }
 
@@ -93,8 +97,8 @@
         }
 
         .theme-toggle {
-            background: transparent;
-            color: #9aa0a6;
+            background: rgba(60, 64, 67, 0.8);
+            color: #e8eaed;
             border: none;
             padding: 0.5rem;
             border-radius: 8px;
@@ -108,8 +112,8 @@
         }
 
         .theme-toggle:hover {
-            background: #3c4043;
-            color: #e8eaed;
+            background: rgba(60, 64, 67, 1);
+            color: #ffffff;
         }
 
         /* Light theme */
@@ -119,7 +123,8 @@
         }
 
         .light-theme .header {
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
         }
 
         .light-theme .logo {
@@ -132,25 +137,65 @@
         }
 
         .light-theme .theme-toggle {
-            color: #5f6368;
-        }
-
-        .light-theme .theme-toggle:hover {
-            background: #f1f3f4;
+            background: rgba(241, 243, 244, 0.8);
             color: #202124;
         }
 
-        /* Video container */
+        .light-theme .theme-toggle:hover {
+            background: rgba(241, 243, 244, 1);
+            color: #000000;
+        }
+
+        /* Audio Visualization - Glowing Orb */
+        .audio-visualizer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .audio-visualizer.hidden {
+            display: none;
+        }
+
+        .orb-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .orb {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #8ab4f8, #1a73e8);
+            border-radius: 50%;
+            transition: all 0.1s ease-out;
+            box-shadow: 0 0 40px rgba(138, 180, 248, 0.6);
+        }
+
+        .light-theme .orb {
+            background: radial-gradient(circle at center, #1a73e8, #1557b0);
+            box-shadow: 0 0 40px rgba(26, 115, 232, 0.6);
+        }
+
+        /* Video container - full screen */
         .video-container {
             position: fixed;
-            top: 80px;
+            top: 0;
             left: 0;
             right: 0;
-            bottom: 100px;
+            bottom: 0;
             display: none;
             justify-content: center;
             align-items: center;
             background: #000;
+            z-index: 1;
         }
 
         .video-container.active {
@@ -158,109 +203,88 @@
         }
 
         #videoElement {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        /* Control buttons */
+        /* Control buttons - overlay on top of video */
         .control-buttons {
             position: fixed;
             bottom: 3rem;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 1000;
+            z-index: 100;
             display: flex;
-            gap: 1rem;
+            gap: 0.5rem;
             align-items: center;
         }
 
         .control-btn {
             border: none;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
+            padding: 0.625rem;
+            border-radius: 18px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            background: rgba(60, 64, 67, 0.8);
+            backdrop-filter: blur(10px);
+            color: #e8eaed;
         }
 
         .control-btn svg {
-            width: 24px;
-            height: 24px;
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
         }
 
         .control-btn:hover {
-            transform: scale(1.1);
+            background: rgba(60, 64, 67, 1);
+            color: #ffffff;
         }
 
-        .control-btn:active {
-            transform: scale(0.95);
-        }
-
-        .video-btn {
-            background: #1a73e8;
-        }
-
-        .video-btn:hover {
-            background: #1557b0;
-        }
-
-        .video-btn.active {
-            background: #0d47a1;
-        }
-
-        .screen-btn {
-            background: #137333;
-        }
-
-        .screen-btn:hover {
-            background: #0f5a28;
-        }
-
-        .screen-btn.active {
-            background: #0a3d1a;
+        .control-btn.active {
+            background: rgba(138, 180, 248, 0.9);
+            color: #202124;
         }
 
         .stop-btn {
-            background: #8B0000;
-            width: 35px;
-            height: 35px;
-        }
-
-        .stop-btn svg {
-            width: 20px;
-            height: 20px;
+            background: rgba(242, 139, 130, 0.8);
+            color: #ffffff;
         }
 
         .stop-btn:hover {
-            background: #A52A2A;
+            background: rgba(242, 139, 130, 1);
+            color: #ffffff;
         }
 
-        .light-theme .video-btn {
-            background: #1a73e8;
+        .light-theme .control-btn {
+            background: rgba(241, 243, 244, 0.8);
+            color: #202124;
         }
 
-        .light-theme .video-btn:hover {
-            background: #1557b0;
+        .light-theme .control-btn:hover {
+            background: rgba(241, 243, 244, 1);
+            color: #000000;
         }
 
-        .light-theme .screen-btn {
-            background: #137333;
-        }
-
-        .light-theme .screen-btn:hover {
-            background: #0f5a28;
+        .light-theme .control-btn.active {
+            background: rgba(26, 115, 232, 0.9);
+            color: #ffffff;
         }
 
         .light-theme .stop-btn {
-            background: #8B0000;
+            background: rgba(217, 48, 37, 0.8);
+            color: #ffffff;
         }
 
         .light-theme .stop-btn:hover {
-            background: #A52A2A;
+            background: rgba(217, 48, 37, 1);
+            color: #ffffff;
         }
 
         /* Responsive */
@@ -273,20 +297,9 @@
                 bottom: 2rem;
             }
 
-            .video-container {
-                top: 60px;
-            }
-        }
-
-        @media (min-width: 1920px) {
-            .stop-btn {
-                width: 35px;
-                height: 35px;
-            }
-            
-            .stop-btn svg {
-                width: 20px;
-                height: 20px;
+            .orb-container {
+                width: 150px;
+                height: 150px;
             }
         }
     </style>
@@ -318,20 +331,27 @@
         </button>
     </div>
 
+    <!-- Audio Visualizer -->
+    <div class="audio-visualizer" id="audioVisualizer">
+        <div class="orb-container">
+            <div class="orb" id="orb"></div>
+        </div>
+    </div>
+
     <div class="video-container" id="videoContainer">
         <video id="videoElement" autoplay muted playsinline></video>
     </div>
 
     <div class="control-buttons">
         <button class="control-btn video-btn" id="videoBtn" title="Toggle video">
-            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
                 <polygon points="23 7 16 12 23 17 23 7"></polygon>
                 <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
             </svg>
         </button>
         <button class="control-btn screen-btn" id="screenBtn" title="Share screen">
-            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
                 <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
                 <line x1="8" y1="21" x2="16" y2="21"></line>
@@ -339,7 +359,7 @@
             </svg>
         </button>
         <button class="control-btn stop-btn" id="stopBtn" title="Stop live conversation">
-            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -365,7 +385,7 @@
         const USER_ID = 'demo_user';
         const SESSION_ID = 'default_session';
 
-        console.log('🌍 Environment Detection:');
+        console.log('🌐 Environment Detection:');
         console.log('  - Is Local:', isLocal);
         console.log('  - ADK Server:', ADK_SERVER_URL);
 
@@ -381,6 +401,12 @@
         let videoEnabled = false;
         let screenEnabled = false;
         let videoFrameInterval = null;
+
+        // Audio visualization state
+        let analyserNode = null;
+        let dataArray = null;
+        let animationFrameId = null;
+        const orb = document.getElementById('orb');
 
         // Theme functions
         function toggleTheme() {
@@ -407,6 +433,51 @@
                 document.body.classList.add('light-theme');
             }
             updateThemeIcon(shouldUseLightTheme);
+        }
+
+        // Audio Visualization Functions
+        function setupAudioVisualization() {
+            if (!audioContext || !analyserNode) return;
+
+            const bufferLength = analyserNode.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+
+            function animate() {
+                animationFrameId = requestAnimationFrame(animate);
+
+                analyserNode.getByteFrequencyData(dataArray);
+
+                // Calculate average frequency
+                let sum = 0;
+                for (let i = 0; i < bufferLength; i++) {
+                    sum += dataArray[i];
+                }
+                const average = sum / bufferLength;
+
+                // Normalize to 0-1 range
+                const normalized = average / 255;
+
+                // Calculate scale and glow based on audio level
+                const scale = 1 + (normalized * 0.5); // Scale from 1 to 1.5
+                const glowIntensity = 40 + (normalized * 60); // Glow from 40px to 100px
+                const opacity = 0.6 + (normalized * 0.3); // Opacity from 0.6 to 0.9
+
+                // Apply transformations
+                orb.style.transform = `scale(${scale})`;
+                orb.style.boxShadow = `0 0 ${glowIntensity}px rgba(138, 180, 248, ${opacity})`;
+            }
+
+            animate();
+        }
+
+        function stopAudioVisualization() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            // Reset orb to default state
+            orb.style.transform = 'scale(1)';
+            orb.style.boxShadow = '0 0 40px rgba(138, 180, 248, 0.6)';
         }
 
         // Session management
@@ -450,6 +521,9 @@
                 stopScreen();
             }
             
+            // Hide audio visualizer
+            document.getElementById('audioVisualizer').classList.add('hidden');
+            
             try {
                 videoStream = await navigator.mediaDevices.getUserMedia({
                     video: {
@@ -472,6 +546,8 @@
             } catch (error) {
                 console.error('❌ Error starting video:', error);
                 alert(`Failed to start video: ${error.message}`);
+                // Show visualizer again if video failed
+                document.getElementById('audioVisualizer').classList.remove('hidden');
             }
         }
 
@@ -494,6 +570,9 @@
             document.getElementById('videoContainer').classList.remove('active');
             document.getElementById('videoBtn').classList.remove('active');
             
+            // Show audio visualizer again
+            document.getElementById('audioVisualizer').classList.remove('hidden');
+            
             videoEnabled = false;
             console.log('✅ Video stopped');
         }
@@ -514,6 +593,9 @@
             if (videoEnabled) {
                 stopVideo();
             }
+            
+            // Hide audio visualizer
+            document.getElementById('audioVisualizer').classList.add('hidden');
             
             try {
                 screenStream = await navigator.mediaDevices.getDisplayMedia({
@@ -544,6 +626,8 @@
                 if (error.name !== 'NotAllowedError') {
                     alert(`Failed to start screen share: ${error.message}`);
                 }
+                // Show visualizer again if screen share failed
+                document.getElementById('audioVisualizer').classList.remove('hidden');
             }
         }
 
@@ -565,6 +649,9 @@
             
             document.getElementById('videoContainer').classList.remove('active');
             document.getElementById('screenBtn').classList.remove('active');
+            
+            // Show audio visualizer again
+            document.getElementById('audioVisualizer').classList.remove('hidden');
             
             screenEnabled = false;
             console.log('✅ Screen share stopped');
@@ -642,6 +729,7 @@
 
             stopVideo();
             stopScreen();
+            stopAudioVisualization();
 
             if (mediaRecorder) {
                 if (mediaRecorder.processor) {
@@ -767,8 +855,16 @@
                 const source = audioContext.createMediaStreamSource(stream);
                 const processor = audioContext.createScriptProcessor(4096, 1, 1);
 
+                // Setup audio analyser for visualization
+                analyserNode = audioContext.createAnalyser();
+                analyserNode.fftSize = 256;
+                source.connect(analyserNode);
+
                 source.connect(processor);
                 processor.connect(audioContext.destination);
+
+                // Start visualization
+                setupAudioVisualization();
 
                 processor.onaudioprocess = (e) => {
                     if (socket && socket.readyState === WebSocket.OPEN) {
@@ -819,6 +915,12 @@
 
                     const source = audioContext.createBufferSource();
                     source.buffer = audioBuffer;
+                    
+                    // Connect to analyser for output visualization
+                    if (analyserNode) {
+                        source.connect(analyserNode);
+                    }
+                    
                     source.connect(audioContext.destination);
 
                     source.onended = () => {

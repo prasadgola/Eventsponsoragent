@@ -2,13 +2,14 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-
-COPY requirements.txt ./requirements.txt
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+COPY . .
 
-COPY . ./chat_with_human/
+ENV PYTHONPATH=/app
+ENV PORT=8000
 
 EXPOSE 8000
 
-CMD ["python", "chat_with_human/main.py"]
+CMD ["python", "main.py"]
