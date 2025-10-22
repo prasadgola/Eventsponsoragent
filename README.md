@@ -1,6 +1,6 @@
 AI-powered event sponsorship platform with email tracking, sponsor management, and Stripe payment processing.
 
-**Live Demo:** [https://storage.googleapis.com/event-sponsor-frontend/index.html](https://storage.googleapis.com/event-sponsor-frontend/index.html)
+**Live Demo:** [https://storage.googleapis.com/event-sponsor-frontend/index.html  ](https://storage.googleapis.com/event-sponsor-frontend/index.html   )
 ---
 
 ## Features
