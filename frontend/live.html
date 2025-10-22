@@ -41,20 +41,7 @@
             align-items: center;
             gap: 1rem;
         }
-
-        .logo {
-            width: 32px;
-            height: 32px;
-            background: #8ab4f8;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-            color: #202124;
-        }
-
+        
         .header-info h1 {
             color: #e8eaed;
             font-size: 1.25rem;
@@ -65,33 +52,55 @@
             cursor: pointer;
         }
 
-        /* Jelly Wiggle Animation */
         .jelly-logo span {
             display: inline-block;
-            animation: jelly 2.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+            animation: jelly 20s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
         }
 
-        .jelly-logo span:nth-child(1) { animation-delay: 0s; }
-        .jelly-logo span:nth-child(2) { animation-delay: 0.1s; }
-        .jelly-logo span:nth-child(3) { animation-delay: 0.2s; }
-        .jelly-logo span:nth-child(4) { animation-delay: 0.3s; }
-        .jelly-logo span:nth-child(5) { animation-delay: 0.4s; }
-        .jelly-logo span:nth-child(6) { animation-delay: 0.5s; }
+        .jelly-logo span:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .jelly-logo span:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .jelly-logo span:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .jelly-logo span:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        .jelly-logo span:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+
+        .jelly-logo span:nth-child(6) {
+            animation-delay: 0.5s;
+        }
 
         @keyframes jelly {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1, 1) rotate(0deg);
             }
-            20% {
+
+            2% {
                 transform: scale(1.1, 0.9) rotate(-2deg);
             }
-            40% {
+
+            4% {
                 transform: scale(0.9, 1.1) rotate(2deg);
             }
-            60% {
+
+            5% {
                 transform: scale(1.05, 0.95) rotate(-1deg);
             }
-            80% {
+
+            8% {
                 transform: scale(0.95, 1.05) rotate(1deg);
             }
         }
@@ -308,7 +317,6 @@
 <body>
     <div class="header">
         <div class="header-left">
-            <div class="logo">ES</div>
             <div class="header-info">
                 <h1 class="jelly-logo" onclick="location.href='index.html'">
                     <span>E</span><span>v</span><span>e</span><span>n</span><span>t</span><span>s</span>

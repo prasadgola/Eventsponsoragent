@@ -13,16 +13,109 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --sidebar-width: 260px;
+            --sidebar-width-closed: 70px;
+            /* Variable for minimized sidebar */
+        }
+
+        .sidebar {
+            background: #2d2d30;
+            border-right: 1px solid #3c4043;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            z-index: 200;
+            transform: translateX(-100%);
+            transition: transform 0.2s ease-out, width 0.2s ease-out;
+            /* Added width transition */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header section for the sidebar (for desktop button) */
+        .sidebar-header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            /* (70px - 40px button) / 2 */
+            flex-shrink: 0;
+        }
+
+        .sidebar-content {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .sidebar-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #e8eaed;
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .sidebar-link {
+            display: flex; /* Changed */
+            align-items: center; /* Added */
+            gap: 1rem; /* Added */
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: #bdc1c6;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            color: #9aa0a6; /* Icon color */
+            transition: color 0.2s ease;
+        }
+
+        .sidebar-link:hover {
+            background: #3c4043;
+            color: #e8eaed;
+        }
+
+        .sidebar-link:hover svg { /* Added */
+            color: #e8eaed;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 199;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-out;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #212121;
+            background: #1d1d1d;
             color: #e8eaed;
             height: 100vh;
             display: flex;
             flex-direction: column;
             transition: all 0.3s ease;
-            /* MODIFIED: Define header height for chat view */
-            --header-height: 64px; /* 1rem(16px) * 2 + 32px logo */
+            --header-height: 64px;
         }
 
         /* Header */
@@ -31,34 +124,21 @@
             align-items: center;
             justify-content: space-between;
             padding: 1rem 2rem;
-            border-bottom: 1px solid #3c4043;
-            background: #212121;
-            /* MODIFIED: Changed to fixed position */
+            background: #1d1d1d;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             z-index: 100;
-            height: var(--header-height); /* Set explicit height */
+            height: var(--header-height);
+            /* Add transitions for desktop squeezing */
+            transition: left 0.2s ease-out, width 0.2s ease-out;
         }
 
         .header-left {
             display: flex;
             align-items: center;
             gap: 1rem;
-        }
-
-        .logo {
-            width: 32px;
-            height: 32px;
-            background: #8ab4f8;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-            color: #202124;
         }
 
         .header-info h1 {
@@ -70,35 +150,90 @@
             gap: 2px;
         }
 
- .jelly-logo span {
+        .jelly-logo span {
             display: inline-block;
             animation: jelly 20s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
         }
 
-        .jelly-logo span:nth-child(1) { animation-delay: 0s; }
-        .jelly-logo span:nth-child(2) { animation-delay: 0.1s; }
-        .jelly-logo span:nth-child(3) { animation-delay: 0.2s; }
-        .jelly-logo span:nth-child(4) { animation-delay: 0.3s; }
-        .jelly-logo span:nth-child(5) { animation-delay: 0.4s; }
-        .jelly-logo span:nth-child(6) { animation-delay: 0.5s; }
+        .jelly-logo span:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .jelly-logo span:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .jelly-logo span:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .jelly-logo span:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        .jelly-logo span:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+
+        .jelly-logo span:nth-child(6) {
+            animation-delay: 0.5s;
+        }
 
         @keyframes jelly {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1, 1) rotate(0deg);
             }
+
             2% {
                 transform: scale(1.1, 0.9) rotate(-2deg);
             }
+
             4% {
                 transform: scale(0.9, 1.1) rotate(2deg);
             }
+
             5% {
                 transform: scale(1.05, 0.95) rotate(-1deg);
             }
+
             8% {
                 transform: scale(0.95, 1.05) rotate(1deg);
             }
         }
+
+        .menu-btn {
+            background: transparent;
+            color: #9aa0a6;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .menu-btn:hover {
+            background: #3c4043;
+            color: #e8eaed;
+        }
+
+        /* Rules to show/hide the correct menu button */
+        .desktop-menu-btn {
+            display: none;
+            /* Hide desktop button on mobile */
+        }
+
+        .mobile-menu-btn {
+            display: flex;
+            /* Show mobile button by default */
+        }
+
 
         .theme-toggle {
             background: transparent;
@@ -129,9 +264,7 @@
             margin: 0 auto;
             width: 100%;
             position: relative;
-            /* MODIFIED: This centers the welcome-screen + input-area group */
-            justify-content: flex-start; 
-            /* MODIFIED: Accounts for fixed header */
+            justify-content: flex-start;
             padding-top: var(--header-height);
             transition: justify-content 0.5s ease;
         }
@@ -144,8 +277,7 @@
             padding: 10rem;
             text-align: center;
             transition: all 0.5s ease;
-            /* MODIFIED: This is the gap between "Hello" and the chat box */
-            padding-bottom: 1.5rem; 
+            padding-bottom: 1.5rem;
         }
 
         .welcome-screen.hidden {
@@ -166,7 +298,7 @@
 
         /* Chat messages */
         .messages {
-            flex: 1; /* MODIFIED: This makes it grow to push input down */
+            flex: 1;
             overflow-y: auto;
             padding: 2rem 1rem;
             display: none;
@@ -231,7 +363,6 @@
             word-wrap: break-word;
         }
 
-        /* --- NEW: Styles for multi-file in-message attachments --- */
         .message-content.with-attachments {
             display: flex;
             flex-direction: column;
@@ -262,8 +393,6 @@
             border-radius: 4px;
         }
 
-        /* --- END NEW --- */
-        
         .message-content .file-bubble-preview {
             padding: 10px 12px;
             background: #3c4043;
@@ -273,6 +402,37 @@
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .light-theme .sidebar {
+            background: #f8f9fa;
+            border-right-color: #dadce0;
+        }
+
+        /* Light theme for sidebar header */
+        .light-theme .sidebar-header {
+            border-bottom-color: #dadce0;
+        }
+
+        .light-theme .sidebar-title {
+            color: #202124;
+        }
+
+        .light-theme .sidebar-link {
+            color: #5f6368;
+        }
+
+        .light-theme .sidebar-link svg { /* Added */
+            color: #5f6368; /* Icon color in light mode */
+        }
+
+        .light-theme .sidebar-link:hover {
+            background: #e8eaed;
+            color: #202124;
+        }
+
+        .light-theme .sidebar-link:hover svg { /* Added */
+            color: #202124;
         }
 
         .light-theme .message-content .file-bubble-preview {
@@ -345,9 +505,8 @@
         .input-area {
             padding: 1rem 1rem 2rem;
             background: transparent;
-            /* MODIFIED: Removed all position, transform, z-index */
             transition: background 0.3s ease;
-            width: 100%; /* MODIFIED: Ensure it spans width */
+            width: 100%;
         }
 
         .input-wrapper {
@@ -355,24 +514,16 @@
             margin: 0 auto;
         }
 
-        /* --- MODIFIED: File Preview Container for multi-file --- */
-        /* --- MOVED: Now inside .input-container --- */
         .file-preview-container {
             display: none;
-            /* Hidden by default */
             margin-bottom: 0.75rem;
-            /* from index_fixed */
             gap: 0.5rem;
-            /* from index_fixed */
             flex-wrap: wrap;
-            /* from index_fixed */
-            /* ADDED: Ensure it fills width inside the padded container */
-            width: 100%; 
+            width: 100%;
         }
 
         .file-preview-item {
             display: flex;
-            /* from index_fixed */
             align-items: center;
             gap: 8px;
             background: #303134;
@@ -381,7 +532,6 @@
             padding: 8px 12px;
             font-size: 0.9rem;
             max-width: 200px;
-            /* from index_fixed */
         }
 
         .light-theme .file-preview-item {
@@ -400,11 +550,8 @@
             display: flex;
             flex-direction: column;
             gap: 0.15rem;
-            /* from index_fixed */
             flex: 1;
-            /* from index_fixed */
             min-width: 0;
-            /* from index_fixed */
             overflow: hidden;
         }
 
@@ -412,7 +559,6 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            /* max-width removed, now controlled by item max-width */
         }
 
         .file-preview-item .file-size {
@@ -445,14 +591,112 @@
             color: #5f6368;
         }
 
-        /* --- END: File Preview --- */
+
+        body.sidebar-open .sidebar {
+            transform: translateX(0);
+        }
+
+        body.sidebar-open .sidebar-overlay {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* This entire block is replaced for new desktop logic */
+        @media (min-width: 1024px) {
+
+            /* 1. Show/hide the correct buttons */
+            .desktop-menu-btn {
+                display: flex;
+                /* Show desktop btn */
+            }
+
+            .mobile-menu-btn {
+                display: none;
+                /* Hide mobile btn */
+            }
+
+            /* 2. DEFAULT STATE (OPEN) */
+            body {
+                padding-left: var(--sidebar-width);
+                /* Default is open */
+                transition: padding-left 0.2s ease-out;
+            }
+
+            /* 3. DEFAULT STATE (OPEN) */
+            .sidebar {
+                transform: translateX(0);
+                z-index: 99;
+                padding-top: 0;
+                /* No padding-top needed, header is built-in */
+                width: var(--sidebar-width);
+                /* Default is open */
+            }
+
+            /* 4. DEFAULT STATE (OPEN) */
+            .sidebar .sidebar-content {
+                opacity: 1;
+                pointer-events: auto;
+                transition: opacity 0.2s ease-in 0.1s;
+            }
+
+            /* 5. DEFAULT STATE (OPEN) */
+            .header {
+                left: var(--sidebar-width);
+                /* Default is open */
+                width: calc(100% - var(--sidebar-width));
+            }
+
+            /* 6. Hide mobile overlay */
+            .sidebar-overlay {
+                display: none;
+            }
+
+            .mobile-menu-btn .icon-arrow {
+                display: none;
+            }
+
+            /* 2. By default, show the menu icon */
+            .mobile-menu-btn .icon-menu {
+                display: block;
+            }
+
+            /* 3. When sidebar is open, SHOW the arrow */
+            body.sidebar-open .mobile-menu-btn .icon-arrow {
+                display: block;
+            }
+
+            /* 4. When sidebar is open, HIDE the menu */
+            body.sidebar-open .mobile-menu-btn .icon-menu {
+                display: none;
+            }
+
+            /* 7. "CLOSED" STATE (MINIMIZED) - Toggled by JS */
+            body.sidebar-closed {
+                padding-left: var(--sidebar-width-closed);
+            }
+
+            body.sidebar-closed .sidebar {
+                width: var(--sidebar-width-closed);
+            }
+
+            body.sidebar-closed .sidebar .sidebar-content {
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.1s ease-out;
+            }
+
+            body.sidebar-closed .header {
+                left: var(--sidebar-width-closed);
+                width: calc(100% - var(--sidebar-width-closed));
+            }
+        }
+
+        /* */
 
 
         .input-container {
             display: flex;
-            /* MODIFIED: Changed to stack preview and controls */
-            flex-direction: column; 
-            /* REMOVED: align-items: flex-end; */
+            flex-direction: column;
             background: #212121;
             border: 1px solid #3c4043;
             border-radius: 24px;
@@ -460,11 +704,10 @@
             transition: all 0.2s ease;
             max-width: 100%;
         }
-        
-        /* ADDED: New wrapper for the controls (buttons, textarea) */
+
         .input-row {
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             width: 100%;
         }
 
@@ -481,7 +724,7 @@
             border: none;
             outline: none;
             background: transparent;
-            color: #e8eaed;
+            color: #fdfdfd;
             resize: none;
             font-family: inherit;
             font-size: 1rem;
@@ -489,7 +732,7 @@
         }
 
         .message-input::placeholder {
-            color: #9aa0a6;
+            color: #c2c2c3;
             font-weight: 300;
         }
 
@@ -505,23 +748,20 @@
             min-width: 40px;
             height: 40px;
             flex-shrink: 0;
-            /* Prevents buttons from shrinking */
         }
 
         .mic-btn,
         .live-btn,
         .attach-btn {
-            /* NEW */
             background: transparent;
-            color: #9aa0a6;
+            color: #c2c2c3;
         }
 
         .mic-btn:hover,
         .live-btn:hover,
         .attach-btn:hover {
-            /* NEW */
             background: #3c4043;
-            color: #e8eaed;
+            color: #c2c2c3;
         }
 
         .mic-btn.listening {
@@ -531,7 +771,7 @@
 
         .send-btn {
             background: transparent;
-            color: #9aa0a6;
+            color: #c2c2c3;
         }
 
         .send-btn:hover:not(:disabled) {
@@ -569,12 +809,16 @@
             border-bottom-color: #dadce0;
         }
 
-        .light-theme .logo {
-            background: #1a73e8;
-            color: #ffffff;
+        .light-theme .header-info h1 {
+            color: #202124;
         }
 
-        .light-theme .header-info h1 {
+        .light-theme .menu-btn {
+            color: #5f6368;
+        }
+
+        .light-theme .menu-btn:hover {
+            background: #f1f3f4;
             color: #202124;
         }
 
@@ -613,15 +857,10 @@
             color: #ffffff;
         }
 
-
-        /* --- NEW: Light theme for multi-file attachments --- */
         .light-theme .message-attachment {
             background: #f8f9fa;
             border-color: #e8eaed;
         }
-
-        /* --- END NEW --- */
-
 
         .light-theme .loading-content {
             color: #202124;
@@ -632,7 +871,7 @@
         }
 
         .light-theme .input-area {
-            background: transparent; /* MODIFIED: Start transparent */
+            background: transparent;
         }
 
         .light-theme .input-container {
@@ -641,30 +880,26 @@
         }
 
         .light-theme .message-input {
-            color: #202124;
+            color: #1a1a1b;
         }
 
         .light-theme .message-input::placeholder {
-            color: #5f6368;
+            color: #3e4143;
         }
 
         .light-theme .send-btn,
         .light-theme .mic-btn,
         .light-theme .live-btn,
         .light-theme .attach-btn {
-            /* NEW */
-            color: #5f6368;
+            color: #3e4143;
         }
 
         .light-theme .mic-btn:hover,
         .light-theme .live-btn:hover,
         .light-theme .attach-btn:hover {
-            /* NEW */
             background: #f1f3f4;
             color: #202124;
         }
-
-
 
         .light-theme .mic-btn.listening {
             color: #1a73e8;
@@ -782,23 +1017,25 @@
             }
         }
 
-        /* --- NEW: Styles for Welcome Screen Input Position --- */
         body.chat-active .main-container {
-            justify-content: flex-start; /* MODIFIED: Pushes chat to top */
-        }
-        
-        body.chat-active .input-area {
-            /* MODIFIED: Becomes sticky at the bottom */
-            position: sticky; 
-            bottom: 0;
-            z-index: 10;
-            background: #212121; /* Restore background */
+            justify-content: flex-start;
         }
 
-        body.chat-active.light-theme .input-area {
-            background: #ffffff; /* Restore background */
+        /* --- MODIFIED RULE --- */
+        body.chat-active .input-area {
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+            background: transparent;
+            /* Changed from #212121 to transparent */
         }
-        /* --- End Welcome Screen Styles --- */
+
+        /* --- REMOVED RULE (was redundant) --- */
+        /*
+        body.chat-active.light-theme .input-area {
+            background: #ffffff;
+        }
+        */
 
         /* Scrollbar */
         .messages::-webkit-scrollbar {
@@ -842,11 +1079,9 @@
         }
 
         .attach-btn:active svg {
-            /* Rotates 45deg only when the button is pressed down */
             transform: rotate(45deg);
         }
 
-        /* --- NEW: Drag and Drop Overlay --- */
         .drag-drop-overlay {
             position: fixed;
             top: 0;
@@ -886,20 +1121,69 @@
         .light-theme .drag-drop-overlay {
             background: rgba(255, 255, 255, 0.85);
         }
-        
+
         .light-theme .drag-drop-message {
             color: #202124;
             border-color: #1a73e8;
         }
-        /* --- END NEW --- */
 
+        .avatar {
+            display: none;
+        }
+
+        .message,
+        .loading-message {
+            gap: 0;
+        }
+
+        .message-content {
+            max-width: 95%;
+            /* Increased from 70% to use more space */
+        }
     </style>
 </head>
 
 <body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="menu-btn desktop-menu-btn" id="menuBtnDesktop" title="Menu">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-link" onclick="location.reload(); return false;"> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    <span>New chat</span>
+                </a>
+                </nav>
+        </div>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+
     <div class="header">
         <div class="header-left">
-            <div class="logo">ES</div>
+            <button class="menu-btn mobile-menu-btn" id="menuBtn" title="Menu">
+                <svg class="icon-menu" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+                <svg class="icon-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
             <div class="header-info">
                 <h1 class="jelly-logo" onclick="location.reload()">
                     <span>E</span><span>v</span><span>e</span><span>n</span><span>t</span><span>s</span>
@@ -931,59 +1215,61 @@
 
         <div class="input-area" id="inputArea">
             <div class="input-wrapper">
-    
+
                 <input type="file" id="fileInput" accept="image/*,application/pdf,text/plain,.docx,.pptx" multiple
                     style="display: none;" />
-    
+
                 <div class="input-container">
-                
+
                     <div class="file-preview-container" id="filePreviewContainer">
                     </div>
-    
+
+                    <textarea id="messageInput" class="message-input" placeholder="Ask events..." rows="1"></textarea>
+
                     <div class="input-row">
                         <button class="action-btn attach-btn" id="attachBtn" title="Attach file">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="12" y1="5" x2="12" y2="19"></line>
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                             </svg>
                         </button>
-    
-                        <textarea id="messageInput" class="message-input" placeholder="Ask events..."
-                            rows="1"></textarea>
-    
+
+                        <div style="flex: 1;"></div>
+
                         <button class="action-btn mic-btn" id="micBtn" title="Voice to text">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                                <line x1="12" y1="19" x2="12" y2="23"></line>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z" />
                             </svg>
                         </button>
-    
+
                         <button class="action-btn live-btn" id="liveBtn" title="Start live conversation">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="6" y1="10" x2="6" y2="14"></line>
                                 <line x1="10" y1="4" x2="10" y2="20"></line>
                                 <line x1="14" y1="8" x2="14" y2="16"></line>
                                 <line x1="18" y1="11" x2="18" y2="13"></line>
                             </svg>
                         </button>
-    
+
                         <button class="action-btn send-btn" onclick="sendMessage()" id="sendBtn" title="Send">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="22" y1="2" x2="11" y2="13"></line>
                                 <polygon points="22,2 15,22 11,13 2,9"></polygon>
                             </svg>
                         </button>
-                    </div> </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div> <div id="dragDropOverlay" class="drag-drop-overlay">
+    </div>
+    <div id="dragDropOverlay" class="drag-drop-overlay">
         <div class="drag-drop-message">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -1036,6 +1322,9 @@
         const themeToggle = document.getElementById('themeToggle');
         const micBtn = document.getElementById('micBtn');
         const liveBtn = document.getElementById('liveBtn');
+        const menuBtn = document.getElementById('menuBtn'); // Mobile button
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const menuBtnDesktop = document.getElementById('menuBtnDesktop'); // Desktop button
 
         // --- NEW: File Attachment Elements ---
         const attachBtn = document.getElementById('attachBtn');
@@ -1049,7 +1338,6 @@
         let cardElement = null;
         let currentCartId = null;
         let currentClientSecret = null;
-        // --- MODIFIED: Changed from single file to array ---
         let attachedFiles = [];
 
         // Initialize Stripe
@@ -1089,21 +1377,16 @@
         // --- INPUT MANAGEMENT - MODIFIED ---
         function updateInputButtons() {
             const hasText = messageInput.value.trim().length > 0;
-            // --- MODIFIED: Check array length ---
             const hasFiles = attachedFiles.length > 0;
 
-            // Goal: Keep the attach button visible, as requested
             attachBtn.style.display = 'flex';
-            // The title will always be "Attach file"
             attachBtn.title = 'Attach file';
 
             if (hasText || hasFiles) {
-                // Show Send, hide Mic/Live
                 sendBtn.style.display = 'flex';
                 micBtn.style.display = 'none';
                 liveBtn.style.display = 'none';
             } else {
-                // Hide Send, show Mic/Live
                 sendBtn.style.display = 'none';
                 micBtn.style.display = 'flex';
                 liveBtn.style.display = 'flex';
@@ -1119,12 +1402,28 @@
         messageInput.addEventListener('keydown', function (event) {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
-                // --- MODIFIED: Check array length ---
                 if (messageInput.value.trim().length > 0 || attachedFiles.length > 0) {
                     sendMessage();
                 }
             }
         });
+
+        // This function now correctly handles both states
+        function toggleSidebar() {
+            const isDesktop = window.innerWidth >= 1024;
+
+            if (isDesktop) {
+                // On desktop, we toggle the "closed" (minimized) state
+                document.body.classList.toggle('sidebar-closed');
+            } else {
+                // On mobile, we toggle the "open" (overlay) state
+                document.body.classList.toggle('sidebar-open');
+            }
+        }
+
+        menuBtn.addEventListener('click', toggleSidebar); // Mobile button
+        menuBtnDesktop.addEventListener('click', toggleSidebar); // Desktop button
+        sidebarOverlay.addEventListener('click', toggleSidebar); // Mobile overlay
 
         // --- VOICE-TO-TEXT (micBtn) ---
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1159,27 +1458,23 @@
             micBtn.style.display = 'none';
         }
 
-        // --- MODIFIED: attachBtn listener ---
-        // Always open file picker
+        // --- FILE ATTACHMENT LOGIC ---
         attachBtn.addEventListener('click', () => {
             fileInput.click();
         });
 
-        // --- MODIFIED: Handle file selection for multiple files ---
         fileInput.addEventListener('change', (event) => {
-            const files = Array.from(event.target.files); // Get all files
+            const files = Array.from(event.target.files);
             if (files.length > 0) {
-                attachedFiles = [...attachedFiles, ...files]; // Add to array
-                showFilePreview(); // Show all files
+                attachedFiles = [...attachedFiles, ...files];
+                showFilePreview();
                 updateInputButtons();
             }
-            // Reset file input to allow selecting the same file again
             event.target.value = null;
         });
 
-        // --- MODIFIED: Show previews of all attached files ---
         function showFilePreview() {
-            filePreviewContainer.innerHTML = ''; // Clear previous previews
+            filePreviewContainer.innerHTML = '';
 
             attachedFiles.forEach((file, index) => {
                 let previewHtml = '';
@@ -1212,38 +1507,31 @@
                 `;
                 filePreviewContainer.appendChild(previewItem);
             });
-            // Use 'flex' to enable flex-wrap
             filePreviewContainer.style.display = attachedFiles.length > 0 ? 'flex' : 'none';
         }
 
-        // --- MODIFIED: Remove a specific file by index, or all files ---
         function removeAttachedFile(index) {
             if (index === undefined) {
-                // Remove all files (called from sendMessage)
                 attachedFiles = [];
             } else {
-                // Remove specific file (called from 'x' button)
                 attachedFiles.splice(index, 1);
             }
-            showFilePreview(); // Re-render the preview
-            updateInputButtons(); // Update button states
+            showFilePreview();
+            updateInputButtons();
         }
 
-        // Helper to convert File object to Base64 string
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result.split(',')[1]); // Get data part
+                reader.onload = () => resolve(reader.result.split(',')[1]);
                 reader.onerror = (error) => reject(error);
             });
         }
-        // --- END: FILE ATTACHMENT LOGIC ---
 
 
         // --- LIVE AUDIO CONVERSATION (liveBtn) ---
         liveBtn.addEventListener('click', () => {
-            // Navigate to live audio page
             window.location.href = 'live.html';
         });
 
@@ -1251,21 +1539,19 @@
         function switchToChatView() {
             welcomeScreen.classList.add('hidden');
             messagesContainer.classList.add('active');
-            document.body.classList.add('chat-active'); // ADDED: To trigger animation
+            document.body.classList.add('chat-active');
             setTimeout(() => {
                 welcomeScreen.style.display = 'none';
             }, 500);
         }
 
-        // --- MODIFIED: addMessage to handle multiple files AND avatar visibility ---
-        function addMessage(content, type, files = null, showAvatar = true) { // Added showAvatar parameter
+        function addMessage(content, type, files = null, showAvatar = true) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
 
-            if (showAvatar) { // Only add avatar if showAvatar is true
+            if (showAvatar) {
                 const avatar = document.createElement('div');
                 avatar.className = 'avatar';
-                // Keep original index.html avatar text
                 avatar.textContent = type === 'user' ? 'You' : 'ES';
                 messageDiv.appendChild(avatar);
             }
@@ -1273,9 +1559,8 @@
             const messageContent = document.createElement('div');
             messageContent.className = 'message-content';
 
-            // --- NEW Multi-file logic from index_fixed ---
             if (files && files.length > 0) {
-                messageContent.classList.add('with-attachments'); // For styling
+                messageContent.classList.add('with-attachments');
 
                 const attachmentsDiv = document.createElement('div');
                 attachmentsDiv.className = 'message-attachments';
@@ -1297,11 +1582,9 @@
 
                 messageContent.appendChild(attachmentsDiv);
             }
-            // --- END NEW ---
 
             if (content) {
                 const textDiv = document.createElement('div');
-                // Keep original index.html line break handling
                 textDiv.innerHTML = content.replace(/\n/g, '<br>');
                 messageContent.appendChild(textDiv);
             }
@@ -1309,7 +1592,7 @@
             messageDiv.appendChild(messageContent);
             messagesContainer.appendChild(messageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            return messageDiv; // Keep original return value
+            return messageDiv;
         }
 
         function addPaymentForm(cartId, clientSecret, cartSummary) {
@@ -1483,22 +1766,17 @@
             }
         }
 
-        // --- MODIFIED: sendMessage for multi-file ---
         async function sendMessage() {
-            // 1. Ensure session exists before doing anything
             if (!await ensureSession()) {
                 addMessage('Failed to create session. Please refresh the page.', 'assistant');
                 return;
             }
 
             const message = messageInput.value.trim();
-            // --- MODIFIED: Copy array of files ---
             const filesToSend = [...attachedFiles];
 
-            // 2. Check if there is anything to send
-            // --- MODIFIED: Check array length ---
             if (!message && filesToSend.length === 0) {
-                return; // Nothing to send
+                return;
             }
 
             if (sendBtn.disabled) return;
@@ -1508,66 +1786,41 @@
                 switchToChatView();
             }
 
-            // 3. Add message(s) to UI based on content
             const hasText = message.length > 0;
             const hasFiles = filesToSend.length > 0;
 
             if (hasText && hasFiles) {
-                // Per user request: show separate bubbles for files and text
-                // 1. Show a bubble for files, NO AVATAR
                 addMessage(null, 'user', filesToSend, false);
-                // 2. Show a separate bubble for text, WITH AVATAR
                 addMessage(message, 'user', null, true);
             } else {
-                // Original behavior (only text OR only files), WITH AVATAR
                 addMessage(message, 'user', filesToSend, true);
             }
 
-            // 4. Clear inputs
             messageInput.value = '';
             messageInput.dispatchEvent(new Event('input'));
-            removeAttachedFile(); // Clears state and preview (calls with no index)
+            removeAttachedFile();
 
             const loadingElement = addLoading();
 
             try {
-                // 5. Build the message parts array
                 const parts = [];
 
-                // --- MODIFIED: Loop over all files to send ---
                 for (const file of filesToSend) {
-                    console.log('📎 File to send:', {
-                        name: file.name,
-                        type: file.type,
-                        size: file.size
-                    });
-
-                    // Convert file to base64
+                    console.log('📎 File to send:', { name: file.name, type: file.type, size: file.size });
                     const base64data = await fileToBase64(file);
                     console.log('✅ Base64 data length:', base64data.length);
-
-                    parts.push({
-                        "inline_data": {
-                            "mime_type": file.type,
-                            "data": base64data
-                        }
-                    });
+                    parts.push({ "inline_data": { "mime_type": file.type, "data": base64data } });
                 }
-                // --- END MODIFIED ---
 
                 if (message) {
                     parts.push({ "text": message });
                 }
 
-                // 6. Create payload
                 const payload = {
                     "app_name": APP_NAME,
                     "user_id": USER_ID,
                     "session_id": SESSION_ID,
-                    "new_message": {
-                        "role": "user",
-                        "parts": parts // Use the dynamic parts array
-                    }
+                    "new_message": { "role": "user", "parts": parts }
                 };
 
                 console.log('📤 Sending payload:', {
@@ -1575,12 +1828,10 @@
                     user_id: payload.user_id,
                     session_id: payload.session_id,
                     parts_count: parts.length,
-                    // --- MODIFIED: Log file count ---
                     file_count: parts.filter(p => p.inline_data).length,
                     has_text: parts.some(p => p.text)
                 });
 
-                // 7. Send to backend
                 const response = await fetch(`${ADK_SERVER_URL}/run`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1590,24 +1841,17 @@
                 loadingElement.remove();
 
                 if (!response.ok) {
-                    // Get error details from backend
                     const errorText = await response.text();
-                    console.error('❌ Backend error:', {
-                        status: response.status,
-                        statusText: response.statusText,
-                        body: errorText
-                    });
+                    console.error('❌ Backend error:', { status: response.status, statusText: response.statusText, body: errorText });
                     throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 200)}`);
                 }
 
-                // 8. Process response - only show final assistant response
                 const data = await response.json();
                 let assistantMessage = '';
                 let cartData = null;
 
                 if (Array.isArray(data)) {
                     for (const event of data) {
-                        // Only process events with role 'model' (final response)
                         if (event.content && event.content.role === 'model' && event.content.parts) {
                             for (const part of event.content.parts) {
                                 if (part.text) {
@@ -1643,7 +1887,6 @@
                     addMessage(assistantMessage, 'assistant');
                 }
 
-                // Check if we found cart data with payment trigger
                 if (cartData && cartData.cart_id && cartData.client_secret) {
                     addPaymentForm(
                         cartData.cart_id,
@@ -1655,7 +1898,6 @@
                     assistantMessage.toLowerCase().includes('created your cart') ||
                     assistantMessage.toLowerCase().includes('cart created')
                 )) {
-                    // Fallback: fetch latest cart from backend
                     setTimeout(async () => {
                         try {
                             const cartResponse = await fetch(`${SERVICES_API}/payments/latest-cart`);
@@ -1679,60 +1921,53 @@
                 addMessage(`Sorry, I encountered an error: ${error.message}`, 'assistant');
             } finally {
                 sendBtn.disabled = false;
-                updateInputButtons(); // Ensure buttons are in correct state
+                updateInputButtons();
                 messageInput.focus();
             }
         }
-        // --- END MODIFIED sendMessage ---
 
 
-        // --- NEW: DRAG AND DROP LOGIC ---
+        // --- DRAG AND DROP LOGIC ---
         const dragDropOverlay = document.getElementById('dragDropOverlay');
         let dragCounter = 0;
 
-        // Show overlay when files enter the window
         window.addEventListener('dragenter', (e) => {
             e.preventDefault();
-            // Check if what's being dragged is files
             if (e.dataTransfer.types.includes('Files')) {
                 dragCounter++;
                 dragDropOverlay.classList.add('visible');
             }
         });
 
-        // Prevent default browser behavior for dragover
+
+
         window.addEventListener('dragover', (e) => {
             e.preventDefault();
         });
 
-        // Hide overlay when files leave the window
         window.addEventListener('dragleave', (e) => {
             e.preventDefault();
-            // Check if the drag is truly leaving the window
             if (e.relatedTarget === null || e.relatedTarget === document.documentElement) {
                 dragCounter--;
                 if (dragCounter <= 0) {
-                    dragCounter = 0; // Reset
+                    dragCounter = 0;
                     dragDropOverlay.classList.remove('visible');
                 }
             }
         });
 
-        // Handle the file drop
         window.addEventListener('drop', (e) => {
             e.preventDefault();
-            dragCounter = 0; // Reset counter
-            dragDropOverlay.classList.remove('visible'); // Hide overlay
+            dragCounter = 0;
+            dragDropOverlay.classList.remove('visible');
 
             const files = Array.from(e.dataTransfer.files);
             if (files.length > 0) {
-                // Use your existing logic!
-                attachedFiles = [...attachedFiles, ...files]; // Add to array
-                showFilePreview(); // Show all files
-                updateInputButtons(); // Update buttons
+                attachedFiles = [...attachedFiles, ...files];
+                showFilePreview();
+                updateInputButtons();
             }
         });
-        // --- END: DRAG AND DROP LOGIC ---
 
 
         // --- Initialize ---
