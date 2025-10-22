@@ -95,6 +95,30 @@
             }
         }
 
+        @keyframes jelly {
+
+            0%,
+            100% {
+                transform: scale(1, 1) rotate(0deg);
+            }
+
+            20% {
+                transform: scale(1.1, 0.9) rotate(-2deg);
+            }
+
+            40% {
+                transform: scale(0.9, 1.1) rotate(2deg);
+            }
+
+            60% {
+                transform: scale(1.05, 0.95) rotate(-1deg);
+            }
+
+            80% {
+                transform: scale(0.95, 1.05) rotate(1deg);
+            }
+        }
+
         .theme-toggle {
             background: transparent;
             color: #9aa0a6;
@@ -124,6 +148,8 @@
             margin: 0 auto;
             width: 100%;
             position: relative;
+            overflow: hidden;
+            /* Prevents layout shift from scrollbar */
         }
 
         /* Welcome screen */
@@ -264,6 +290,66 @@
             word-wrap: break-word;
         }
 
+        /* --- NEW: Styles for multi-file in-message attachments --- */
+        .message-content.with-attachments {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .message-attachments {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .message-attachment {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .message-attachment img {
+            max-width: 150px;
+            max-height: 150px;
+            border-radius: 4px;
+        }
+
+        /* --- END NEW --- */
+
+        /* Styles for images/files sent in chat (Original index.html) */
+        /* This style is now superseded by .message-attachment img */
+        /*
+        .message-content img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        */
+
+        .message-content .file-bubble-preview {
+            padding: 10px 12px;
+            background: #3c4043;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .light-theme .message-content .file-bubble-preview {
+            background: #f1f3f4;
+            border: 1px solid #dadce0;
+        }
+
+
         .message.user .message-content {
             border-bottom-right-radius: 6px;
         }
@@ -337,15 +423,117 @@
             margin: 0 auto;
         }
 
+        /* --- MODIFIED: File Preview Container for multi-file --- */
+        /* --- MOVED: Now inside .input-container --- */
+        .file-preview-container {
+            display: none;
+            /* Hidden by default */
+            margin-bottom: 0.75rem;
+            /* from index_fixed */
+            gap: 0.5rem;
+            /* from index_fixed */
+            flex-wrap: wrap;
+            /* from index_fixed */
+            /* ADDED: Ensure it fills width inside the padded container */
+            width: 100%; 
+        }
+
+        .file-preview-item {
+            display: flex;
+            /* from index_fixed */
+            align-items: center;
+            gap: 8px;
+            background: #303134;
+            border: 1px solid #3c4043;
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            max-width: 200px;
+            /* from index_fixed */
+        }
+
+        .light-theme .file-preview-item {
+            background: #f1f3f4;
+            border-color: #dadce0;
+        }
+
+        .file-preview-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .file-preview-item .file-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            /* from index_fixed */
+            flex: 1;
+            /* from index_fixed */
+            min-width: 0;
+            /* from index_fixed */
+            overflow: hidden;
+        }
+
+        .file-preview-item .file-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* max-width removed, now controlled by item max-width */
+        }
+
+        .file-preview-item .file-size {
+            font-size: 0.8rem;
+            color: #9aa0a6;
+        }
+
+        .light-theme .file-preview-item .file-size {
+            color: #5f6368;
+        }
+
+        .file-preview-remove {
+            background: #3c4043;
+            color: #e8eaed;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 20px;
+            margin-left: 8px;
+        }
+
+        .light-theme .file-preview-remove {
+            background: #e8eaed;
+            color: #5f6368;
+        }
+
+        /* --- END: File Preview --- */
+
+
         .input-container {
             display: flex;
-            align-items: flex-end;
+            /* MODIFIED: Changed to stack preview and controls */
+            flex-direction: column; 
+            /* REMOVED: align-items: flex-end; */
             background: #212121;
             border: 1px solid #3c4043;
             border-radius: 24px;
             padding: 0.5rem;
             transition: all 0.2s ease;
             max-width: 100%;
+        }
+        
+        /* ADDED: New wrapper for the controls (buttons, textarea) */
+        .input-row {
+            display: flex;
+            align-items: flex-end;
+            width: 100%;
         }
 
         .input-container:focus-within {
@@ -384,16 +572,22 @@
             justify-content: center;
             min-width: 40px;
             height: 40px;
+            flex-shrink: 0;
+            /* Prevents buttons from shrinking */
         }
 
         .mic-btn,
-        .live-btn {
+        .live-btn,
+        .attach-btn {
+            /* NEW */
             background: transparent;
             color: #9aa0a6;
         }
 
         .mic-btn:hover,
-        .live-btn:hover {
+        .live-btn:hover,
+        .attach-btn:hover {
+            /* NEW */
             background: #3c4043;
             color: #e8eaed;
         }
@@ -509,6 +703,15 @@
             color: #ffffff;
         }
 
+        /* --- NEW: Light theme for multi-file attachments --- */
+        .light-theme .message-attachment {
+            background: #f8f9fa;
+            border-color: #e8eaed;
+        }
+
+        /* --- END NEW --- */
+
+
         .light-theme .loading-content {
             color: #202124;
         }
@@ -536,12 +739,16 @@
 
         .light-theme .send-btn,
         .light-theme .mic-btn,
-        .light-theme .live-btn {
+        .light-theme .live-btn,
+        .light-theme .attach-btn {
+            /* NEW */
             color: #5f6368;
         }
 
         .light-theme .mic-btn:hover,
-        .light-theme .live-btn:hover {
+        .light-theme .live-btn:hover,
+        .light-theme .attach-btn:hover {
+            /* NEW */
             background: #f1f3f4;
             color: #202124;
         }
@@ -702,6 +909,15 @@
                 padding: 1rem;
             }
         }
+
+        .attach-btn svg {
+            transition: transform 0.2s ease-out;
+        }
+
+        .attach-btn:active svg {
+            /* Rotates 45deg only when the button is pressed down */
+            transform: rotate(45deg);
+        }
     </style>
 </head>
 
@@ -762,40 +978,54 @@
 
     <div class="input-area">
         <div class="input-wrapper">
+
+            <input type="file" id="fileInput" accept="image/*,application/pdf,text/plain,.docx,.pptx" multiple
+                style="display: none;" />
+
             <div class="input-container">
-                <textarea id="messageInput" class="message-input" placeholder="Ask me about event sponsorship..."
-                    rows="1"></textarea>
+            
+                <div class="file-preview-container" id="filePreviewContainer">
+                </div>
 
-                <!-- Voice-to-text button -->
-                <button class="action-btn mic-btn" id="micBtn" title="Voice to text">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                        <line x1="12" y1="19" x2="12" y2="23"></line>
-                    </svg>
-                </button>
+                <div class="input-row">
+                    <button class="action-btn attach-btn" id="attachBtn" title="Attach file">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
 
-                <!-- Live audio conversation button -->
-                <button class="action-btn live-btn" id="liveBtn" title="Start live conversation">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="6" y1="10" x2="6" y2="14"></line>
-                        <line x1="10" y1="4" x2="10" y2="20"></line>
-                        <line x1="14" y1="8" x2="14" y2="16"></line>
-                        <line x1="18" y1="11" x2="18" y2="13"></line>
-                    </svg>
-                </button>
+                    <textarea id="messageInput" class="message-input" placeholder="Ask me about event sponsorship..."
+                        rows="1"></textarea>
 
-                <!-- Send button -->
-                <button class="action-btn send-btn" onclick="sendMessage()" id="sendBtn" title="Send">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polygon points="22,2 15,22 11,13 2,9"></polygon>
-                    </svg>
-                </button>
-            </div>
+                    <button class="action-btn mic-btn" id="micBtn" title="Voice to text">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            <line x1="12" y1="19" x2="12" y2="23"></line>
+                        </svg>
+                    </button>
+
+                    <button class="action-btn live-btn" id="liveBtn" title="Start live conversation">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="6" y1="10" x2="6" y2="14"></line>
+                            <line x1="10" y1="4" x2="10" y2="20"></line>
+                            <line x1="14" y1="8" x2="14" y2="16"></line>
+                            <line x1="18" y1="11" x2="18" y2="13"></line>
+                        </svg>
+                    </button>
+
+                    <button class="action-btn send-btn" onclick="sendMessage()" id="sendBtn" title="Send">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22,2 15,22 11,13 2,9"></polygon>
+                        </svg>
+                    </button>
+                </div> </div>
         </div>
     </div>
 
@@ -805,20 +1035,20 @@
             // Production URLs (Cloud Run)
             PROD_ADK_SERVER_URL: 'https://adk-backend-service-766291037876.us-central1.run.app',
             PROD_SERVICES_API_URL: 'https://services-backend-766291037876.us-central1.run.app',
-            
+
             // Local Development URLs
             LOCAL_ADK_SERVER_URL: 'http://localhost:8000',
             LOCAL_SERVICES_API_URL: 'http://localhost:8001',
-            
+
             STRIPE_PUBLISHABLE_KEY: 'pk_test_51SFiGIHRBWNtQGKsXBP2PDJE5iPhriiCZBQW5QESdTgOSoFCTEdM1eiNdQXNSbkFqNcsoVdCMYqXJLtf0C0v3S4h00SLYyRXU4',
             APP_NAME: 'chat_with_human'
         };
 
         // Smart environment detection
-        const isLocal = window.location.hostname === 'localhost' || 
-                       window.location.hostname === '127.0.0.1' ||
-                       window.location.hostname === '' ||
-                       window.location.port === '8080';
+        const isLocal = window.location.hostname === 'localhost' ||
+            window.location.hostname === '127.0.0.1' ||
+            window.location.hostname === '' ||
+            window.location.port === '8080';
 
         // Automatically select the right URLs based on environment
         const ADK_SERVER_URL = isLocal ? CONFIG.LOCAL_ADK_SERVER_URL : CONFIG.PROD_ADK_SERVER_URL;
@@ -844,12 +1074,20 @@
         const micBtn = document.getElementById('micBtn');
         const liveBtn = document.getElementById('liveBtn');
 
+        // --- NEW: File Attachment Elements ---
+        const attachBtn = document.getElementById('attachBtn');
+        const fileInput = document.getElementById('fileInput');
+        const filePreviewContainer = document.getElementById('filePreviewContainer');
+        // --- End New Elements ---
+
         // State
         let stripe = null;
         let elements = null;
         let cardElement = null;
         let currentCartId = null;
         let currentClientSecret = null;
+        // --- MODIFIED: Changed from single file to array ---
+        let attachedFiles = [];
 
         // Initialize Stripe
         function initializeStripe() {
@@ -885,15 +1123,24 @@
             updateThemeIcon(shouldUseLightTheme);
         }
 
-        // --- INPUT MANAGEMENT ---
+        // --- INPUT MANAGEMENT - MODIFIED ---
         function updateInputButtons() {
             const hasText = messageInput.value.trim().length > 0;
+            // --- MODIFIED: Check array length ---
+            const hasFiles = attachedFiles.length > 0;
 
-            if (hasText) {
+            // Goal: Keep the attach button visible, as requested
+            attachBtn.style.display = 'flex';
+            // The title will always be "Attach file"
+            attachBtn.title = 'Attach file';
+
+            if (hasText || hasFiles) {
+                // Show Send, hide Mic/Live
                 sendBtn.style.display = 'flex';
                 micBtn.style.display = 'none';
                 liveBtn.style.display = 'none';
             } else {
+                // Hide Send, show Mic/Live
                 sendBtn.style.display = 'none';
                 micBtn.style.display = 'flex';
                 liveBtn.style.display = 'flex';
@@ -909,7 +1156,8 @@
         messageInput.addEventListener('keydown', function (event) {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
-                if (messageInput.value.trim().length > 0) {
+                // --- MODIFIED: Check array length ---
+                if (messageInput.value.trim().length > 0 || attachedFiles.length > 0) {
                     sendMessage();
                 }
             }
@@ -948,6 +1196,88 @@
             micBtn.style.display = 'none';
         }
 
+        // --- MODIFIED: attachBtn listener ---
+        // Always open file picker
+        attachBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // --- MODIFIED: Handle file selection for multiple files ---
+        fileInput.addEventListener('change', (event) => {
+            const files = Array.from(event.target.files); // Get all files
+            if (files.length > 0) {
+                attachedFiles = [...attachedFiles, ...files]; // Add to array
+                showFilePreview(); // Show all files
+                updateInputButtons();
+            }
+            // Reset file input to allow selecting the same file again
+            event.target.value = null;
+        });
+
+        // --- MODIFIED: Show previews of all attached files ---
+        function showFilePreview() {
+            filePreviewContainer.innerHTML = ''; // Clear previous previews
+
+            attachedFiles.forEach((file, index) => {
+                let previewHtml = '';
+                const fileSize = (file.size / 1024 / 1024).toFixed(2); // in MB
+
+                if (file.type.startsWith('image/')) {
+                    const objectUrl = URL.createObjectURL(file);
+                    previewHtml = `
+                        <img src="${objectUrl}" alt="Preview" />
+                        <div class="file-info">
+                            <span class="file-name">${file.name}</span>
+                            <span class="file-size">${fileSize} MB</span>
+                        </div>
+                    `;
+                } else {
+                    previewHtml = `
+                        <span>📄</span>
+                        <div class="file-info">
+                            <span class="file-name">${file.name}</span>
+                            <span class="file-size">${fileSize} MB</span>
+                        </div>
+                    `;
+                }
+
+                const previewItem = document.createElement('div');
+                previewItem.className = 'file-preview-item';
+                previewItem.innerHTML = `
+                    ${previewHtml}
+                    <button class="file-preview-remove" onclick="removeAttachedFile(${index})">&times;</button>
+                `;
+                filePreviewContainer.appendChild(previewItem);
+            });
+            // Use 'flex' to enable flex-wrap
+            filePreviewContainer.style.display = attachedFiles.length > 0 ? 'flex' : 'none';
+        }
+
+        // --- MODIFIED: Remove a specific file by index, or all files ---
+        function removeAttachedFile(index) {
+            if (index === undefined) {
+                // Remove all files (called from sendMessage)
+                attachedFiles = [];
+            } else {
+                // Remove specific file (called from 'x' button)
+                attachedFiles.splice(index, 1);
+            }
+            showFilePreview(); // Re-render the preview
+            updateInputButtons(); // Update button states
+        }
+
+        // Helper to convert File object to Base64 string
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]); // Get data part
+                reader.onerror = (error) => reject(error);
+            });
+        }
+        // --- END: FILE ATTACHMENT LOGIC ---
+
+
         // --- LIVE AUDIO CONVERSATION (liveBtn) ---
         liveBtn.addEventListener('click', () => {
             // Navigate to live audio page
@@ -963,20 +1293,59 @@
             }, 500);
         }
 
-        function addMessage(content, type) {
+        // --- MODIFIED: addMessage to handle multiple files AND avatar visibility ---
+        function addMessage(content, type, files = null, showAvatar = true) { // Added showAvatar parameter
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
-            const avatar = document.createElement('div');
-            avatar.className = 'avatar';
-            avatar.textContent = type === 'user' ? 'You' : 'ES';
+
+            if (showAvatar) { // Only add avatar if showAvatar is true
+                const avatar = document.createElement('div');
+                avatar.className = 'avatar';
+                // Keep original index.html avatar text
+                avatar.textContent = type === 'user' ? 'You' : 'ES';
+                messageDiv.appendChild(avatar);
+            }
+
             const messageContent = document.createElement('div');
             messageContent.className = 'message-content';
-            messageContent.innerHTML = content.replace(/\n/g, '<br>');
-            messageDiv.appendChild(avatar);
+
+            // --- NEW Multi-file logic from index_fixed ---
+            if (files && files.length > 0) {
+                messageContent.classList.add('with-attachments'); // For styling
+
+                const attachmentsDiv = document.createElement('div');
+                attachmentsDiv.className = 'message-attachments';
+
+                files.forEach(file => {
+                    const attachmentDiv = document.createElement('div');
+                    attachmentDiv.className = 'message-attachment';
+
+                    if (file.type.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        img.src = URL.createObjectURL(file);
+                        img.alt = file.name;
+                        attachmentDiv.appendChild(img);
+                    } else {
+                        attachmentDiv.innerHTML = `<span>📄</span><span>${file.name}</span>`;
+                    }
+                    attachmentsDiv.appendChild(attachmentDiv);
+                });
+
+                messageContent.appendChild(attachmentsDiv);
+            }
+            // --- END NEW ---
+
+            if (content) {
+                const textDiv = document.createElement('div');
+                // Keep original index.html line break handling
+                textDiv.innerHTML = content.replace(/\n/g, '<br>');
+                messageContent.appendChild(textDiv);
+            }
+
             messageDiv.appendChild(messageContent);
             messagesContainer.appendChild(messageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            return messageDiv;
+            return messageDiv; // Keep original return value
         }
 
         function addPaymentForm(cartId, clientSecret, cartSummary) {
@@ -1156,38 +1525,104 @@
             }
         }
 
+        // --- MODIFIED: sendMessage for multi-file ---
         async function sendMessage() {
+            // 1. Ensure session exists before doing anything
             if (!await ensureSession()) {
                 addMessage('Failed to create session. Please refresh the page.', 'assistant');
                 return;
             }
 
             const message = messageInput.value.trim();
-            if (!message || sendBtn.disabled) return;
+            // --- MODIFIED: Copy array of files ---
+            const filesToSend = [...attachedFiles];
+
+            // 2. Check if there is anything to send
+            // --- MODIFIED: Check array length ---
+            if (!message && filesToSend.length === 0) {
+                return; // Nothing to send
+            }
+
+            if (sendBtn.disabled) return;
+            sendBtn.disabled = true;
 
             if (!messagesContainer.classList.contains('active')) {
                 switchToChatView();
             }
 
-            sendBtn.disabled = true;
-            addMessage(message, 'user');
+            // 3. Add message(s) to UI based on content
+            const hasText = message.length > 0;
+            const hasFiles = filesToSend.length > 0;
 
+            if (hasText && hasFiles) {
+                // Per user request: show separate bubbles for files and text
+                // 1. Show a bubble for files, NO AVATAR
+                addMessage(null, 'user', filesToSend, false);
+                // 2. Show a separate bubble for text, WITH AVATAR
+                addMessage(message, 'user', null, true);
+            } else {
+                // Original behavior (only text OR only files), WITH AVATAR
+                addMessage(message, 'user', filesToSend, true);
+            }
+
+            // 4. Clear inputs
             messageInput.value = '';
             messageInput.dispatchEvent(new Event('input'));
+            removeAttachedFile(); // Clears state and preview (calls with no index)
 
             const loadingElement = addLoading();
 
             try {
+                // 5. Build the message parts array
+                const parts = [];
+
+                // --- MODIFIED: Loop over all files to send ---
+                for (const file of filesToSend) {
+                    console.log('📎 File to send:', {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size
+                    });
+
+                    // Convert file to base64
+                    const base64data = await fileToBase64(file);
+                    console.log('✅ Base64 data length:', base64data.length);
+
+                    parts.push({
+                        "inline_data": {
+                            "mime_type": file.type,
+                            "data": base64data
+                        }
+                    });
+                }
+                // --- END MODIFIED ---
+
+                if (message) {
+                    parts.push({ "text": message });
+                }
+
+                // 6. Create payload
                 const payload = {
                     "app_name": APP_NAME,
                     "user_id": USER_ID,
                     "session_id": SESSION_ID,
                     "new_message": {
                         "role": "user",
-                        "parts": [{ "text": message }]
+                        "parts": parts // Use the dynamic parts array
                     }
                 };
 
+                console.log('📤 Sending payload:', {
+                    app_name: payload.app_name,
+                    user_id: payload.user_id,
+                    session_id: payload.session_id,
+                    parts_count: parts.length,
+                    // --- MODIFIED: Log file count ---
+                    file_count: parts.filter(p => p.inline_data).length,
+                    has_text: parts.some(p => p.text)
+                });
+
+                // 7. Send to backend
                 const response = await fetch(`${ADK_SERVER_URL}/run`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1197,16 +1632,25 @@
                 loadingElement.remove();
 
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
+                    // Get error details from backend
+                    const errorText = await response.text();
+                    console.error('❌ Backend error:', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        body: errorText
+                    });
+                    throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 200)}`);
                 }
 
+                // 8. Process response - only show final assistant response
                 const data = await response.json();
                 let assistantMessage = '';
                 let cartData = null;
 
                 if (Array.isArray(data)) {
                     for (const event of data) {
-                        if (event.content && event.content.parts) {
+                        // Only process events with role 'model' (final response)
+                        if (event.content && event.content.role === 'model' && event.content.parts) {
                             for (const part of event.content.parts) {
                                 if (part.text) {
                                     assistantMessage += part.text + '\n';
@@ -1277,9 +1721,11 @@
                 addMessage(`Sorry, I encountered an error: ${error.message}`, 'assistant');
             } finally {
                 sendBtn.disabled = false;
+                updateInputButtons(); // Ensure buttons are in correct state
                 messageInput.focus();
             }
         }
+        // --- END MODIFIED sendMessage ---
 
         // --- Initialize ---
         window.addEventListener('load', () => {
