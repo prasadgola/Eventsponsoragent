@@ -16,7 +16,6 @@
         :root {
             --sidebar-width: 260px;
             --sidebar-width-closed: 70px;
-            /* Variable for minimized sidebar */
         }
 
         .sidebar {
@@ -30,18 +29,15 @@
             z-index: 200;
             transform: translateX(-100%);
             transition: transform 0.2s ease-out, width 0.2s ease-out;
-            /* Added width transition */
             display: flex;
             flex-direction: column;
         }
 
-        /* Header section for the sidebar (for desktop button) */
         .sidebar-header {
             height: var(--header-height);
             display: flex;
             align-items: center;
             padding: 0 15px;
-            /* (70px - 40px button) / 2 */
             flex-shrink: 0;
         }
 
@@ -66,9 +62,9 @@
         }
 
         .sidebar-link {
-            display: flex; /* Changed */
-            align-items: center; /* Added */
-            gap: 1rem; /* Added */
+            display: flex;
+            align-items: center;
+            gap: 1rem;
             padding: 0.75rem 1rem;
             border-radius: 8px;
             color: #bdc1c6;
@@ -81,7 +77,7 @@
             width: 18px;
             height: 18px;
             flex-shrink: 0;
-            color: #9aa0a6; /* Icon color */
+            color: #9aa0a6;
             transition: color 0.2s ease;
         }
 
@@ -90,7 +86,7 @@
             color: #e8eaed;
         }
 
-        .sidebar-link:hover svg { /* Added */
+        .sidebar-link:hover svg {
             color: #e8eaed;
         }
 
@@ -118,7 +114,6 @@
             --header-height: 64px;
         }
 
-        /* Header */
         .header {
             display: flex;
             align-items: center;
@@ -131,7 +126,6 @@
             right: 0;
             z-index: 100;
             height: var(--header-height);
-            /* Add transitions for desktop squeezing */
             transition: left 0.2s ease-out, width 0.2s ease-out;
         }
 
@@ -155,52 +149,19 @@
             animation: jelly 20s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
         }
 
-        .jelly-logo span:nth-child(1) {
-            animation-delay: 0s;
-        }
-
-        .jelly-logo span:nth-child(2) {
-            animation-delay: 0.1s;
-        }
-
-        .jelly-logo span:nth-child(3) {
-            animation-delay: 0.2s;
-        }
-
-        .jelly-logo span:nth-child(4) {
-            animation-delay: 0.3s;
-        }
-
-        .jelly-logo span:nth-child(5) {
-            animation-delay: 0.4s;
-        }
-
-        .jelly-logo span:nth-child(6) {
-            animation-delay: 0.5s;
-        }
+        .jelly-logo span:nth-child(1) { animation-delay: 0s; }
+        .jelly-logo span:nth-child(2) { animation-delay: 0.1s; }
+        .jelly-logo span:nth-child(3) { animation-delay: 0.2s; }
+        .jelly-logo span:nth-child(4) { animation-delay: 0.3s; }
+        .jelly-logo span:nth-child(5) { animation-delay: 0.4s; }
+        .jelly-logo span:nth-child(6) { animation-delay: 0.5s; }
 
         @keyframes jelly {
-
-            0%,
-            100% {
-                transform: scale(1, 1) rotate(0deg);
-            }
-
-            2% {
-                transform: scale(1.1, 0.9) rotate(-2deg);
-            }
-
-            4% {
-                transform: scale(0.9, 1.1) rotate(2deg);
-            }
-
-            5% {
-                transform: scale(1.05, 0.95) rotate(-1deg);
-            }
-
-            8% {
-                transform: scale(0.95, 1.05) rotate(1deg);
-            }
+            0%, 100% { transform: scale(1, 1) rotate(0deg); }
+            2% { transform: scale(1.1, 0.9) rotate(-2deg); }
+            4% { transform: scale(0.9, 1.1) rotate(2deg); }
+            5% { transform: scale(1.05, 0.95) rotate(-1deg); }
+            8% { transform: scale(0.95, 1.05) rotate(1deg); }
         }
 
         .menu-btn {
@@ -223,17 +184,13 @@
             color: #e8eaed;
         }
 
-        /* Rules to show/hide the correct menu button */
         .desktop-menu-btn {
             display: none;
-            /* Hide desktop button on mobile */
         }
 
         .mobile-menu-btn {
             display: flex;
-            /* Show mobile button by default */
         }
-
 
         .theme-toggle {
             background: transparent;
@@ -255,7 +212,6 @@
             color: #e8eaed;
         }
 
-        /* Main container */
         .main-container {
             flex: 1;
             display: flex;
@@ -269,7 +225,6 @@
             transition: justify-content 0.5s ease;
         }
 
-        /* Welcome screen */
         .welcome-screen {
             display: flex;
             flex-direction: column;
@@ -296,7 +251,6 @@
             background-clip: text;
         }
 
-        /* Chat messages */
         .messages {
             flex: 1;
             overflow-y: auto;
@@ -404,12 +358,25 @@
             gap: 8px;
         }
 
+        /* Generated media styling */
+        .message-content img,
+        .message-content video {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            display: block;
+        }
+
+        .message-content video {
+            background: #000;
+        }
+
         .light-theme .sidebar {
             background: #f8f9fa;
             border-right-color: #dadce0;
         }
 
-        /* Light theme for sidebar header */
         .light-theme .sidebar-header {
             border-bottom-color: #dadce0;
         }
@@ -422,8 +389,8 @@
             color: #5f6368;
         }
 
-        .light-theme .sidebar-link svg { /* Added */
-            color: #5f6368; /* Icon color in light mode */
+        .light-theme .sidebar-link svg {
+            color: #5f6368;
         }
 
         .light-theme .sidebar-link:hover {
@@ -431,7 +398,7 @@
             color: #202124;
         }
 
-        .light-theme .sidebar-link:hover svg { /* Added */
+        .light-theme .sidebar-link:hover svg {
             color: #202124;
         }
 
@@ -440,6 +407,9 @@
             border: 1px solid #dadce0;
         }
 
+        .light-theme .message-content video {
+            background: #f1f3f4;
+        }
 
         .message.user .message-content {
             border-bottom-right-radius: 6px;
@@ -449,7 +419,6 @@
             border-bottom-left-radius: 6px;
         }
 
-        /* Loading indicator */
         .loading-message {
             display: flex;
             gap: 1rem;
@@ -480,28 +449,14 @@
             animation: bounce 1.4s infinite ease-in-out both;
         }
 
-        .dot:nth-child(1) {
-            animation-delay: -0.32s;
-        }
-
-        .dot:nth-child(2) {
-            animation-delay: -0.16s;
-        }
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
 
         @keyframes bounce {
-
-            0%,
-            80%,
-            100% {
-                transform: scale(0);
-            }
-
-            40% {
-                transform: scale(1);
-            }
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
         }
 
-        /* Input area */
         .input-area {
             padding: 1rem 1rem 2rem;
             background: transparent;
@@ -591,7 +546,6 @@
             color: #5f6368;
         }
 
-
         body.sidebar-open .sidebar {
             transform: translateX(0);
         }
@@ -601,52 +555,33 @@
             pointer-events: auto;
         }
 
-        /* This entire block is replaced for new desktop logic */
         @media (min-width: 1024px) {
+            .desktop-menu-btn { display: flex; }
+            .mobile-menu-btn { display: none; }
 
-            /* 1. Show/hide the correct buttons */
-            .desktop-menu-btn {
-                display: flex;
-                /* Show desktop btn */
-            }
-
-            .mobile-menu-btn {
-                display: none;
-                /* Hide mobile btn */
-            }
-
-            /* 2. DEFAULT STATE (OPEN) */
             body {
                 padding-left: var(--sidebar-width);
-                /* Default is open */
                 transition: padding-left 0.2s ease-out;
             }
 
-            /* 3. DEFAULT STATE (OPEN) */
             .sidebar {
                 transform: translateX(0);
                 z-index: 99;
                 padding-top: 0;
-                /* No padding-top needed, header is built-in */
                 width: var(--sidebar-width);
-                /* Default is open */
             }
 
-            /* 4. DEFAULT STATE (OPEN) */
             .sidebar .sidebar-content {
                 opacity: 1;
                 pointer-events: auto;
                 transition: opacity 0.2s ease-in 0.1s;
             }
 
-            /* 5. DEFAULT STATE (OPEN) */
             .header {
                 left: var(--sidebar-width);
-                /* Default is open */
                 width: calc(100% - var(--sidebar-width));
             }
 
-            /* 6. Hide mobile overlay */
             .sidebar-overlay {
                 display: none;
             }
@@ -655,22 +590,18 @@
                 display: none;
             }
 
-            /* 2. By default, show the menu icon */
             .mobile-menu-btn .icon-menu {
                 display: block;
             }
 
-            /* 3. When sidebar is open, SHOW the arrow */
             body.sidebar-open .mobile-menu-btn .icon-arrow {
                 display: block;
             }
 
-            /* 4. When sidebar is open, HIDE the menu */
             body.sidebar-open .mobile-menu-btn .icon-menu {
                 display: none;
             }
 
-            /* 7. "CLOSED" STATE (MINIMIZED) - Toggled by JS */
             body.sidebar-closed {
                 padding-left: var(--sidebar-width-closed);
             }
@@ -690,9 +621,6 @@
                 width: calc(100% - var(--sidebar-width-closed));
             }
         }
-
-        /* */
-
 
         .input-container {
             display: flex;
@@ -785,20 +713,11 @@
         }
 
         @keyframes glow {
-            0% {
-                box-shadow: 0 0 0 0 rgba(138, 180, 248, 0.4);
-            }
-
-            70% {
-                box-shadow: 0 0 0 12px rgba(138, 180, 248, 0);
-            }
-
-            100% {
-                box-shadow: 0 0 0 0 rgba(138, 180, 248, 0);
-            }
+            0% { box-shadow: 0 0 0 0 rgba(138, 180, 248, 0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(138, 180, 248, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(138, 180, 248, 0); }
         }
 
-        /* Light theme */
         body.light-theme {
             background: #ffffff;
             color: #202124;
@@ -910,7 +829,6 @@
             color: #202124;
         }
 
-        /* Payment form styles */
         .payment-form-container {
             background: #303134;
             border: 1px solid #3c4043;
@@ -1004,13 +922,11 @@
             background: #1765cc;
         }
 
-        /* Animations */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
                 transform: translateY(20px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -1021,23 +937,13 @@
             justify-content: flex-start;
         }
 
-        /* --- MODIFIED RULE --- */
         body.chat-active .input-area {
             position: sticky;
             bottom: 0;
             z-index: 10;
             background: transparent;
-            /* Changed from #212121 to transparent */
         }
 
-        /* --- REMOVED RULE (was redundant) --- */
-        /*
-        body.chat-active.light-theme .input-area {
-            background: #ffffff;
-        }
-        */
-
-        /* Scrollbar */
         .messages::-webkit-scrollbar {
             width: 4px;
         }
@@ -1055,7 +961,6 @@
             background: #dadce0;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .welcome-title {
                 font-size: 2rem;
@@ -1138,7 +1043,6 @@
 
         .message-content {
             max-width: 95%;
-            /* Increased from 70% to use more space */
         }
     </style>
 </head>
@@ -1157,17 +1061,17 @@
         </div>
         <div class="sidebar-content">
             <nav class="sidebar-nav">
-                <a href="#" class="sidebar-link" onclick="location.reload(); return false;"> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <a href="#" class="sidebar-link" onclick="location.reload(); return false;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                     </svg>
                     <span>New chat</span>
                 </a>
-                </nav>
+            </nav>
         </div>
     </div>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
 
     <div class="header">
         <div class="header-left">
@@ -1215,12 +1119,10 @@
 
         <div class="input-area" id="inputArea">
             <div class="input-wrapper">
-
                 <input type="file" id="fileInput" accept="image/*,application/pdf,text/plain,.docx,.pptx" multiple
                     style="display: none;" />
 
                 <div class="input-container">
-
                     <div class="file-preview-container" id="filePreviewContainer">
                     </div>
 
@@ -1281,25 +1183,19 @@
     <script>
         // Configuration
         const CONFIG = {
-            // Production URLs (Cloud Run)
             PROD_ADK_SERVER_URL: 'https://adk-backend-service-766291037876.us-central1.run.app',
             PROD_SERVICES_API_URL: 'https://services-backend-766291037876.us-central1.run.app',
-
-            // Local Development URLs
             LOCAL_ADK_SERVER_URL: 'http://localhost:8000',
             LOCAL_SERVICES_API_URL: 'http://localhost:8001',
-
             STRIPE_PUBLISHABLE_KEY: 'pk_test_51SFiGIHRBWNtQGKsXBP2PDJE5iPhriiCZBQW5QESdTgOSoFCTEdM1eiNdQXNSbkFqNcsoVdCMYqXJLtf0C0v3S4h00SLYyRXU4',
             APP_NAME: 'chat_with_human'
         };
 
-        // Smart environment detection
         const isLocal = window.location.hostname === 'localhost' ||
             window.location.hostname === '127.0.0.1' ||
             window.location.hostname === '' ||
             window.location.port === '8080';
 
-        // Automatically select the right URLs based on environment
         const ADK_SERVER_URL = isLocal ? CONFIG.LOCAL_ADK_SERVER_URL : CONFIG.PROD_ADK_SERVER_URL;
         const SERVICES_API = isLocal ? CONFIG.LOCAL_SERVICES_API_URL : CONFIG.PROD_SERVICES_API_URL;
         const STRIPE_PUBLISHABLE_KEY = CONFIG.STRIPE_PUBLISHABLE_KEY;
@@ -1307,7 +1203,6 @@
         const USER_ID = 'demo_user';
         const SESSION_ID = 'default_session';
 
-        // Log the environment for debugging
         console.log('🌐 Environment Detection:');
         console.log('  - Hostname:', window.location.hostname);
         console.log('  - Port:', window.location.port);
@@ -1322,17 +1217,13 @@
         const themeToggle = document.getElementById('themeToggle');
         const micBtn = document.getElementById('micBtn');
         const liveBtn = document.getElementById('liveBtn');
-        const menuBtn = document.getElementById('menuBtn'); // Mobile button
+        const menuBtn = document.getElementById('menuBtn');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const menuBtnDesktop = document.getElementById('menuBtnDesktop'); // Desktop button
-
-        // --- NEW: File Attachment Elements ---
+        const menuBtnDesktop = document.getElementById('menuBtnDesktop');
         const attachBtn = document.getElementById('attachBtn');
         const fileInput = document.getElementById('fileInput');
         const filePreviewContainer = document.getElementById('filePreviewContainer');
-        // --- End New Elements ---
 
-        // State
         let stripe = null;
         let elements = null;
         let cardElement = null;
@@ -1340,14 +1231,12 @@
         let currentClientSecret = null;
         let attachedFiles = [];
 
-        // Initialize Stripe
         function initializeStripe() {
             if (!stripe) {
                 stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
             }
         }
 
-        // --- THEME MANAGEMENT ---
         function toggleTheme() {
             document.body.classList.toggle('light-theme');
             const isLightTheme = document.body.classList.contains('light-theme');
@@ -1374,7 +1263,6 @@
             updateThemeIcon(shouldUseLightTheme);
         }
 
-        // --- INPUT MANAGEMENT - MODIFIED ---
         function updateInputButtons() {
             const hasText = messageInput.value.trim().length > 0;
             const hasFiles = attachedFiles.length > 0;
@@ -1408,24 +1296,19 @@
             }
         });
 
-        // This function now correctly handles both states
         function toggleSidebar() {
             const isDesktop = window.innerWidth >= 1024;
-
             if (isDesktop) {
-                // On desktop, we toggle the "closed" (minimized) state
                 document.body.classList.toggle('sidebar-closed');
             } else {
-                // On mobile, we toggle the "open" (overlay) state
                 document.body.classList.toggle('sidebar-open');
             }
         }
 
-        menuBtn.addEventListener('click', toggleSidebar); // Mobile button
-        menuBtnDesktop.addEventListener('click', toggleSidebar); // Desktop button
-        sidebarOverlay.addEventListener('click', toggleSidebar); // Mobile overlay
+        menuBtn.addEventListener('click', toggleSidebar);
+        menuBtnDesktop.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
 
-        // --- VOICE-TO-TEXT (micBtn) ---
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
             const recognition = new SpeechRecognition();
@@ -1458,7 +1341,6 @@
             micBtn.style.display = 'none';
         }
 
-        // --- FILE ATTACHMENT LOGIC ---
         attachBtn.addEventListener('click', () => {
             fileInput.click();
         });
@@ -1478,7 +1360,7 @@
 
             attachedFiles.forEach((file, index) => {
                 let previewHtml = '';
-                const fileSize = (file.size / 1024 / 1024).toFixed(2); // in MB
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
 
                 if (file.type.startsWith('image/')) {
                     const objectUrl = URL.createObjectURL(file);
@@ -1529,13 +1411,10 @@
             });
         }
 
-
-        // --- LIVE AUDIO CONVERSATION (liveBtn) ---
         liveBtn.addEventListener('click', () => {
             window.location.href = 'live.html';
         });
 
-        // --- CHAT UI FUNCTIONS ---
         function switchToChatView() {
             welcomeScreen.classList.add('hidden');
             messagesContainer.classList.add('active');
@@ -1852,30 +1731,130 @@
 
                 if (Array.isArray(data)) {
                     for (const event of data) {
-                        if (event.content && event.content.role === 'model' && event.content.parts) {
+                        if (event.content && event.content.parts) {
                             for (const part of event.content.parts) {
                                 if (part.text) {
                                     assistantMessage += part.text + '\n';
                                 }
 
-                                if (part.function_response && part.function_response.response) {
-                                    const funcResp = part.function_response.response;
+                                // ========================================
+                                // IMAGE AND VIDEO DISPLAY CODE (NEW)
+                                // ========================================
+                                if (part.functionResponse && part.functionResponse.response) {
+                                    console.log('🔍 Found functionResponse');
+                                    let funcResp = part.functionResponse.response;
+                                    
+                                    // Handle ADK's extra "result" wrapper
+                                    if (funcResp && typeof funcResp === 'object' && funcResp.result) {
+                                        console.log('📦 Unwrapping ADK result wrapper');
+                                        funcResp = funcResp.result;
+                                    }
+                                    
                                     let parsedResp = funcResp;
+                                    
+                                    // Parse JSON string if needed
                                     if (typeof funcResp === 'string') {
                                         try {
                                             parsedResp = JSON.parse(funcResp);
+                                            console.log('📦 Parsed function response:', parsedResp);
                                         } catch (e) {
-                                            console.error('Failed to parse function response:', e);
+                                            console.error('❌ Failed to parse:', e);
+                                            continue;
                                         }
                                     }
 
-                                    console.log('Function response parsed:', parsedResp);
+                                    // Check if we have image data
+                                    if (parsedResp && parsedResp.image_data) {
+                                        console.log('🖼️ Image data found! Length:', parsedResp.image_data.length);
+                                        
+                                        // Create a separate message with the image
+                                        const imageDiv = document.createElement('div');
+                                        imageDiv.className = 'message assistant';
 
-                                    if (parsedResp.payment_form_trigger && parsedResp.cart_id && parsedResp.client_secret) {
+                                        const avatar = document.createElement('div');
+                                        avatar.className = 'avatar';
+                                        avatar.textContent = 'ES';
+
+                                        const messageContent = document.createElement('div');
+                                        messageContent.className = 'message-content';
+                                        
+                                        // Add text if present
+                                        if (parsedResp.text_response) {
+                                            const textPara = document.createElement('p');
+                                            textPara.textContent = parsedResp.text_response;
+                                            textPara.style.marginBottom = '0.5rem';
+                                            messageContent.appendChild(textPara);
+                                        }
+                                        
+                                        // Create and add image
+                                        const img = document.createElement('img');
+                                        img.src = `data:image/jpeg;base64,${parsedResp.image_data}`;
+                                        img.style.maxWidth = '100%';
+                                        img.style.height = 'auto';
+                                        img.style.borderRadius = '8px';
+                                        img.style.marginTop = '0.5rem';
+                                        img.alt = 'Generated image';
+                                        
+                                        img.onload = function() {
+                                            console.log('✅ Image loaded successfully!');
+                                        };
+                                        
+                                        img.onerror = function() {
+                                            console.error('❌ Image failed to load');
+                                            messageContent.innerHTML = '<p>Failed to load image</p>';
+                                        };
+                                        
+                                        messageContent.appendChild(img);
+                                        imageDiv.appendChild(avatar);
+                                        imageDiv.appendChild(messageContent);
+                                        messagesContainer.appendChild(imageDiv);
+                                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                                    }
+                                    
+                                    // Check if we have video URL
+                                    if (parsedResp && parsedResp.video_url) {
+                                        console.log('🎬 Video URL found!');
+                                        
+                                        const videoDiv = document.createElement('div');
+                                        videoDiv.className = 'message assistant';
+
+                                        const avatar = document.createElement('div');
+                                        avatar.className = 'avatar';
+                                        avatar.textContent = 'ES';
+
+                                        const messageContent = document.createElement('div');
+                                        messageContent.className = 'message-content';
+                                        
+                                        if (parsedResp.text_response) {
+                                            const textPara = document.createElement('p');
+                                            textPara.textContent = parsedResp.text_response;
+                                            textPara.style.marginBottom = '0.5rem';
+                                            messageContent.appendChild(textPara);
+                                        }
+                                        
+                                        const video = document.createElement('video');
+                                        video.src = parsedResp.video_url;
+                                        video.controls = true;
+                                        video.style.maxWidth = '100%';
+                                        video.style.borderRadius = '8px';
+                                        video.style.marginTop = '0.5rem';
+                                        
+                                        messageContent.appendChild(video);
+                                        videoDiv.appendChild(avatar);
+                                        videoDiv.appendChild(messageContent);
+                                        messagesContainer.appendChild(videoDiv);
+                                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                                    }
+
+                                    // Check for payment cart data
+                                    if (parsedResp && parsedResp.payment_form_trigger && parsedResp.cart_id && parsedResp.client_secret) {
                                         console.log('Found payment cart data!', parsedResp);
                                         cartData = parsedResp;
                                     }
                                 }
+                                // ========================================
+                                // END IMAGE AND VIDEO DISPLAY CODE
+                                // ========================================
                             }
                         }
                     }
@@ -1926,8 +1905,6 @@
             }
         }
 
-
-        // --- DRAG AND DROP LOGIC ---
         const dragDropOverlay = document.getElementById('dragDropOverlay');
         let dragCounter = 0;
 
@@ -1938,8 +1915,6 @@
                 dragDropOverlay.classList.add('visible');
             }
         });
-
-
 
         window.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -1969,8 +1944,6 @@
             }
         });
 
-
-        // --- Initialize ---
         window.addEventListener('load', () => {
             loadTheme();
             updateInputButtons();

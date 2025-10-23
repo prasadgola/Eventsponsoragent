@@ -14,6 +14,8 @@ from .payment_tools import (
     get_sponsorship_tiers
 )
 
+from chat_with_human.media_tools import generate_image, generate_video
+
 sponsor_agent = Agent(
     name="sponsor_agent",
     model="gemini-2.0-flash-exp",
@@ -27,6 +29,8 @@ sponsor_agent = Agent(
         create_sponsorship_cart,
         select_payment_method,
         process_payment,
-        get_sponsorship_tiers
+        get_sponsorship_tiers,
+        generate_image,
+        generate_video
     ]
 )

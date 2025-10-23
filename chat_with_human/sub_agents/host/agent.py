@@ -7,6 +7,7 @@ from .tools import (
     get_email_stats,
     parse_json
 )
+from chat_with_human.media_tools import generate_image, generate_video
 
 host_agent = Agent(
     name="host_agent",
@@ -18,6 +19,8 @@ host_agent = Agent(
         format_outreach_email,
         send_email,
         get_email_stats,
-        parse_json
+        parse_json,
+        generate_image,
+        generate_video
     ]
 )
