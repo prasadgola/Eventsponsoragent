@@ -6,7 +6,7 @@ import os
 # Load .env
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
-from routers import email, sponsors, events, tracking, airtable, payments, leads
+from routers import email, sponsors, events, tracking, airtable, payments, leads, oauth
 
 app = FastAPI(title="Event Sponsor Services API")
 
@@ -31,6 +31,7 @@ app.include_router(tracking.router, prefix="/track", tags=["Tracking"])
 app.include_router(airtable.router, prefix="/airtable", tags=["Airtable"])
 app.include_router(payments.router, prefix="/payments", tags=["Payments"])
 app.include_router(leads.router, prefix="/leads", tags=["Leads"])
+app.include_router(oauth.router, prefix="/oauth", tags=["OAuth"])  # ← NEW
 
 @app.get("/")
 async def root():
@@ -43,7 +44,9 @@ async def root():
             "events": "/events/*",
             "tracking": "/track/*",
             "airtable": "/airtable/*",
-            "payments": "/payments/*"
+            "payments": "/payments/*",
+            "leads": "/leads/*",
+            "oauth": "/oauth/*"
         }
     }
 
