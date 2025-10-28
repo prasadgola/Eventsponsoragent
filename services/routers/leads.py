@@ -215,6 +215,8 @@ async def sync_contacts_to_hubspot(request: SyncContactsRequest):
                 # ============================================================
                 # STEP 1: Create Company in HubSpot
                 # ============================================================
+                
+                # --- THIS BLOCK IS FIXED ---
                 company_data = {
                     "properties": {
                         "name": company_name,
@@ -224,11 +226,16 @@ async def sync_contacts_to_hubspot(request: SyncContactsRequest):
                         "city": lead.get("location", "").split(",")[0].strip() if lead.get("location") else "",
                         "state": lead.get("location", "").split(",")[-1].strip() if "," in lead.get("location", "") else "",
                         "website": f"https://{lead.get('domain', '')}",
-                        "numberofemployees": lead.get("size", ""),
-                        "linkedinbio": lead.get("linkedin", ""),
-                        "hs_lead_status": "NEW"
+                        
+                        # 1. Changed 'linkedinbio' to 'linkedin_company_page' (HubSpot's internal name)
+                        "linkedin_company_page": lead.get("linkedin", ""),
+                        
+                        # 2. Removed "numberofemployees" (was sending "500-1000 employees", which is an invalid string)
+                        
+                        # 3. Removed "hs_lead_status" (this is a contact property, not a company one)
                     }
                 }
+                # --- END OF FIX ---
                 
                 # PRODUCTION: Make real API call to HubSpot
                 company_response = requests.post(

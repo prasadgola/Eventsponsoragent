@@ -3,10 +3,10 @@
     "apollo_api_key": "gsYTYGHTnNUjn0rAfrR8Bw",
     "clay_api_key": "33ff43f41368de57e0df",
     "hubspot": {
-      "access_token": "CLmByuaiMxIRQlNQMl8kQEwrAgQACAkWEg0Y1_-5dCC2p70nKKCu8AoyFDk52RAkG0RrVi4sDZEkI3mwROT3OhlCU1AyXyRATCsCDAAIGQZxTjABAQEEMi4FQhQMAGfqYf_GZLJpFdNo2KSyoTXIt0oDbmEyUgBaAGAAaLanvSdwAHgA",
+      "access_token": "CLLq9-miMxISQlNQMl8kQEwrAgUACAkWEgkEGNf_uXQgtqe9JyigrvAKMhQd2s5Pxpe4fuB8xyrrKDHBBb28YzodQlNQMl8kQEwrAhAACBkGcU4cAQESAQEBBDIuAgNCFDgHJ2h4fXQtv7DuyDFhiEPx-6YlSgNuYTJSAFoAYABotqe9J3AAeAA",
       "refresh_token": "na2-a657-6730-4efd-a18f-c9270198a88b",
       "expires_at": 1800,
-      "connected_at": "2025-10-28T16:26:24.334055",
+      "connected_at": "2025-10-28T18:23:46.559834",
       "additional_data": {
         "token_type": "bearer",
         "hub_id": 244219863

@@ -232,13 +232,16 @@ async def hubspot_authorize(user_id: str = Query(default=DEMO_USER_ID)):
         )
     
     # HubSpot OAuth URL (this one is accurate)
+    # --- THIS IS THE MODIFIED LINE ---
+    # Added %20crm.objects.companies.write to the scope
     auth_url = (
         f"https://app.hubspot.com/oauth/authorize?"
         f"client_id={HUBSPOT_CLIENT_ID}&"
         f"redirect_uri={HUBSPOT_REDIRECT_URI}&"
-        f"scope=crm.objects.contacts.write%20crm.objects.contacts.read%20crm.schemas.contacts.read"
+        f"scope=crm.objects.contacts.write%20crm.objects.contacts.read%20crm.schemas.contacts.read%20crm.objects.companies.write" # <-- ADDED companies scope HERE
         f"&state={user_id}"
     )
+    # --- END OF MODIFICATION ---
     
     print(f"🟠 Redirecting {user_id} to HubSpot OAuth...")
     return RedirectResponse(url=auth_url)
