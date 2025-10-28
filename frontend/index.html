@@ -79,6 +79,8 @@
             background: transparent;
             width: 100%;
             text-align: left;
+            position: relative;
+            z-index: 1;
         }
 
         .sidebar-link svg {
@@ -511,6 +513,7 @@
             margin: 0;
             display: flex;
             gap: 2px;
+            cursor: pointer;
         }
 
         .jelly-logo span {
@@ -665,6 +668,7 @@
             justify-content: center;
             font-weight: 600;
             font-size: 12px;
+            display: none;
         }
 
         .message.user .avatar {
@@ -679,7 +683,7 @@
         }
 
         .message-content {
-            max-width: 70%;
+            max-width: 95%;
             padding: 1rem 1.25rem;
             border-radius: 18px;
             line-height: 1.5;
@@ -1399,19 +1403,6 @@
             color: #202124;
             border-color: #1a73e8;
         }
-
-        .avatar {
-            display: none;
-        }
-
-        .message,
-        .loading-message {
-            gap: 0;
-        }
-
-        .message-content {
-            max-width: 95%;
-        }
     </style>
 </head>
 
@@ -1442,8 +1433,8 @@
                 <button class="sidebar-link" id="settingsBtn">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <circle cx="12" cy="12" r="3"></circle>
-                      <path d="M12 1v6m0 6v6m0-12l-5.196 3m10.392 0L12 7m0 10l-5.196-3m10.392 0L12 17"></path>
                       <path d="M12 1v6m0 6v6"></path>
+                      <path d="M12 1l-5.196 3m10.392 0L12 7m0 10l-5.196-3m10.392 0L12 17"></path>
                     </svg>
                     <span>Settings</span>
                 </button>
@@ -1671,7 +1662,9 @@
     </div>
 
     <script>
-        // Configuration
+        // ========================================
+        // CONFIGURATION
+        // ========================================
         const CONFIG = {
             PROD_ADK_SERVER_URL: 'https://adk-backend-service-766291037876.us-central1.run.app',
             PROD_SERVICES_API_URL: 'https://services-backend-766291037876.us-central1.run.app',
@@ -1700,34 +1693,90 @@
         console.log('  - ADK Server:', ADK_SERVER_URL);
         console.log('  - Services API:', SERVICES_API);
 
-        // Settings Modal Logic
-        const settingsModal = document.getElementById('settingsModal');
-        const settingsBtn = document.getElementById('settingsBtn');
-        const settingsCloseBtn = document.getElementById('settingsCloseBtn');
-        const settingsCancelBtn = document.getElementById('settingsCancelBtn');
-        const settingsSaveBtn = document.getElementById('settingsSaveBtn');
-        const hubspotConnectBtn = document.getElementById('hubspotConnectBtn');
-        const hubspotStatus = document.getElementById('hubspotStatus');
+        // ========================================
+        // DOM ELEMENTS - Initialize after page loads
+        // ========================================
+        let settingsModal, settingsBtn, settingsCloseBtn, settingsCancelBtn, settingsSaveBtn;
+        let hubspotConnectBtn, hubspotStatus, apolloApiKeyInput, clayApiKeyInput;
 
-        const apolloApiKeyInput = document.getElementById('apolloApiKey');
-        const clayApiKeyInput = document.getElementById('clayApiKey');
+        function initializeSettingsElements() {
+            settingsModal = document.getElementById('settingsModal');
+            settingsBtn = document.getElementById('settingsBtn');
+            settingsCloseBtn = document.getElementById('settingsCloseBtn');
+            settingsCancelBtn = document.getElementById('settingsCancelBtn');
+            settingsSaveBtn = document.getElementById('settingsSaveBtn');
+            hubspotConnectBtn = document.getElementById('hubspotConnectBtn');
+            hubspotStatus = document.getElementById('hubspotStatus');
+            apolloApiKeyInput = document.getElementById('apolloApiKey');
+            clayApiKeyInput = document.getElementById('clayApiKey');
 
-        // Load saved settings from localStorage
+            console.log('🔍 Settings elements initialized:', {
+                settingsBtn: settingsBtn ? '✅' : '❌',
+                settingsModal: settingsModal ? '✅' : '❌',
+                settingsCloseBtn: settingsCloseBtn ? '✅' : '❌',
+                hubspotConnectBtn: hubspotConnectBtn ? '✅' : '❌'
+            });
+
+            // Add event listeners
+            if (settingsBtn) {
+                settingsBtn.addEventListener('click', function(e) {
+                    console.log('⚙️ Settings button clicked!');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openSettingsModal();
+                });
+                console.log('✅ Settings button listener attached');
+            } else {
+                console.error('❌ Cannot attach listener - settingsBtn is null');
+            }
+
+            if (settingsCloseBtn) settingsCloseBtn.addEventListener('click', closeSettingsModal);
+            if (settingsCancelBtn) settingsCancelBtn.addEventListener('click', closeSettingsModal);
+            if (settingsSaveBtn) settingsSaveBtn.addEventListener('click', saveSettings);
+            if (hubspotConnectBtn) hubspotConnectBtn.addEventListener('click', handleHubspotConnect);
+            
+            if (settingsModal) {
+                settingsModal.addEventListener('click', (e) => {
+                    if (e.target === settingsModal) {
+                        closeSettingsModal();
+                    }
+                });
+            }
+        }
+
+        // ========================================
+        // SETTINGS FUNCTIONS
+        // ========================================
+        function openSettingsModal() {
+            console.log('🔧 Opening settings modal...');
+            if (!settingsModal) {
+                console.error('❌ settingsModal is null!');
+                return;
+            }
+            loadSettings();
+            checkHubspotConnection();
+            settingsModal.classList.add('active');
+            console.log('✅ Modal opened, classes:', settingsModal.className);
+        }
+
+        function closeSettingsModal() {
+            console.log('🔧 Closing settings modal...');
+            if (settingsModal) {
+                settingsModal.classList.remove('active');
+            }
+        }
+
         function loadSettings() {
             const apolloKey = localStorage.getItem('apollo_api_key');
             const clayKey = localStorage.getItem('clay_api_key');
-            const hubspotConnected = localStorage.getItem('hubspot_connected') === 'true';
-
-            if (apolloKey) apolloApiKeyInput.value = apolloKey;
-            if (clayKey) clayApiKeyInput.value = clayKey;
             
-            updateHubspotStatus(hubspotConnected);
+            if (apolloApiKeyInput && apolloKey) apolloApiKeyInput.value = apolloKey;
+            if (clayApiKeyInput && clayKey) clayApiKeyInput.value = clayKey;
         }
 
-        // Save settings to localStorage
         function saveSettings() {
-            const apolloKey = apolloApiKeyInput.value.trim();
-            const clayKey = clayApiKeyInput.value.trim();
+            const apolloKey = apolloApiKeyInput ? apolloApiKeyInput.value.trim() : '';
+            const clayKey = clayApiKeyInput ? clayApiKeyInput.value.trim() : '';
 
             if (apolloKey) {
                 localStorage.setItem('apollo_api_key', apolloKey);
@@ -1742,13 +1791,12 @@
             }
 
             closeSettingsModal();
-            
-            // Show success message (you could make this fancier)
             console.log('✅ Settings saved successfully');
         }
 
-        // Update HubSpot connection status
         function updateHubspotStatus(isConnected) {
+            if (!hubspotStatus) return;
+            
             const indicator = hubspotStatus.querySelector('.status-indicator');
             const text = hubspotStatus.querySelector('.status-text');
             
@@ -1757,70 +1805,85 @@
                 text.classList.add('connected');
                 text.textContent = 'Connected';
                 
-                hubspotConnectBtn.classList.add('connected');
-                hubspotConnectBtn.querySelector('span').textContent = 'Disconnect HubSpot';
+                if (hubspotConnectBtn) {
+                    hubspotConnectBtn.classList.add('connected');
+                    hubspotConnectBtn.querySelector('span').textContent = 'Disconnect HubSpot';
+                }
             } else {
                 indicator.classList.remove('connected');
                 text.classList.remove('connected');
                 text.textContent = 'Not connected';
                 
-                hubspotConnectBtn.classList.remove('connected');
-                hubspotConnectBtn.querySelector('span').textContent = 'Connect HubSpot';
+                if (hubspotConnectBtn) {
+                    hubspotConnectBtn.classList.remove('connected');
+                    hubspotConnectBtn.querySelector('span').textContent = 'Connect HubSpot';
+                }
             }
         }
 
-        // HubSpot OAuth connection handler
-        hubspotConnectBtn.addEventListener('click', () => {
+        async function checkHubspotConnection() {
+            try {
+                const response = await fetch(`${SERVICES_API}/oauth/status?user_id=demo_user`);
+                const data = await response.json();
+                
+                if (data.connections && data.connections.hubspot) {
+                    localStorage.setItem('hubspot_connected', 'true');
+                    updateHubspotStatus(true);
+                } else {
+                    localStorage.removeItem('hubspot_connected');
+                    updateHubspotStatus(false);
+                }
+            } catch (error) {
+                console.error('Error checking HubSpot status:', error);
+            }
+        }
+
+        function handleHubspotConnect() {
             const isConnected = localStorage.getItem('hubspot_connected') === 'true';
             
             if (isConnected) {
                 // Disconnect
-                localStorage.removeItem('hubspot_connected');
-                localStorage.removeItem('hubspot_token');
-                updateHubspotStatus(false);
-                console.log('🔌 HubSpot disconnected');
+                if (confirm('Are you sure you want to disconnect HubSpot?')) {
+                    fetch(`${SERVICES_API}/oauth/disconnect/hubspot?user_id=demo_user`, {
+                        method: 'POST'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        localStorage.removeItem('hubspot_connected');
+                        localStorage.removeItem('hubspot_token');
+                        updateHubspotStatus(false);
+                        console.log('🔌 HubSpot disconnected');
+                        if (typeof addMessage === 'function') {
+                            addMessage('🔌 HubSpot disconnected successfully', 'assistant');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error disconnecting HubSpot:', error);
+                        alert('Failed to disconnect HubSpot');
+                    });
+                }
             } else {
-                // Connect - In production, this would trigger OAuth flow
-                // For now, just simulate the connection
+                // Connect - Redirect to OAuth flow
                 console.log('🔗 Initiating HubSpot OAuth...');
-                
-                // Simulate OAuth success
-                setTimeout(() => {
-                    localStorage.setItem('hubspot_connected', 'true');
-                    localStorage.setItem('hubspot_token', 'demo_token_' + Date.now());
-                    updateHubspotStatus(true);
-                    console.log('✅ HubSpot connected successfully');
-                }, 500);
-            }
-        });
-
-        // Open settings modal
-        function openSettingsModal() {
-            loadSettings();
-            settingsModal.classList.add('active');
-        }
-
-        // Close settings modal
-        function closeSettingsModal() {
-            settingsModal.classList.remove('active');
-        }
-
-        // Event listeners for settings
-        settingsBtn.addEventListener('click', openSettingsModal);
-        settingsCloseBtn.addEventListener('click', closeSettingsModal);
-        settingsCancelBtn.addEventListener('click', closeSettingsModal);
-        settingsSaveBtn.addEventListener('click', saveSettings);
-
-        // Close modal when clicking outside
-        settingsModal.addEventListener('click', (e) => {
-            if (e.target === settingsModal) {
                 closeSettingsModal();
+                const oauthUrl = `${SERVICES_API}/oauth/hubspot/authorize?user_id=demo_user`;
+                console.log('🔗 Redirecting to:', oauthUrl);
+                window.location.href = oauthUrl;
             }
-        });
+        }
 
-        // Rest of the existing JavaScript code...
-        // (All the existing code for theme, messages, file handling, etc. remains the same)
-        
+        // ========================================
+        // INITIALIZE SETTINGS ON PAGE LOAD
+        // ========================================
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeSettingsElements);
+        } else {
+            initializeSettingsElements();
+        }
+
+        // ========================================
+        // REST OF THE APPLICATION CODE
+        // ========================================
         const welcomeScreen = document.getElementById('welcomeScreen');
         const messagesContainer = document.getElementById('messages');
         const messageInput = document.getElementById('messageInput');
@@ -2541,11 +2604,53 @@
             }
         });
 
+        // ========================================
+        // PAGE LOAD - Initialize everything
+        // ========================================
         window.addEventListener('load', () => {
+            console.log('🚀 Page fully loaded');
+            
             loadTheme();
             updateInputButtons();
             messageInput.focus();
             initializeStripe();
+            
+            // Check for OAuth success/error in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            if (urlParams.has('oauth_success')) {
+                const service = urlParams.get('oauth_success');
+                console.log(`✅ OAuth success for ${service}`);
+                
+                // Update UI based on service
+                if (service === 'hubspot') {
+                    localStorage.setItem('hubspot_connected', 'true');
+                    updateHubspotStatus(true);
+                    
+                    // Show success message in chat
+                    setTimeout(() => {
+                        addMessage('✅ HubSpot connected successfully! You can now sync contacts to your HubSpot CRM.', 'assistant');
+                    }, 500);
+                }
+                
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+            
+            if (urlParams.has('oauth_error')) {
+                const service = urlParams.get('oauth_error');
+                const message = urlParams.get('message') || 'Unknown error';
+                console.error(`❌ OAuth error for ${service}: ${message}`);
+                
+                // Show error message
+                alert(`Failed to connect ${service}: ${message}`);
+                
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+            
+            // Load HubSpot connection status on page load
+            checkHubspotConnection();
         });
     </script>
 </body>

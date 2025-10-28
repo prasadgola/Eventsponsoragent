@@ -5,7 +5,10 @@ from .tools import (
     format_outreach_email,
     send_email,
     get_email_stats,
-    parse_json
+    parse_json,
+    find_sponsors_with_apollo,
+    enrich_leads_with_clay,
+    upload_contacts_to_hubspot_json
 )
 from chat_with_human.media_tools import generate_image, generate_video
 
@@ -21,6 +24,9 @@ host_agent = Agent(
         get_email_stats,
         parse_json,
         generate_image,
-        generate_video
+        generate_video,
+        find_sponsors_with_apollo,
+        enrich_leads_with_clay,
+        upload_contacts_to_hubspot_json
     ]
 )
