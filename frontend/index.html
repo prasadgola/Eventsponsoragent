@@ -45,6 +45,8 @@
             padding: 1.5rem;
             overflow-y: auto;
             flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .sidebar-title {
@@ -59,6 +61,7 @@
             display: flex;
             flex-direction: column;
             gap: 0.25rem;
+            flex: 1;
         }
 
         .sidebar-link {
@@ -71,6 +74,11 @@
             text-decoration: none;
             font-size: 0.95rem;
             transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
         }
 
         .sidebar-link svg {
@@ -90,6 +98,12 @@
             color: #e8eaed;
         }
 
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid #3c4043;
+        }
+
         .sidebar-overlay {
             position: fixed;
             top: 0;
@@ -101,6 +115,361 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease-out;
+        }
+
+        /* Settings Modal */
+        .settings-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .settings-modal.active {
+            display: flex;
+        }
+
+        .settings-content {
+            background: #2d2d30;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .settings-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #3c4043;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .settings-header h2 {
+            color: #e8eaed;
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .settings-close {
+            background: transparent;
+            border: none;
+            color: #9aa0a6;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .settings-close:hover {
+            background: #3c4043;
+            color: #e8eaed;
+        }
+
+        .settings-body {
+            padding: 1.5rem;
+        }
+
+        .settings-section {
+            margin-bottom: 2rem;
+        }
+
+        .settings-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .settings-section-title {
+            color: #e8eaed;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .settings-section-title svg {
+            width: 20px;
+            height: 20px;
+            color: #8ab4f8;
+        }
+
+        .settings-section-desc {
+            color: #9aa0a6;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #bdc1c6;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: #212121;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: #e8eaed;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #8ab4f8;
+            box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #5f6368;
+        }
+
+        .oauth-button {
+            width: 100%;
+            background: #8ab4f8;
+            color: #202124;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .oauth-button:hover {
+            background: #aecbfa;
+            transform: translateY(-1px);
+        }
+
+        .oauth-button.connected {
+            background: #34a853;
+            color: #ffffff;
+        }
+
+        .oauth-button.connected:hover {
+            background: #2d9246;
+        }
+
+        .oauth-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .settings-actions {
+            padding: 1.5rem;
+            border-top: 1px solid #3c4043;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #bdc1c6;
+            border: 1px solid #3c4043;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #3c4043;
+            color: #e8eaed;
+        }
+
+        .btn-primary {
+            background: #8ab4f8;
+            color: #202124;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background: #aecbfa;
+            transform: translateY(-1px);
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: #212121;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #5f6368;
+        }
+
+        .status-indicator.connected {
+            background: #34a853;
+        }
+
+        .status-text {
+            color: #9aa0a6;
+            font-size: 0.875rem;
+        }
+
+        .status-text.connected {
+            color: #81c995;
+        }
+
+        /* Light theme adjustments */
+        .light-theme .sidebar {
+            background: #f8f9fa;
+            border-right-color: #dadce0;
+        }
+
+        .light-theme .sidebar-header {
+            border-bottom-color: #dadce0;
+        }
+
+        .light-theme .sidebar-title {
+            color: #202124;
+        }
+
+        .light-theme .sidebar-link {
+            color: #5f6368;
+        }
+
+        .light-theme .sidebar-link svg {
+            color: #5f6368;
+        }
+
+        .light-theme .sidebar-link:hover {
+            background: #e8eaed;
+            color: #202124;
+        }
+
+        .light-theme .sidebar-link:hover svg {
+            color: #202124;
+        }
+
+        .light-theme .sidebar-footer {
+            border-top-color: #dadce0;
+        }
+
+        .light-theme .settings-content {
+            background: #ffffff;
+        }
+
+        .light-theme .settings-header {
+            border-bottom-color: #dadce0;
+        }
+
+        .light-theme .settings-header h2 {
+            color: #202124;
+        }
+
+        .light-theme .settings-close {
+            color: #5f6368;
+        }
+
+        .light-theme .settings-close:hover {
+            background: #f1f3f4;
+            color: #202124;
+        }
+
+        .light-theme .settings-section-title {
+            color: #202124;
+        }
+
+        .light-theme .settings-section-title svg {
+            color: #1a73e8;
+        }
+
+        .light-theme .settings-section-desc {
+            color: #5f6368;
+        }
+
+        .light-theme .form-label {
+            color: #5f6368;
+        }
+
+        .light-theme .form-input {
+            background: #f8f9fa;
+            border-color: #dadce0;
+            color: #202124;
+        }
+
+        .light-theme .form-input:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        .light-theme .form-input::placeholder {
+            color: #9aa0a6;
+        }
+
+        .light-theme .oauth-button {
+            background: #1a73e8;
+            color: #ffffff;
+        }
+
+        .light-theme .oauth-button:hover {
+            background: #1765cc;
+        }
+
+        .light-theme .connection-status {
+            background: #f8f9fa;
+        }
+
+        .light-theme .settings-actions {
+            border-top-color: #dadce0;
+        }
+
+        .light-theme .btn-secondary {
+            color: #5f6368;
+            border-color: #dadce0;
+        }
+
+        .light-theme .btn-secondary:hover {
+            background: #f1f3f4;
+            color: #202124;
+        }
+
+        .light-theme .btn-primary {
+            background: #1a73e8;
+            color: #ffffff;
+        }
+
+        .light-theme .btn-primary:hover {
+            background: #1765cc;
         }
 
         body {
@@ -358,7 +727,6 @@
             gap: 8px;
         }
 
-        /* Generated media styling */
         .message-content img,
         .message-content video {
             max-width: 100%;
@@ -1061,17 +1429,139 @@
         </div>
         <div class="sidebar-content">
             <nav class="sidebar-nav">
-                <a href="#" class="sidebar-link" onclick="location.reload(); return false;">
+                <button class="sidebar-link" onclick="location.reload()">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                     </svg>
                     <span>New chat</span>
-                </a>
+                </button>
             </nav>
+            
+            <div class="sidebar-footer">
+                <button class="sidebar-link" id="settingsBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="3"></circle>
+                      <path d="M12 1v6m0 6v6m0-12l-5.196 3m10.392 0L12 7m0 10l-5.196-3m10.392 0L12 17"></path>
+                      <path d="M12 1v6m0 6v6"></path>
+                    </svg>
+                    <span>Settings</span>
+                </button>
+            </div>
         </div>
     </div>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Settings Modal -->
+    <div class="settings-modal" id="settingsModal">
+        <div class="settings-content">
+            <div class="settings-header">
+                <h2>Integration Settings</h2>
+                <button class="settings-close" id="settingsCloseBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="settings-body">
+                <!-- Apollo.io Section -->
+                <div class="settings-section">
+                    <div class="settings-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                        Apollo.io
+                    </div>
+                    <div class="settings-section-desc">
+                        Connect your Apollo.io account to enrich sponsor data and find leads.
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">API Key</label>
+                        <input 
+                            type="password" 
+                            class="form-input" 
+                            id="apolloApiKey" 
+                            placeholder="Enter your Apollo.io API key"
+                            autocomplete="off"
+                        />
+                    </div>
+                </div>
+
+                <!-- Clay Section -->
+                <div class="settings-section">
+                    <div class="settings-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        Clay
+                    </div>
+                    <div class="settings-section-desc">
+                        Connect Clay to automate data enrichment and workflows.
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">API Key</label>
+                        <input 
+                            type="password" 
+                            class="form-input" 
+                            id="clayApiKey" 
+                            placeholder="Enter your Clay API key"
+                            autocomplete="off"
+                        />
+                    </div>
+                </div>
+
+                <!-- HubSpot Section -->
+                <div class="settings-section">
+                    <div class="settings-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <circle cx="12" cy="12" r="4"></circle>
+                            <line x1="4.93" y1="4.93" x2="9.17" y2="9.17"></line>
+                            <line x1="14.83" y1="14.83" x2="19.07" y2="19.07"></line>
+                            <line x1="14.83" y1="9.17" x2="19.07" y2="4.93"></line>
+                            <line x1="14.83" y1="9.17" x2="18.36" y2="5.64"></line>
+                            <line x1="4.93" y1="19.07" x2="9.17" y2="14.83"></line>
+                        </svg>
+                        HubSpot
+                    </div>
+                    <div class="settings-section-desc">
+                        Connect your HubSpot account to sync contacts and manage relationships.
+                    </div>
+                    
+                    <div class="connection-status" id="hubspotStatus">
+                        <span class="status-indicator"></span>
+                        <span class="status-text">Not connected</span>
+                    </div>
+                    
+                    <button class="oauth-button" id="hubspotConnectBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <circle cx="12" cy="12" r="4"></circle>
+                            <line x1="4.93" y1="4.93" x2="9.17" y2="9.17"></line>
+                            <line x1="14.83" y1="14.83" x2="19.07" y2="19.07"></line>
+                            <line x1="14.83" y1="9.17" x2="19.07" y2="4.93"></line>
+                            <line x1="14.83" y1="9.17" x2="18.36" y2="5.64"></line>
+                            <line x1="4.93" y1="19.07" x2="9.17" y2="14.83"></line>
+                        </svg>
+                        <span>Connect HubSpot</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="settings-actions">
+                <button class="btn-secondary" id="settingsCancelBtn">Cancel</button>
+                <button class="btn-primary" id="settingsSaveBtn">Save Settings</button>
+            </div>
+        </div>
+    </div>
 
     <div class="header">
         <div class="header-left">
@@ -1210,6 +1700,127 @@
         console.log('  - ADK Server:', ADK_SERVER_URL);
         console.log('  - Services API:', SERVICES_API);
 
+        // Settings Modal Logic
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsCloseBtn = document.getElementById('settingsCloseBtn');
+        const settingsCancelBtn = document.getElementById('settingsCancelBtn');
+        const settingsSaveBtn = document.getElementById('settingsSaveBtn');
+        const hubspotConnectBtn = document.getElementById('hubspotConnectBtn');
+        const hubspotStatus = document.getElementById('hubspotStatus');
+
+        const apolloApiKeyInput = document.getElementById('apolloApiKey');
+        const clayApiKeyInput = document.getElementById('clayApiKey');
+
+        // Load saved settings from localStorage
+        function loadSettings() {
+            const apolloKey = localStorage.getItem('apollo_api_key');
+            const clayKey = localStorage.getItem('clay_api_key');
+            const hubspotConnected = localStorage.getItem('hubspot_connected') === 'true';
+
+            if (apolloKey) apolloApiKeyInput.value = apolloKey;
+            if (clayKey) clayApiKeyInput.value = clayKey;
+            
+            updateHubspotStatus(hubspotConnected);
+        }
+
+        // Save settings to localStorage
+        function saveSettings() {
+            const apolloKey = apolloApiKeyInput.value.trim();
+            const clayKey = clayApiKeyInput.value.trim();
+
+            if (apolloKey) {
+                localStorage.setItem('apollo_api_key', apolloKey);
+            } else {
+                localStorage.removeItem('apollo_api_key');
+            }
+
+            if (clayKey) {
+                localStorage.setItem('clay_api_key', clayKey);
+            } else {
+                localStorage.removeItem('clay_api_key');
+            }
+
+            closeSettingsModal();
+            
+            // Show success message (you could make this fancier)
+            console.log('✅ Settings saved successfully');
+        }
+
+        // Update HubSpot connection status
+        function updateHubspotStatus(isConnected) {
+            const indicator = hubspotStatus.querySelector('.status-indicator');
+            const text = hubspotStatus.querySelector('.status-text');
+            
+            if (isConnected) {
+                indicator.classList.add('connected');
+                text.classList.add('connected');
+                text.textContent = 'Connected';
+                
+                hubspotConnectBtn.classList.add('connected');
+                hubspotConnectBtn.querySelector('span').textContent = 'Disconnect HubSpot';
+            } else {
+                indicator.classList.remove('connected');
+                text.classList.remove('connected');
+                text.textContent = 'Not connected';
+                
+                hubspotConnectBtn.classList.remove('connected');
+                hubspotConnectBtn.querySelector('span').textContent = 'Connect HubSpot';
+            }
+        }
+
+        // HubSpot OAuth connection handler
+        hubspotConnectBtn.addEventListener('click', () => {
+            const isConnected = localStorage.getItem('hubspot_connected') === 'true';
+            
+            if (isConnected) {
+                // Disconnect
+                localStorage.removeItem('hubspot_connected');
+                localStorage.removeItem('hubspot_token');
+                updateHubspotStatus(false);
+                console.log('🔌 HubSpot disconnected');
+            } else {
+                // Connect - In production, this would trigger OAuth flow
+                // For now, just simulate the connection
+                console.log('🔗 Initiating HubSpot OAuth...');
+                
+                // Simulate OAuth success
+                setTimeout(() => {
+                    localStorage.setItem('hubspot_connected', 'true');
+                    localStorage.setItem('hubspot_token', 'demo_token_' + Date.now());
+                    updateHubspotStatus(true);
+                    console.log('✅ HubSpot connected successfully');
+                }, 500);
+            }
+        });
+
+        // Open settings modal
+        function openSettingsModal() {
+            loadSettings();
+            settingsModal.classList.add('active');
+        }
+
+        // Close settings modal
+        function closeSettingsModal() {
+            settingsModal.classList.remove('active');
+        }
+
+        // Event listeners for settings
+        settingsBtn.addEventListener('click', openSettingsModal);
+        settingsCloseBtn.addEventListener('click', closeSettingsModal);
+        settingsCancelBtn.addEventListener('click', closeSettingsModal);
+        settingsSaveBtn.addEventListener('click', saveSettings);
+
+        // Close modal when clicking outside
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) {
+                closeSettingsModal();
+            }
+        });
+
+        // Rest of the existing JavaScript code...
+        // (All the existing code for theme, messages, file handling, etc. remains the same)
+        
         const welcomeScreen = document.getElementById('welcomeScreen');
         const messagesContainer = document.getElementById('messages');
         const messageInput = document.getElementById('messageInput');
@@ -1737,14 +2348,10 @@
                                     assistantMessage += part.text + '\n';
                                 }
 
-                                // ========================================
-                                // IMAGE AND VIDEO DISPLAY CODE (NEW)
-                                // ========================================
                                 if (part.functionResponse && part.functionResponse.response) {
                                     console.log('🔍 Found functionResponse');
                                     let funcResp = part.functionResponse.response;
                                     
-                                    // Handle ADK's extra "result" wrapper
                                     if (funcResp && typeof funcResp === 'object' && funcResp.result) {
                                         console.log('📦 Unwrapping ADK result wrapper');
                                         funcResp = funcResp.result;
@@ -1752,7 +2359,6 @@
                                     
                                     let parsedResp = funcResp;
                                     
-                                    // Parse JSON string if needed
                                     if (typeof funcResp === 'string') {
                                         try {
                                             parsedResp = JSON.parse(funcResp);
@@ -1763,11 +2369,9 @@
                                         }
                                     }
 
-                                    // Check if we have image data
                                     if (parsedResp && parsedResp.image_data) {
                                         console.log('🖼️ Image data found! Length:', parsedResp.image_data.length);
                                         
-                                        // Create a separate message with the image
                                         const imageDiv = document.createElement('div');
                                         imageDiv.className = 'message assistant';
 
@@ -1778,7 +2382,6 @@
                                         const messageContent = document.createElement('div');
                                         messageContent.className = 'message-content';
                                         
-                                        // Add text if present
                                         if (parsedResp.text_response) {
                                             const textPara = document.createElement('p');
                                             textPara.textContent = parsedResp.text_response;
@@ -1786,7 +2389,6 @@
                                             messageContent.appendChild(textPara);
                                         }
                                         
-                                        // Create and add image
                                         const img = document.createElement('img');
                                         img.src = `data:image/jpeg;base64,${parsedResp.image_data}`;
                                         img.style.maxWidth = '100%';
@@ -1811,7 +2413,6 @@
                                         messagesContainer.scrollTop = messagesContainer.scrollHeight;
                                     }
                                     
-                                    // Check if we have video URL
                                     if (parsedResp && parsedResp.video_url) {
                                         console.log('🎬 Video URL found!');
                                         
@@ -1846,15 +2447,11 @@
                                         messagesContainer.scrollTop = messagesContainer.scrollHeight;
                                     }
 
-                                    // Check for payment cart data
                                     if (parsedResp && parsedResp.payment_form_trigger && parsedResp.cart_id && parsedResp.client_secret) {
                                         console.log('Found payment cart data!', parsedResp);
                                         cartData = parsedResp;
                                     }
                                 }
-                                // ========================================
-                                // END IMAGE AND VIDEO DISPLAY CODE
-                                // ========================================
                             }
                         }
                     }
