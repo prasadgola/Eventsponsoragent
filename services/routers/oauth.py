@@ -18,13 +18,30 @@ router = APIRouter()
 # HubSpot uses OAuth, Apollo and Clay use API keys
 HUBSPOT_CLIENT_ID = os.getenv('HUBSPOT_CLIENT_ID', '')
 HUBSPOT_CLIENT_SECRET = os.getenv('HUBSPOT_CLIENT_SECRET', '')
-HUBSPOT_REDIRECT_URI = os.getenv('HUBSPOT_REDIRECT_URI', 'http://localhost:8001/oauth/hubspot/callback')
+
+# Detect environment
+is_cloud_run = os.getenv('K_SERVICE') is not None
+
+# Configure URLs based on environment
+if is_cloud_run:
+    # Production: Use Cloud Run URLs
+    SERVICES_BASE_URL = os.getenv('SERVICES_URL', 'https://services-backend-766291037876.us-central1.run.app')
+    FRONTEND_URL = 'https://storage.googleapis.com/event-sponsor-frontend/index.html'
+else:
+    # Local development
+    SERVICES_BASE_URL = os.getenv('SERVICES_URL', 'http://localhost:8001')
+    FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:8080')
+
+HUBSPOT_REDIRECT_URI = f"{SERVICES_BASE_URL}/oauth/hubspot/callback"
 
 # For now, hardcode the demo user
 DEMO_USER_ID = 'demo_user'
 
-# Frontend URL for redirects after OAuth
-FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:8080')
+print(f"🔧 OAuth Configuration:")
+print(f"   Environment: {'Cloud Run' if is_cloud_run else 'Local'}")
+print(f"   Services URL: {SERVICES_BASE_URL}")
+print(f"   Frontend URL: {FRONTEND_URL}")
+print(f"   HubSpot Redirect URI: {HUBSPOT_REDIRECT_URI}")
 
 
 # ============================================================================
@@ -52,6 +69,7 @@ async def hubspot_authorize(user_id: str = Query(default=DEMO_USER_ID)):
     )
     
     print(f"🟠 Redirecting {user_id} to HubSpot OAuth...")
+    print(f"   Redirect URI: {HUBSPOT_REDIRECT_URI}")
     return RedirectResponse(url=auth_url)
 
 
