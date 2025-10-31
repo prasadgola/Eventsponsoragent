@@ -92,43 +92,6 @@ def create_sponsorship_cart(
     except Exception as e:
         return json.dumps({"success": False, "error": str(e)})
 
-def select_payment_method(cart_id: str) -> str:
-    """
-    Show available payment methods (Stripe card input).
-    
-    Args:
-        cart_id: Cart ID from create_sponsorship_cart
-    
-    Returns:
-        JSON string with payment instructions
-    """
-    return json.dumps({
-        "success": True,
-        "message": "Payment form is ready. User can enter card details securely."
-    })
-
-def process_payment(
-    cart_id: str,
-    payment_method_id: str,
-    otp: str = ""
-) -> str:
-    """
-    This tool is no longer needed - Stripe handles payment directly.
-    Kept for compatibility.
-    
-    Args:
-        cart_id: Cart ID
-        payment_method_id: Selected payment method ID
-        otp: One-time password
-    
-    Returns:
-        Status message
-    """
-    return json.dumps({
-        "success": True,
-        "message": "Payment processing happens automatically via Stripe form."
-    })
-
 def get_sponsorship_tiers(event_type: str = "") -> str:
     """
     Get available sponsorship tiers with pricing.

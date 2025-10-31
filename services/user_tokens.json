@@ -1,16 +1,6 @@
 {
   "demo_user": {
     "apollo_api_key": "gsYTYGHTnNUjn0rAfrR8Bw",
-    "clay_api_key": "33ff43f41368de57e0df",
-    "hubspot": {
-      "access_token": "CKvVmIqjMxISQlNQMl8kQEwrAgUACAkWEgkEGNf_uXQgtqe9JyigrvAKMhToVuFjznbIYEb9fuPEQYPuS8LPkjodQlNQMl8kQEwrAhAACBkGcU4cAQESAQEBBDIuAgNCFB-zzoTJWSF-JZrRG3FAxxKOJEHqSgNuYTJSAFoAYABotqe9J3AAeAA",
-      "refresh_token": "na2-a657-6730-4efd-a18f-c9270198a88b",
-      "expires_at": 1800,
-      "connected_at": "2025-10-29T13:11:13.344024",
-      "additional_data": {
-        "token_type": "bearer",
-        "hub_id": 244219863
-      }
-    }
+    "clay_api_key": "33ff43f41368de57e0df"
   }
 }

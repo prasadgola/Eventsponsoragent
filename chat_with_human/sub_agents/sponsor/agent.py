@@ -9,8 +9,6 @@ from .tools import (
 
 from .payment_tools import (
     create_sponsorship_cart,
-    select_payment_method,
-    process_payment,
     get_sponsorship_tiers
 )
 
@@ -27,8 +25,6 @@ sponsor_agent = Agent(
         find_sponsor_opportunities,
         parse_json,
         create_sponsorship_cart,
-        select_payment_method,
-        process_payment,
         get_sponsorship_tiers,
         generate_image,
         generate_video
