@@ -1,16 +1,19 @@
 AI-powered event sponsorship platform with email tracking, sponsor management, and Stripe payment processing.
 
-**Live Demo:** [https://storage.googleapis.com/event-sponsor-frontend/index.html  ](https://storage.googleapis.com/event-sponsor-frontend/index.html   )
+**Live Demo:** [https://storage.googleapis.com/event-sponsor-frontend/index.html](https://storage.googleapis.com/event-sponsor-frontend/index.html)
+
 ---
 
 ## Features
 
 🤖 **Multi-agent AI conversation system** (host, sponsor, undecided)
-<br>🎙️ **Live audio conversation** with real-time voice interaction via WebSocket streaming
+<br>🎙️ **Live audio & video conversation** with real-time WebSocket streaming
+<br>🎯 **Advanced Lead Generation Workflow** (Apollo, Clay, & HubSpot Integration)
 <br>🔌 Built on the **Model Context Protocol (MCP)** for a scalable, decoupled architecture
+<br>🎨 **On-demand media generation** (images & video) using Vertex AI
 <br>📧 **Email tracking** with open detection via a 1x1 tracking pixel
 <br>💳 **Stripe payment integration** with AP2 protocol
-<br>🧪 **Automated Agent Evaluation** using the ADK to ensure tool reliability and response quality
+<br>🧪 **Automated Agent Evaluation** using the ADK
 <br>💻 **Agent-to-Agent (A2A) Client** for programmatic interaction
 <br>📊 **Sponsor database** (Airtable integration)
 <br>🎯 **Tiered sponsorship packages** ($10k Gold, $5k Silver, $2.5k Bronze)
@@ -71,15 +74,14 @@ This project follows the **Model Context Protocol (MCP)**, which separates the A
     cd chat_with_human/
     pip install -r requirements.txt
     export SERVICES_URL=http://localhost:8001
-    adk api_server --host 0.0.0.0 --port 8000
+    python main.py
     ```
 
 4.  **Run frontend server (Terminal 3):**
     This server provides the user-facing web interface.
     ```bash
     cd frontend/
-    export ADK_SERVER_URL=http://localhost:8000
-    python server.py
+    python -m http.server 8080
     ```
 
 5.  **Open your browser** to `http://localhost:8080`.
@@ -90,7 +92,7 @@ This project follows the **Model Context Protocol (MCP)**, which separates the A
 
 The platform includes a real-time voice conversation feature that allows users to speak directly with the AI assistant.
 
--   Click the **wave icon (🌊)** in the chat interface to start a live conversation.
+-   Click the **live conversation icon** in the chat interface to start a live conversation.
 -   Speak naturally - the AI will listen and respond with voice.
 -   The system uses **bidirectional streaming** for real-time audio input and output via WebSocket.
 -   Features 24kHz audio quality for clear voice interaction.
@@ -165,6 +167,8 @@ This project includes a command-line client in the `a2a_client_example/` directo
     echo -n "your_airtable_table_id" | gcloud secrets create AIRTABLE_TABLE_ID --data-file=-
     echo -n "your_google_api_key" | gcloud secrets create GOOGLE_API_KEY --data-file=-
     echo -n "your_stripe_secret_key" | gcloud secrets create STRIPE_SECRET_KEY --data-file=-
+    echo -n "your_hubspot_client_id" | gcloud secrets create HUBSPOT_CLIENT_ID --data-file=-
+    echo -n "your_hubspot_client_secret" | gcloud secrets create HUBSPOT_CLIENT_SECRET --data-file=-
     gcloud secrets create GMAIL_TOKEN --data-file=secrets/gmail_token.json
     ```
 
@@ -211,22 +215,25 @@ Use the following test card numbers provided by Stripe:
 
 ## Project Structure
 
+```
 event-sponsor-assistant/
 ├── a2a_client_example/       # A2A client for programmatic interaction
 ├── chat_with_human/          # ADK agents (MCP Host/Client)
 │   ├── agent.py              # Root orchestrator agent
+│   ├── main.py               # ADK server entry point
 │   └── sub_agents/
 │       ├── host/
 │       ├── sponsor/
 │       └── undecided/
 ├── services/                 # Backend API (MCP Server)
+│   ├── main.py               # Services server entry point
 │   ├── core/
 │   └── routers/
-├── frontend/                 # Chat UI
+├── frontend/                 # Chat UI (static files)
 │   ├── index.html
-│   └── server.py
+│   └── live.html
 └── cloudbuild.yaml           # CI/CD configuration
-
+```
 
 ---
 
@@ -257,8 +264,6 @@ event-sponsor-assistant/
     gcloud run logs read services-backend --region=us-central1 --limit=50
     # Check ADK agent logs
     gcloud run logs read adk-backend-service --region=us-central1 --limit=50
-    # Check frontend logs
-    gcloud run logs read adk-frontend-service --region=us-central1 --limit=50
     ```
 
 ---
