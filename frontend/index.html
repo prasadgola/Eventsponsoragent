@@ -1789,6 +1789,7 @@ static-analyzer-disable-next-line
         .send-btn {
             background: transparent;
             color: var(--text-secondary);
+            display: none; /* Hidden by default until text is entered */
         }
 
         .send-btn:hover:not(:disabled) {
@@ -2656,11 +2657,15 @@ static-analyzer-disable-next-line
             const hasText = messageInput.value.trim().length > 0;
             const hasFiles = attachedFiles.length > 0;
 
+            // Attach button is always visible
             attachBtn.style.display = 'flex';
             attachBtn.title = 'Attach file';
 
+            // Show send button only if there's text or files
+            // Otherwise show mic and live buttons
             if (hasText || hasFiles) {
                 sendBtn.style.display = 'flex';
+                sendBtn.disabled = false;
                 micBtn.style.display = 'none';
                 liveBtn.style.display = 'none';
             } else {
