@@ -2108,10 +2108,27 @@
       max-width: 680px;
       margin: 0 auto;
       width: 100%;
+      transition: opacity 0.3s ease, transform 0.3s ease;
     }
 
     .starter-prompts.hidden {
       display: none;
+    }
+
+    .starter-prompts.fade-in {
+      animation: fadeInScale 0.3s ease-out forwards;
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
     }
 
     .prompt-categories {
@@ -2120,7 +2137,7 @@
       justify-content: center;
       gap: 0.5rem;
       margin-bottom: 1rem;
-      transition: opacity 0.2s ease, transform 0.2s ease;
+      transition: opacity 0.3s ease, transform 0.3s ease;
     }
 
     .prompt-categories.hidden {
@@ -2130,6 +2147,24 @@
       height: 0;
       overflow: hidden;
       margin-bottom: 0;
+    }
+
+    .prompt-categories.fade-in {
+      animation: fadeInCategories 0.3s ease-out forwards;
+    }
+
+    @keyframes fadeInCategories {
+      from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+        height: 0;
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        height: auto;
+      }
     }
 
     .prompt-category-btn {
@@ -2146,6 +2181,40 @@
       cursor: pointer;
       transition: all 0.2s ease;
       white-space: nowrap;
+      animation: fadeInButton 0.3s ease-out backwards;
+    }
+
+    /* Stagger animation for category buttons */
+    .prompt-category-btn:nth-child(1) {
+      animation-delay: 0.05s;
+    }
+
+    .prompt-category-btn:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+
+    .prompt-category-btn:nth-child(3) {
+      animation-delay: 0.15s;
+    }
+
+    .prompt-category-btn:nth-child(4) {
+      animation-delay: 0.2s;
+    }
+
+    .prompt-category-btn:nth-child(5) {
+      animation-delay: 0.25s;
+    }
+
+    @keyframes fadeInButton {
+      from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
     }
 
     .prompt-category-btn:hover {
@@ -2206,11 +2275,11 @@
       border-radius: 12px;
       padding: 0.5rem;
       margin-top: 0.5rem;
-      animation: slideDown 0.2s ease-out;
     }
 
     .prompt-options-container.active {
       display: block;
+      animation: slideDown 0.2s ease-out;
     }
 
     @keyframes slideDown {
@@ -3867,8 +3936,44 @@
       }
     };
 
-    // Track if textarea has expanded
+    // Track states
     let textareaExpanded = false;
+    let chatStarted = false;
+    let previousInputValue = ''; // Track previous input value
+    let promptsCurrentlyVisible = true; // Track if prompts are visible
+
+    // Function to show category buttons with animation
+    function showCategoriesWithAnimation() {
+      promptCategories.classList.remove('hidden');
+      // Remove animation class if it exists
+      promptCategories.classList.remove('fade-in');
+      // Force reflow to restart animation
+      void promptCategories.offsetWidth;
+      // Add animation class
+      promptCategories.classList.add('fade-in');
+
+      // Remove animation class after animation completes
+      setTimeout(() => {
+        promptCategories.classList.remove('fade-in');
+      }, 300);
+    }
+
+    // Function to show entire prompts section with animation
+    function showPromptsWithAnimation() {
+      starterPromptsSection.classList.remove('hidden');
+      promptsCurrentlyVisible = true;
+      // Remove animation class if it exists
+      starterPromptsSection.classList.remove('fade-in');
+      // Force reflow to restart animation
+      void starterPromptsSection.offsetWidth;
+      // Add animation class
+      starterPromptsSection.classList.add('fade-in');
+
+      // Remove animation class after animation completes
+      setTimeout(() => {
+        starterPromptsSection.classList.remove('fade-in');
+      }, 300);
+    }
 
     // Category button click handlers
     document.querySelectorAll('.prompt-category-btn').forEach(btn => {
@@ -3902,7 +4007,7 @@
               messageInput.dispatchEvent(new Event('input'));
               messageInput.focus();
               promptOptionsContainer.classList.remove('active');
-              promptCategories.classList.remove('hidden');
+              showCategoriesWithAnimation();
             });
           }
 
@@ -3915,40 +4020,77 @@
       });
     });
 
-    // Close button handler
+    // Close button handler with animation
     closePromptOptions.addEventListener('click', function () {
       promptOptionsContainer.classList.remove('active');
-      promptCategories.classList.remove('hidden');
+      showCategoriesWithAnimation();
     });
 
-    // Monitor textarea expansion
-    messageInput.addEventListener('input', function () {
-      const currentHeight = parseInt(this.style.height) || 24;
+    // Function to check if prompts should be visible
+    function updatePromptsVisibility() {
+      const currentInputValue = messageInput.value.trim();
+      const hasText = currentInputValue.length > 0;
+      const currentHeight = parseInt(messageInput.style.height) || 24;
+      const isExpanded = currentHeight > 50; // More than ~2 lines
 
-      // Check if textarea has expanded beyond initial height
-      if (currentHeight > 50) { // More than ~2 lines
-        if (!textareaExpanded) {
-          textareaExpanded = true;
-          starterPromptsSection.classList.add('hidden');
+      // Check if we transitioned from having text to no text
+      const justBecameEmpty = previousInputValue.length > 0 && currentInputValue.length === 0;
+
+      // Show prompts only if:
+      // 1. No text in input
+      // 2. Textarea not expanded
+      // 3. Chat hasn't started yet
+      const shouldShowPrompts = !hasText && !isExpanded && !chatStarted;
+
+      if (shouldShowPrompts) {
+        // Only animate if:
+        // - Prompts are currently hidden AND
+        // - We just transitioned from having text to no text (not already empty)
+        if (!promptsCurrentlyVisible && justBecameEmpty) {
+          showPromptsWithAnimation();
+        } else if (!promptsCurrentlyVisible && previousInputValue.length === 0) {
+          // Show without animation if already empty (page load case)
+          starterPromptsSection.classList.remove('hidden');
+          promptsCurrentlyVisible = true;
         }
       } else {
-        // Don't show prompts back when shrinking
-        // textareaExpanded remains true once set
+        if (promptsCurrentlyVisible) {
+          starterPromptsSection.classList.add('hidden');
+          promptsCurrentlyVisible = false;
+        }
       }
 
-      // Hide if there's text
-      if (this.value.trim().length > 0) {
-        starterPromptsSection.classList.add('hidden');
-      }
+      // Update previous value for next comparison
+      previousInputValue = currentInputValue;
+
+      // Track expansion state
+      textareaExpanded = isExpanded;
+    }
+
+    // Monitor textarea changes
+    messageInput.addEventListener('input', function () {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+      updatePromptsVisibility();
+      updateInputButtons();
     });
 
-    // Update the switchToChatView function to hide prompts
+    // Monitor textarea for manual resizing (if user deletes text)
+    messageInput.addEventListener('keyup', function () {
+      updatePromptsVisibility();
+    });
+
+    // Update the switchToChatView function to hide prompts permanently
     const originalSwitchToChatView = switchToChatView;
     switchToChatView = function () {
       originalSwitchToChatView();
+      chatStarted = true; // Mark that chat has started
       starterPromptsSection.classList.add('hidden');
-      textareaExpanded = true; // Prevent prompts from showing again
+      promptsCurrentlyVisible = false;
     };
+
+    // Initial visibility check
+    updatePromptsVisibility();
   </script>
 </body>
 
