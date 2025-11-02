@@ -8,17 +8,13 @@ AI-powered event sponsorship platform with email tracking, sponsor management, a
 
 🤖 **Multi-agent AI conversation system** (host, sponsor, undecided)
 <br>🎙️ **Live audio & video conversation** with real-time WebSocket streaming
-<br>🎯 **Advanced Lead Generation Workflow** (Apollo, Clay, & HubSpot Integration)
-<br>🔌 Built on the **Model Context Protocol (MCP)** for a scalable, decoupled architecture
-<br>🎨 **On-demand media generation** (images & video) using Vertex AI
-<br>📧 **Email tracking** with open detection via a 1x1 tracking pixel
-<br>💳 **Stripe payment integration** with AP2 protocol
-<br>🧪 **Automated Agent Evaluation** using the ADK
-<br>💻 **Agent-to-Agent (A2A) Client** for programmatic interaction
-<br>📊 **Sponsor database** (Airtable integration)
-<br>🎯 **Tiered sponsorship packages** ($10k Gold, $5k Silver, $2.5k Bronze)
-<br>✨ **Custom amount sponsorships** ($0.50+)
-<br>🔒 **PCI-compliant payment processing** via Stripe Elements
+<br>🎯**Data** from Apollo.io, Clay.com & display on HubSpot dashboard
+<br> 🔌Built on the **Model Context Protocol (MCP)** and **Agent-to-Agent (A2A)** for a scalable, decoupled architecture, converstion with another agent
+<br>🎨 **IMAGE and VIDEO generation** using Vertex AI
+<br>🧪Built-in testing with **Automated Agent Evaluation(eval)** using ADK and example of ** A2A client**
+<br>💳 **Stripe payment integration**($0.50+) and **AP2 protocol**
+<br>📧**Email tracking** via a 1x1 tracking pixel 
+<br>📊**Database** (Airtable integration)
 <br>☁️ **Cloud Run deployment ready** with a `cloudbuild.yaml` for CI/CD
 
 ---
