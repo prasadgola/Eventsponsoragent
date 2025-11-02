@@ -2101,6 +2101,257 @@
       padding: 2rem 3rem;
       text-align: center;
     }
+
+    /* Starter Prompts Section */
+    .starter-prompts {
+      padding: 0 1rem 1rem;
+      max-width: 680px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .starter-prompts.hidden {
+      display: none;
+    }
+
+    .prompt-categories {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .prompt-categories.hidden {
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+      height: 0;
+      overflow: hidden;
+      margin-bottom: 0;
+    }
+
+    .prompt-category-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.5rem 0.75rem;
+      height: 32px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-primary);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .prompt-category-btn:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-secondary);
+      color: var(--text-primary);
+    }
+
+    .prompt-category-btn.active {
+      background: var(--accent-primary);
+      border-color: var(--accent-primary);
+      color: var(--text-on-primary);
+    }
+
+    /* Fix text color for active buttons on light themes */
+    .theme-c1 .prompt-category-btn.active,
+    .theme-c2 .prompt-category-btn.active,
+    .theme-c3 .prompt-category-btn.active,
+    .theme-c7 .prompt-category-btn.active,
+    .theme-c8 .prompt-category-btn.active,
+    .theme-c9 .prompt-category-btn.active,
+    .theme-c10 .prompt-category-btn.active,
+    .theme-c11 .prompt-category-btn.active,
+    .theme-c12 .prompt-category-btn.active,
+    .theme-c13 .prompt-category-btn.active,
+    .theme-c14 .prompt-category-btn.active,
+    .theme-c15 .prompt-category-btn.active,
+    .theme-c16 .prompt-category-btn.active,
+    .theme-c19 .prompt-category-btn.active,
+    .theme-c20 .prompt-category-btn.active,
+    .theme-c21 .prompt-category-btn.active,
+    .theme-c23 .prompt-category-btn.active,
+    .theme-c24 .prompt-category-btn.active {
+      color: #212121;
+    }
+
+    .theme-c4 .prompt-category-btn.active,
+    .theme-c5 .prompt-category-btn.active,
+    .theme-c6 .prompt-category-btn.active,
+    .theme-c17 .prompt-category-btn.active,
+    .theme-c18 .prompt-category-btn.active,
+    .theme-c22 .prompt-category-btn.active {
+      color: #ffffff;
+    }
+
+    .prompt-category-btn svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    /* Prompt Options Container - Like Claude's dropdown */
+    .prompt-options-container {
+      position: relative;
+      display: none;
+      background: var(--bg-input);
+      border: 1px solid var(--border-primary);
+      border-radius: 12px;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      animation: slideDown 0.2s ease-out;
+    }
+
+    .prompt-options-container.active {
+      display: block;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .prompt-options-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .prompt-options-header svg {
+      width: 16px;
+      height: 16px;
+      color: var(--text-tertiary);
+    }
+
+    .prompt-options-title {
+      flex: 1;
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .prompt-options-close {
+      background: transparent;
+      border: none;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      width: 24px;
+      height: 24px;
+    }
+
+    .prompt-options-close:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .prompt-options-close svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .prompt-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .prompt-option {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border-primary);
+      border-radius: 0;
+      padding: 0.625rem 0.75rem;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .prompt-option:last-child {
+      border-bottom: none;
+    }
+
+    .prompt-option:first-child {
+      border-radius: 8px 8px 0 0;
+    }
+
+    .prompt-option:last-child {
+      border-radius: 0 0 8px 8px;
+    }
+
+    .prompt-option:hover:not(:disabled) {
+      background: var(--bg-hover);
+    }
+
+    .prompt-option:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .prompt-option::before {
+      display: none;
+    }
+
+    .prompt-option-arrow {
+      margin-left: auto;
+      width: 16px;
+      height: 16px;
+      color: var(--text-tertiary);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .prompt-option:hover .prompt-option-arrow {
+      opacity: 1;
+    }
+
+    .coming-soon-badge {
+      margin-left: auto;
+      padding: 0.125rem 0.5rem;
+      background: var(--bg-hover);
+      border-radius: 4px;
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+    }
+
+    @media (max-width: 768px) {
+      .prompt-categories {
+        gap: 0.375rem;
+      }
+
+      .prompt-category-btn {
+        font-size: 0.8125rem;
+        padding: 0.375rem 0.625rem;
+      }
+    }
   </style>
 </head>
 
@@ -2404,6 +2655,78 @@
               </svg>
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+    <!-- Starter Prompts Section -->
+    <div class="starter-prompts" id="starterPrompts">
+      <div class="prompt-categories" id="promptCategories">
+        <button class="prompt-category-btn" data-category="ideas">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+            <path
+              d="M176,232a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,232Zm40-128a87.55,87.55,0,0,1-33.64,69.21A16.24,16.24,0,0,0,176,186v6a16,16,0,0,1-16,16H96a16,16,0,0,1-16-16v-6a16,16,0,0,0-6.23-12.66A87.59,87.59,0,0,1,40,104.49C39.74,56.83,78.26,17.14,125.88,16A88,88,0,0,1,216,104Zm-16,0a72,72,0,0,0-73.74-72c-39,.92-70.47,33.39-70.26,72.39a71.65,71.65,0,0,0,27.64,56.3A32,32,0,0,1,96,186v6h64v-6a32.15,32.15,0,0,1,12.47-25.35A71.65,71.65,0,0,0,200,104Zm-16.11-9.34a57.6,57.6,0,0,0-46.56-46.55,8,8,0,0,0-2.66,15.78c16.57,2.79,30.63,16.85,33.44,33.45A8,8,0,0,0,176,104a9,9,0,0,0,1.35-.11A8,8,0,0,0,183.89,94.66Z">
+            </path>
+          </svg>
+          Get Ideas
+        </button>
+
+        <button class="prompt-category-btn" data-category="images">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+            <path
+              d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z">
+            </path>
+          </svg>
+          Create Images
+        </button>
+
+        <button class="prompt-category-btn" data-category="video">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+            <path
+              d="M164.44,121.34l-48-32A8,8,0,0,0,104,96v64a8,8,0,0,0,12.44,6.66l48-32a8,8,0,0,0,0-13.32ZM120,145.05V111l25.58,17ZM216,40H40A16,16,0,0,0,24,56V168a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,128H40V56H216V168Zm16,40a8,8,0,0,1-8,8H32a8,8,0,0,1,0-16H224A8,8,0,0,1,232,208Z">
+            </path>
+          </svg>
+          Create Video
+        </button>
+
+        <button class="prompt-category-btn" data-category="plan">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+            <path
+              d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z">
+            </path>
+          </svg>
+          Plan Event
+        </button>
+
+        <button class="prompt-category-btn" data-category="sponsor">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+            <path
+              d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm40-68a28,28,0,0,1-28,28h-4v8a8,8,0,0,1-16,0v-8H104a8,8,0,0,1,0-16h36a12,12,0,0,0,0-24H116a28,28,0,0,1,0-56h4V72a8,8,0,0,1,16,0v8h16a8,8,0,0,1,0,16H116a12,12,0,0,0,0,24h24A28,28,0,0,1,168,148Z">
+            </path>
+          </svg>
+          Sponsor
+        </button>
+      </div>
+
+      <!-- Single Options Container -->
+      <div class="prompt-options-container" id="promptOptionsContainer">
+        <div class="prompt-options-header">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"
+            id="categoryIcon">
+            <path
+              d="M176,232a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,232Zm40-128a87.55,87.55,0,0,1-33.64,69.21A16.24,16.24,0,0,0,176,186v6a16,16,0,0,1-16,16H96a16,16,0,0,1-16-16v-6a16,16,0,0,0-6.23-12.66A87.59,87.59,0,0,1,40,104.49C39.74,56.83,78.26,17.14,125.88,16A88,88,0,0,1,216,104Zm-16,0a72,72,0,0,0-73.74-72c-39,.92-70.47,33.39-70.26,72.39a71.65,71.65,0,0,0,27.64,56.3A32,32,0,0,1,96,186v6h64v-6a32.15,32.15,0,0,1,12.47-25.35A71.65,71.65,0,0,0,200,104Zm-16.11-9.34a57.6,57.6,0,0,0-46.56-46.55,8,8,0,0,0-2.66,15.78c16.57,2.79,30.63,16.85,33.44,33.45A8,8,0,0,0,176,104a9,9,0,0,0,1.35-.11A8,8,0,0,0,183.89,94.66Z">
+            </path>
+          </svg>
+          <span class="prompt-options-title" id="categoryTitle">Get Ideas</span>
+          <button class="prompt-options-close" id="closePromptOptions">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256">
+              <path
+                d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z">
+              </path>
+            </svg>
+          </button>
+        </div>
+        <div class="prompt-options" id="promptOptionsList">
+          <!-- Options will be dynamically inserted here -->
         </div>
       </div>
     </div>
@@ -3473,6 +3796,159 @@
       // Load HubSpot connection status on page load
       checkHubspotConnection();
     });
+
+    // ========================================
+    // STARTER PROMPTS FUNCTIONALITY
+    // ========================================
+    const starterPromptsSection = document.getElementById('starterPrompts');
+    const promptCategories = document.getElementById('promptCategories');
+    const promptOptionsContainer = document.getElementById('promptOptionsContainer');
+    const promptOptionsList = document.getElementById('promptOptionsList');
+    const categoryTitle = document.getElementById('categoryTitle');
+    const categoryIcon = document.getElementById('categoryIcon');
+    const closePromptOptions = document.getElementById('closePromptOptions');
+
+    // Define all prompt options
+    const promptData = {
+      ideas: {
+        title: 'Get Ideas',
+        icon: '<path d="M176,232a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,232Zm40-128a87.55,87.55,0,0,1-33.64,69.21A16.24,16.24,0,0,0,176,186v6a16,16,0,0,1-16,16H96a16,16,0,0,1-16-16v-6a16,16,0,0,0-6.23-12.66A87.59,87.59,0,0,1,40,104.49C39.74,56.83,78.26,17.14,125.88,16A88,88,0,0,1,216,104Zm-16,0a72,72,0,0,0-73.74-72c-39,.92-70.47,33.39-70.26,72.39a71.65,71.65,0,0,0,27.64,56.3A32,32,0,0,1,96,186v6h64v-6a32.15,32.15,0,0,1,12.47-25.35A71.65,71.65,0,0,0,200,104Zm-16.11-9.34a57.6,57.6,0,0,0-46.56-46.55,8,8,0,0,0-2.66,15.78c16.57,2.79,30.63,16.85,33.44,33.45A8,8,0,0,0,176,104a9,9,0,0,0,1.35-.11A8,8,0,0,0,183.89,94.66Z"></path>',
+        options: [
+          'Suggest event types I could host',
+          'What industries sponsor events like mine?',
+          'Give me sponsorship pitch ideas',
+          'How to approach potential sponsors?',
+          'What makes a successful event?'
+        ]
+      },
+      images: {
+        title: 'Create Images',
+        icon: '<path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"></path>',
+        options: [
+          'Design an event poster for my upcoming conference',
+          'Generate a sponsor banner with logo placement',
+          'Create promotional graphics for social media',
+          'Make a logo placement mockup for sponsors',
+          'Design social media visuals for event promotion'
+        ]
+      },
+      video: {
+        title: 'Create Video',
+        icon: '<path d="M164.44,121.34l-48-32A8,8,0,0,0,104,96v64a8,8,0,0,0,12.44,6.66l48-32a8,8,0,0,0,0-13.32ZM120,145.05V111l25.58,17ZM216,40H40A16,16,0,0,0,24,56V168a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,128H40V56H216V168Zm16,40a8,8,0,0,1-8,8H32a8,8,0,0,1,0-16H224A8,8,0,0,1,232,208Z"></path>',
+        options: [
+          { text: 'Generate event promo video', disabled: true },
+          { text: 'Create sponsor spotlight video', disabled: true },
+          { text: 'Make event recap video', disabled: true },
+          { text: 'Design animated logo reveal', disabled: true },
+          { text: 'Create social media video ad', disabled: true }
+        ]
+      },
+      plan: {
+        title: 'Plan Event',
+        icon: '<path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"></path>',
+        options: [
+          'I want to organize a tech conference. Help me plan it.',
+          'Help me find sponsors for my event',
+          'Create sponsorship packages for my event',
+          'Draft outreach emails to potential sponsors',
+          'Show me potential sponsors from your database'
+        ]
+      },
+      sponsor: {
+        title: 'Sponsor',
+        icon: '<path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm40-68a28,28,0,0,1-28,28h-4v8a8,8,0,0,1-16,0v-8H104a8,8,0,0,1,0-16h36a12,12,0,0,0,0-24H116a28,28,0,0,1,0-56h4V72a8,8,0,0,1,16,0v8h16a8,8,0,0,1,0,16H116a12,12,0,0,0,0,24h24A28,28,0,0,1,168,148Z"></path>',
+        options: [
+          'I want to sponsor an event. What are my options?',
+          'Show me sponsorship tiers and pricing',
+          'Find events I can sponsor in my industry',
+          'Process a $10,000 Gold sponsorship payment',
+          'Make a custom $500 contribution'
+        ]
+      }
+    };
+
+    // Track if textarea has expanded
+    let textareaExpanded = false;
+
+    // Category button click handlers
+    document.querySelectorAll('.prompt-category-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const category = this.getAttribute('data-category');
+        const data = promptData[category];
+
+        // Update header
+        categoryTitle.textContent = data.title;
+        categoryIcon.innerHTML = data.icon;
+
+        // Clear and populate options
+        promptOptionsList.innerHTML = '';
+        data.options.forEach(option => {
+          const isDisabled = typeof option === 'object';
+          const optionText = isDisabled ? option.text : option;
+
+          const button = document.createElement('button');
+          button.className = 'prompt-option';
+          if (isDisabled) button.disabled = true;
+          button.setAttribute('data-prompt', optionText);
+
+          button.innerHTML = `
+                <div style="flex: 1;">${optionText}</div>
+                ${isDisabled ? '<span class="coming-soon-badge">Coming Soon</span>' : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256" class="prompt-option-arrow"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path></svg>'}
+            `;
+
+          if (!isDisabled) {
+            button.addEventListener('click', function () {
+              messageInput.value = optionText;
+              messageInput.dispatchEvent(new Event('input'));
+              messageInput.focus();
+              promptOptionsContainer.classList.remove('active');
+              promptCategories.classList.remove('hidden');
+            });
+          }
+
+          promptOptionsList.appendChild(button);
+        });
+
+        // Show options, hide categories
+        promptOptionsContainer.classList.add('active');
+        promptCategories.classList.add('hidden');
+      });
+    });
+
+    // Close button handler
+    closePromptOptions.addEventListener('click', function () {
+      promptOptionsContainer.classList.remove('active');
+      promptCategories.classList.remove('hidden');
+    });
+
+    // Monitor textarea expansion
+    messageInput.addEventListener('input', function () {
+      const currentHeight = parseInt(this.style.height) || 24;
+
+      // Check if textarea has expanded beyond initial height
+      if (currentHeight > 50) { // More than ~2 lines
+        if (!textareaExpanded) {
+          textareaExpanded = true;
+          starterPromptsSection.classList.add('hidden');
+        }
+      } else {
+        // Don't show prompts back when shrinking
+        // textareaExpanded remains true once set
+      }
+
+      // Hide if there's text
+      if (this.value.trim().length > 0) {
+        starterPromptsSection.classList.add('hidden');
+      }
+    });
+
+    // Update the switchToChatView function to hide prompts
+    const originalSwitchToChatView = switchToChatView;
+    switchToChatView = function () {
+      originalSwitchToChatView();
+      starterPromptsSection.classList.add('hidden');
+      textareaExpanded = true; // Prevent prompts from showing again
+    };
   </script>
 </body>
 
