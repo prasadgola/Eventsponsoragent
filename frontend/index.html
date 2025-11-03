@@ -15,7 +15,7 @@
 
     :root {
       --sidebar-width: 308px;
-      --sidebar-width-closed: 70px;
+      --sidebar-width-closed: 60px;
 
       /* Dark theme colors (default) */
       --bg-primary: #1d1d1d;
@@ -1772,9 +1772,47 @@
       }
 
       body.sidebar-closed .sidebar .sidebar-content {
+        overflow: visible;
+      }
+      
+      /* Hide text labels when sidebar is closed */
+      body.sidebar-closed .sidebar-link span,
+      body.sidebar-closed .sidebar-footer span {
         opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.1s ease-out;
+        width: 0;
+        overflow: hidden;
+        transition: opacity 0.1s ease-out, width 0.1s ease-out;
+      }
+      
+      /* Center icons when sidebar is closed */
+      body.sidebar-closed .sidebar-link {
+        justify-content: center;
+        padding: 0.75rem;
+      }
+      
+      /* Remove hover background when sidebar is closed */
+      body.sidebar-closed .sidebar-link:hover {
+        background: transparent;
+      }
+      
+      /* Keep icons visible */
+      body.sidebar-closed .sidebar-link svg {
+        opacity: 1;
+        margin: 0;
+      }
+      
+      /* Position dropup menu to the right when sidebar is closed */
+      body.sidebar-closed .dropup-menu {
+        left: 100%;
+        bottom: 0;
+        margin-left: 8px;
+        margin-bottom: 0;
+      }
+      
+      /* Center sidebar header when closed */
+      body.sidebar-closed .sidebar-header {
+        justify-content: center;
+        padding: 1rem 0.5rem;
       }
 
       body.sidebar-closed .header {
@@ -2428,7 +2466,7 @@
   <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <button class="menu-btn desktop-menu-btn" id="menuBtnDesktop" title="Menu">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -2649,13 +2687,13 @@
   <div class="header">
     <div class="header-left">
       <button class="menu-btn mobile-menu-btn" id="menuBtn" title="Menu">
-        <svg class="icon-menu" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        <svg class="icon-menu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
-        <svg class="icon-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        <svg class="icon-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
