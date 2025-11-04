@@ -1019,13 +1019,14 @@
 
     .dropup-menu.active {
       display: block;
+      animation: slideUp 0.2s ease-out;
     }
 
     .dropup-item {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      padding: 0.75rem 1rem;
+      padding: 0.3rem 1rem;
       color: var(--text-secondary);
       text-decoration: none;
       font-size: 0.95rem;
@@ -1774,7 +1775,7 @@
       body.sidebar-closed .sidebar .sidebar-content {
         overflow: visible;
       }
-      
+
       /* Hide text labels when sidebar is closed */
       body.sidebar-closed .sidebar-link span,
       body.sidebar-closed .sidebar-footer span {
@@ -1783,24 +1784,24 @@
         overflow: hidden;
         transition: opacity 0.1s ease-out, width 0.1s ease-out;
       }
-      
+
       /* Center icons when sidebar is closed */
       body.sidebar-closed .sidebar-link {
         justify-content: center;
         padding: 0.75rem;
       }
-      
+
       /* Remove hover background when sidebar is closed */
       body.sidebar-closed .sidebar-link:hover {
         background: transparent;
       }
-      
+
       /* Keep icons visible */
       body.sidebar-closed .sidebar-link svg {
         opacity: 1;
         margin: 0;
       }
-      
+
       /* Position dropup menu to the right when sidebar is closed */
       body.sidebar-closed .dropup-menu {
         left: 100%;
@@ -1808,7 +1809,7 @@
         margin-left: 8px;
         margin-bottom: 0;
       }
-      
+
       /* Center sidebar header when closed */
       body.sidebar-closed .sidebar-header {
         justify-content: center;
@@ -2039,7 +2040,17 @@
       transform: none;
     }
 
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
 
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
     @keyframes fadeInUp {
       from {
@@ -2727,13 +2738,26 @@
           </div>
 
           <div class="input-row">
-            <button class="action-btn attach-btn" id="attachBtn" title="Attach file">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-            </button>
+            <div class="dropup-container">
+              <button class="action-btn attach-btn" id="attachBtn" title="Attach file">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+              <div class="dropup-menu" id="attachDropup">
+                <button class="dropup-item" id="uploadFileBtn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  <span>Upload a file</span>
+                </button>
+              </div>
+            </div>
 
             <div style="flex: 1;"></div>
 
@@ -2960,10 +2984,19 @@
           });
         }
 
-        // Close dropup when clicking outside
+        // Close dropups when clicking outside
         document.addEventListener('click', function (e) {
+          // Close settings dropup
           if (settingsDropup && !settingsBtn.contains(e.target) && !settingsDropup.contains(e.target)) {
             settingsDropup.classList.remove('active');
+          }
+
+          // Close attach dropup (check if elements exist first)
+          const attachBtn = document.getElementById('attachBtn');
+          const attachDropup = document.getElementById('attachDropup');
+          if (attachDropup && attachBtn && !attachBtn.contains(e.target) && !attachDropup.contains(e.target)) {
+            attachDropup.classList.remove('active');
+            attachBtn.classList.remove('active');
           }
         });
 
@@ -3143,6 +3176,7 @@
     const sidebarOverlay = document.getElementById('sidebarOverlay');
     const menuBtnDesktop = document.getElementById('menuBtnDesktop');
     const attachBtn = document.getElementById('attachBtn');
+    const uploadFileBtn = document.getElementById('uploadFileBtn');
     const fileInput = document.getElementById('fileInput');
     const filePreviewContainer = document.getElementById('filePreviewContainer');
 
@@ -3266,8 +3300,17 @@
       micBtn.style.display = 'none';
     }
 
-    attachBtn.addEventListener('click', () => {
+    attachBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      attachBtn.classList.toggle('active');
+      attachDropup.classList.toggle('active');
+    });
+
+    uploadFileBtn.addEventListener('click', () => {
       fileInput.click();
+      attachBtn.classList.remove('active');
+      attachDropup.classList.remove('active');
     });
 
     fileInput.addEventListener('change', (event) => {

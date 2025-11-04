@@ -11,7 +11,7 @@ AI-powered event sponsorship platform with email tracking, sponsor management, a
 <br>🎯**Data** from Apollo.io, Clay.com & display on HubSpot dashboard
 <br> 🔌Built on the **Model Context Protocol (MCP)** and **Agent-to-Agent (A2A)** for a scalable, decoupled architecture, converstion with another agent
 <br>🎨 **IMAGE and VIDEO generation** using Vertex AI
-<br>🧪Built-in testing with **Automated Agent Evaluation(eval)** using ADK and example of ** A2A client**
+<br>🧪Built-in testing with **Automated Agent Evaluation(eval)** using ADK and example of **A2A client**
 <br>💳 **Stripe payment integration**($0.50+) and **AP2 protocol**
 <br>📧**Email tracking** via a 1x1 tracking pixel 
 <br>📊**Database** (Airtable integration)
