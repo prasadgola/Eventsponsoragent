@@ -2470,6 +2470,51 @@
         padding: 0.375rem 0.625rem;
       }
     }
+
+    /* --- Nano Offline Header Indicator --- */
+    .header-nano-status {
+      display: none;
+      /* Hidden by default */
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border-primary);
+      border-radius: 8px;
+      color: var(--text-tertiary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-left: 1rem;
+    }
+
+    .header-nano-status svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .header-nano-status.success {
+      border-color: var(--success);
+      color: var(--success-light);
+    }
+
+    .header-nano-status.warning {
+      border-color: var(--border-secondary);
+      color: var(--text-tertiary);
+    }
+
+    .header-nano-status.error {
+      border-color: var(--border-primary);
+      color: var(--text-tertiary);
+    }
+
+    @media (max-width: 768px) {
+
+      /* Hide on small screens to avoid crowding the header */
+      .header-nano-status {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 
@@ -2714,6 +2759,15 @@
         <h1 class="jelly-logo" onclick="location.reload()">
           <span>E</span><span>v</span><span>e</span><span>n</span><span>t</span><span>s</span>
         </h1>
+      </div>
+      <div class="header-nano-status" id="offlineNanoStatus" style="display: none;">
+        <svg id="offlineNanoIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span id="offlineNanoText">Offline</span>
       </div>
     </div>
   </div>
@@ -3614,11 +3668,6 @@
     }
 
     async function sendMessage() {
-      if (!await ensureSession()) {
-        addMessage('Failed to create session. Please refresh the page.', 'assistant');
-        return;
-      }
-
       const message = messageInput.value.trim();
       const filesToSend = [...attachedFiles];
 
@@ -3626,6 +3675,36 @@
         return;
       }
 
+      const isOffline = !navigator.onLine; // Check internet status
+
+      // --- NANO INTEGRATION START ---
+      // Check if OFFLINE, Nano is available, AND it's a text-only message
+      if (isOffline && isNanoAvailable && filesToSend.length === 0 && message) {
+        console.log('🔌 Offline: Routing to Gemini Nano.');
+        // Use local Gemini Nano
+        await sendNanoMessage(message);
+        return; // Stop execution, Nano handled it
+      }
+      // --- NANO INTEGRATION END ---
+
+      // If ONLINE, or files are attached, or Nano isn't ready,
+      // proceed with the original backend logic.
+
+      // ADDED: If we are offline but couldn't use Nano (e.g., files attached),
+      // we must stop here. We can't reach the backend.
+      if (isOffline) {
+        console.log('🔌 Offline: Cannot send message with files.');
+        addMessage('You are offline. Please connect to the internet to send files or attachments.', 'assistant');
+        return; // Don't try to call the backend
+      }
+
+      // --- START OF YOUR ORIGINAL FUNCTION LOGIC ---
+      if (!await ensureSession()) {
+        addMessage('Failed to create session. Please refresh the page.', 'assistant');
+        return;
+      }
+
+      // Note: message and filesToSend are already defined above
       if (sendBtn.disabled) return;
       sendBtn.disabled = true;
 
@@ -3909,6 +3988,12 @@
       messageInput.focus();
       initializeStripe();
 
+      initializeNanoElements();
+      checkNanoAvailability();
+
+      window.addEventListener('online', updateOfflineNanoIndicator);
+      window.addEventListener('offline', updateOfflineNanoIndicator);
+
       // Check for OAuth success/error in URL
       const urlParams = new URLSearchParams(window.location.search);
 
@@ -4172,6 +4257,148 @@
 
     // Initial visibility check
     updatePromptsVisibility();
+
+
+
+    // ========================================
+    // GEMINI NANO (Offline AI)
+    // ========================================
+
+    // Global state for Gemini Nano
+    let isNanoAvailable = false;
+    let nanoAvailability = 'unknown'; // Stores 'readily', 'downloadable', 'no', etc.
+    let offlineNanoStatus, offlineNanoIcon, offlineNanoText;
+
+    function initializeNanoElements() {
+      offlineNanoStatus = document.getElementById('offlineNanoStatus');
+      offlineNanoIcon = document.getElementById('offlineNanoIcon');
+      offlineNanoText = document.getElementById('offlineNanoText');
+    }
+
+    // This function is called by online/offline events and by checkNanoAvailability
+    function updateOfflineNanoIndicator() {
+      if (navigator.onLine) {
+        // User is ONLINE. Always hide the indicator.
+        if (offlineNanoStatus) {
+          offlineNanoStatus.style.display = 'none';
+          offlineNanoStatus.className = 'header-nano-status';
+        }
+        return;
+      }
+
+      // User is OFFLINE. Show the indicator and set its state.
+      if (!offlineNanoStatus || !offlineNanoIcon || !offlineNanoText) {
+        return; // Elements not found
+      }
+
+      offlineNanoStatus.style.display = 'flex';
+
+      switch (nanoAvailability) {
+        case 'readily':
+        case 'available':
+          offlineNanoStatus.className = 'header-nano-status success';
+          offlineNanoIcon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+          offlineNanoText.textContent = 'Nano AI Ready';
+          break;
+        case 'downloadable':
+          offlineNanoStatus.className = 'header-nano-status warning';
+          offlineNanoIcon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>';
+          offlineNanoText.textContent = 'Offline. Download Nano to use.';
+          break;
+        case 'no':
+          offlineNanoStatus.className = 'header-nano-status error';
+          offlineNanoIcon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+          offlineNanoText.textContent = 'Offline. Nano not supported.';
+          break;
+        default:
+          // API not found or other issue
+          offlineNanoStatus.className = 'header-nano-status error';
+          offlineNanoIcon.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+          offlineNanoText.textContent = 'Offline';
+      }
+    }
+
+    async function checkNanoAvailability() {
+      if (typeof LanguageModel === 'undefined') {
+        nanoAvailability = 'no'; // API not found
+        console.log('Nano: API not available (check browser/flags)');
+        updateOfflineNanoIndicator(); // Check UI
+        return;
+      }
+
+      try {
+        const availability = await LanguageModel.availability();
+        console.log('Nano Availability:', availability);
+
+        if (availability === 'no') {
+          nanoAvailability = 'no';
+        } else if (availability === 'after-download' || availability === 'downloadable') {
+          nanoAvailability = 'downloadable';
+        } else if (availability === 'readily' || availability === 'available') {
+          nanoAvailability = 'readily';
+          isNanoAvailable = true; // This global is used by sendMessage
+        } else {
+          nanoAvailability = 'unknown';
+        }
+
+      } catch (error) {
+        nanoAvailability = 'error'; // Store error state
+        console.error('Nano Error:', error);
+      }
+
+      // Finally, check if we need to show the indicator
+      updateOfflineNanoIndicator();
+    }
+
+    async function sendNanoMessage(prompt) {
+      if (sendBtn.disabled) return;
+      sendBtn.disabled = true;
+
+      if (!messagesContainer.classList.contains('active')) {
+        switchToChatView();
+      }
+
+      addMessage(prompt, 'user');
+
+      messageInput.value = '';
+      messageInput.dispatchEvent(new Event('input'));
+      removeAttachedFile(); // Clear any files
+
+      const loadingElement = addLoading();
+
+      let session = null;
+      try {
+        // Create fresh session per message (from index.html example)
+        session = await LanguageModel.create({
+          systemPrompt: "You are a helpful, friendly AI assistant. Be concise but engaging.",
+          temperature: 0.8,
+          topK: 3
+        });
+
+        const response = await session.prompt(prompt);
+
+        loadingElement.remove();
+        addMessage(response, 'assistant');
+
+      } catch (error) {
+        loadingElement.remove();
+        addMessage(`Sorry, I encountered a Nano error: ${error.message}`, 'assistant');
+        console.error('Nano Error:', error);
+      } finally {
+        if (session) {
+          try {
+            await session.destroy();
+          } catch (e) {
+            console.warn('Nano: Error destroying session:', e);
+          }
+        }
+        sendBtn.disabled = false;
+        updateInputButtons();
+        messageInput.focus();
+      }
+    }
+
+
   </script>
 </body>
 

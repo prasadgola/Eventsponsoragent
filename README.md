@@ -13,6 +13,7 @@ AI-powered event sponsorship platform with email tracking, sponsor management, a
 <br>🎨 **IMAGE and VIDEO generation** using Vertex AI
 <br>🧪Built-in testing with **Automated Agent Evaluation(eval)** using ADK and example of **A2A client**
 <br>💳 **Stripe payment integration**($0.50+) and **AP2 protocol**
+<br>📱**Offline Chat** using Gemini Nano (Chrome)
 <br>📧**Email tracking** via a 1x1 tracking pixel 
 <br>📊**Database** (Airtable integration)
 <br>☁️ **Cloud Run deployment ready** with a `cloudbuild.yaml` for CI/CD
