@@ -16,7 +16,7 @@ from chat_with_human.media_tools import generate_image, generate_video
 
 sponsor_agent = Agent(
     name="sponsor_agent",
-    model="gemini-2.0-flash-exp",
+    model="gemini-3-flash-preview",
     description=sponsor_description(),
     instruction=sponsor_instructions(),
     tools=[
