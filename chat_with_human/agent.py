@@ -7,7 +7,7 @@ from .media_tools import generate_image, generate_video
 
 root_agent = Agent(
     name="root_orchestrator",
-    model="gemini-2.5-flash-native-audio-preview-12-2025",
+    model="gemini-3-flash-preview",
     instruction=root_instructions(),
     sub_agents=[undecided_agent, host_agent, sponsor_agent],
     tools=[generate_image, generate_video]
